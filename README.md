@@ -12,7 +12,7 @@ Studio for organizing, analyzing, and presenting
 data. Required course for the Master of Science in
 Agronomy degree program.
 
-## Tentative Schedule
+# Tentative Schedule
 
 | **Week** | **Content** |
 |-----------------|---------------------------------|
