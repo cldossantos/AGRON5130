@@ -1,0 +1,91 @@
+
+
+
+
+
+
+--- 
+title: Exercises -- Linear Contrasts
+output: html_document
+---
+
+
+# Introduction
+Linear contrasts are different from least significant difference (LSD) or Tukey's honest significant difference (HSD) tests in that they can test groups of treatments.  As we learned in the lecture, the simplest way to think of a linear constrast is as a t-test between two groups.
+
+We also learned in the lecture that we use contrast coefficients to define these groups.  The coefficients for one group should add up to 1; the coefficients of the other group should add up to -1.  That way, we subtract the average value for treatments in one group from the average value for treatments in the other group.
+
+# Case Study: Winter Canola Cultivar Trial.
+Six winter canola cultivars were tested in a randomized complete block trial in Manitoba.  Yield is in kg / ha.
+
+```{r}
+canola = read.csv("data/canola_gd.csv")
+head(canola)
+
+```
+
+## ANOVA
+First, let's run our analysis of variance
+```{r}
+canola_model = aov(yield ~ block + cultivar, data = canola)
+summary(canola_model)
+
+```
+
+## Variable Classes
+This exercise requires us to talk a little about variable classes in R.  If we run the head command on our data again, you will notice small text below the variable name in each column.  
+
+```{r}
+head(canola)
+```
+
+"block" has "<int>" underneath it.  "cultivar" has "<chr>", and yield has "<dbl>".  These are the classes of each variable.  We can also view the class with the class() function:
+
+```{r}
+class(canola$block)
+class(canola$cultivar)
+class(canola$yield)
+
+```
+The class defines the nature of the data and how R deals with it.  "<int>" is an integer, or whole number.  "<cht>" is a character, or text string.  "<dbl>" refers to a double precision floating point numbers or, for practical terms, a number that can have decimal places.  
+
+Our response variable, in agronomic research, will typically be a numeric class.  Our treatment variables will typically be "character" classes, or a different class called a "factor".
+
+In many cases, character and factor classes can be used interchangeably.  One important difference, as we will soon see, is that factor variables have levels, while character variables do not.  If we try to look up the levels of cultivar as a character variable, we will get a "NULL" response from R.
+
+```{r}
+levels(canola$cultivar)
+```
+
+Another problem in our ANOVA table above is that "block" only has one degree of freedom, even though there are six blocks.  The problem is that block is indicated by a number.  When R read in the dataset, it therefore assumed block is an integer, not a factor.
+
+So there are times when we may need to change a character variable to a factor variable.
+How do we change the class of a variable?  Fortunately, it is not difficult.  First, let's change the class of block to factor and confirm, using the class() function, its new class.
+
+```{r}
+canola$block = as.factor(canola$block)
+class(canola$block)
+```
+
+Then let's do the same for cultivar.  The reason for this is we will need to be able to identify the order of the levels of cultivar, in order to specify our contrast coefficients in the correct order to match the treatment levels.
+
+```{r}
+canola$cultivar = as.factor(canola$cultivar)
+class(canola$cultivar)
+```
+
+Now let's recreate our canola model and check our analysis of variance
+```{r}
+canola_model = aov(yield ~ block + cultivar, data = canola)
+summary(canola_model)
+
+```
+We see the block effect now has three degrees of freedom.  Much better!
+
+## Least Significant Difference Test
+Next, lets run an LSD test.
+```{r}
+library(agricolae)
+lsd_canola = LSD.test(canola_model, "cultivar")
+lsd_canola
+```

@@ -1,0 +1,6 @@
+"0","yield_predictors = counties_mn_wi %>%"
+"0","  dplyr::select(corn, ppt, sand, clay, sph, om) %>%"
+"0","  na.omit() %>%"
+"0","  as.data.frame()"
+"0",""
+"0","plot(yield_predictors)"

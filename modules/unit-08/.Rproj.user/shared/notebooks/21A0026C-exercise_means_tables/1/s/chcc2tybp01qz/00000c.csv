@@ -1,0 +1,5 @@
+"0","table_w_stats = table_w_trt_column %>%"
+"0","  add_row(trt=""SED"", yield=sed) %>%"
+"0","  add_row(trt=""Number of Reps"", yield=r)"
+"0",""
+"0","table_w_stats"

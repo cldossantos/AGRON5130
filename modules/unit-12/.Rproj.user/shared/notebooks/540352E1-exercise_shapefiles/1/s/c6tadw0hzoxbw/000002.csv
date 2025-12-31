@@ -1,0 +1,7 @@
+"0","single_attribute_data %>%   # starts with om dataset"
+"0","  leaflet() %>%    # starts leaflet"
+"0","  addCircleMarkers("
+"0","    fillColor = ~palette_om(measure),"
+"0","    fillOpacity = 0.8"
+"0","  ) %>%    # adds markers as points"
+"0","  addProviderTiles(provider = providers$Esri.WorldImagery)"

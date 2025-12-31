@@ -1,0 +1,38 @@
+geomftname,geomfname,geomfmod,geomfeatid,existsonfeat,rvindicator,cokey,cogeomdkey
+Landform,flood plains,,1,2,Yes,20428651,31389573
+Landscape,river valleys,,2,NA,Yes,20428651,31389826
+Landform,flood plains,,1,2,Yes,20428652,31389574
+Landscape,river valleys,,2,NA,Yes,20428652,31389827
+Landform,flood-plain steps,,1,2,Yes,20428704,31389538
+Landscape,river valleys,,2,NA,Yes,20428704,31389799
+Landform,flood-plain steps,,1,2,Yes,20428705,31389539
+Landscape,river valleys,,2,NA,Yes,20428705,31389800
+Landform,stream terraces,,1,2,Yes,20428362,31389490
+Landscape,river valleys,,2,NA,Yes,20428362,31389791
+Landform,stream terraces,,1,2,Yes,20428363,31389491
+Landscape,river valleys,,2,NA,Yes,20428363,31389792
+Landform,stream terraces,,1,2,Yes,20428392,31389493
+Landscape,river valleys,,2,NA,Yes,20428392,31389871
+Landform,stream terraces,,1,2,Yes,20428393,31389494
+Landscape,river valleys,,2,NA,Yes,20428393,31389872
+Landform,stream terraces,,NA,NA,Yes,20428394,31389495
+Landscape,river valleys,,NA,NA,Yes,20428394,31389861
+Landform,stream terraces,,1,2,Yes,20428581,31389515
+Landscape,river valleys,,2,NA,Yes,20428581,31389831
+Landform,stream terraces,,1,2,Yes,20428582,31389516
+Landscape,river valleys,,2,NA,Yes,20428582,31389832
+Landform,stream terraces,,2,3,Yes,20428583,31389505
+Landform,depressions,,1,2,Yes,20428583,31389543
+Landscape,river valleys,,3,NA,Yes,20428583,31389833
+Landform,stream terraces,,1,2,Yes,20428584,31389506
+Landscape,river valleys,,2,NA,Yes,20428584,31389834
+Landform,flood plains,,1,2,Yes,20428500,31389580
+Landscape,river valleys,,2,NA,Yes,20428500,31389839
+Landform,flood plains,,1,2,Yes,20428501,31389569
+Landscape,river valleys,,2,NA,Yes,20428501,31389840
+Landform,flood plains,,1,2,Yes,20428502,31389570
+Landscape,river valleys,,2,NA,Yes,20428502,31389841
+Landform,depressions,,1,2,Yes,20428503,31389541
+Landform,flood plains,,2,NA,No ,20428503,31389571
+Landform,flood plains,,1,2,Yes,20428504,31389572
+Landscape,river valleys,,2,NA,Yes,20428504,31389842

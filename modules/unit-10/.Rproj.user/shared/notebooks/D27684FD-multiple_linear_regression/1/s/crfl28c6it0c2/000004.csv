@@ -1,0 +1,5 @@
+"0",""
+"0","ia_and_il_corn = county_corn_data %>%"
+"0","  filter(state %in% c(""IL"", ""IA""))"
+"0",""
+"0","head(ia_and_il_corn)"

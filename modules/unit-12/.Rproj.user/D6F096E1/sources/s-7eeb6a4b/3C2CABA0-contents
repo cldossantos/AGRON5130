@@ -1,0 +1,111 @@
+---
+title: "Unit 12 Homework Key"
+output: html_document
+---
+
+
+# Question 1a (1 pt)
+For this question we will use soil test data from a grid-sampled field in Minnesota.  The field is can be found at "data/Paulines_grid_sample.shp"
+
+Read in the dataset and name it "soil_data".
+```{r}
+library(tidyverse)
+library(sf)
+
+```
+
+# Question 1b (1 pt)  
+Filter the data so that it only includes rows where the attribute is equal to "Ph".
+```{r}
+
+```
+
+# Question 1c (1 pt)  
+Prepare to plot the data by creating a palatte using the "RdYlGn" scheme we have used elsewhere in this lesson.  (Hint: for many of the questions in this homework, you can recycle code from the exercises.  Believe me -- I can't keep all of these functions in my head at once, either!) 
+```{r}
+library(leaflet)
+library(RColorBrewer)
+
+
+
+```
+
+
+# Question 1d (2 pt)
+Create a basic plot with basic circle markers and the 'Esri.WorldImagery' background.  You do not yet need to color-code the circle markers.
+```{r}
+
+
+```
+# Question 1e (1 pt)  
+Now color-code the markers using the *fillColor* function.
+```{r}
+
+```
+# Question 1f (2 pt)  
+Now tweak the appearance of the circle markers.  Set their fillOpacity to 0.8, the weight of their boundary to zero, and their radius to 6.
+
+```{r}
+
+```
+# Question 1g (1 pt)
+Finally, add a legend to your plot.
+```{r}
+
+```
+
+# Question 1h (1 pt)
+Do you see any trends in soil pH?  What third of the field (upper, middle, third) seems to have the lowest soil pH?
+
+
+# Question 2a (1 pt)
+For this question, we will create a recommendation map for soil phosphorus.  First, read in the boundary file we will need to create our raster.
+
+```{r}
+
+```
+
+
+# Question 2b (1.5 pt)
+Next, create the grid (grd) we will fill in while creating our raster.
+```{r}
+library(stars)
+
+```
+
+
+# Question 2c (1 pt)
+Filter the data so that it only includes rows for the attribute "P_bray".
+```{r}
+
+```
+
+# Question 2d (1.5 pt)
+Create a variogram model for the soil P_bray measure and plot the results.  Again, re-use your code from the lesson!
+```{r}
+library(gstat)
+
+
+```
+
+# Question 2e (1 pt)
+Create the kriged model using the *gstat::krige()* function you learned in this lesson.  (There won't be any output to show here.)
+```{r}
+
+
+```
+
+# Question 2f (2 pt)
+Plot the kriged_data below.  
+```{r}
+library(RColorBrewer)
+library(leafem)
+
+
+```
+
+# Question 2g (1 pt)
+Add interactivity to the map so you can click on a point in the field to see its value.
+```{r}
+
+```

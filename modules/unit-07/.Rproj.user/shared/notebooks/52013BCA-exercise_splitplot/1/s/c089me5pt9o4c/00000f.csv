@@ -1,0 +1,6 @@
+"0","soybean %>%"
+"0","  ggplot(aes(x=tillage, y=yield, group=fungicide)) +"
+"0","  geom_bar(aes(fill=fungicide), stat = ""summary"", fun=""mean"", position=""dodge"") +"
+"0","  theme(axis.title = element_text(size=18),"
+"0","        axis.text = element_text(size=14))  # element_text() tells R we are modifying the font, as opposed to the position of the axis title"
+"0",""

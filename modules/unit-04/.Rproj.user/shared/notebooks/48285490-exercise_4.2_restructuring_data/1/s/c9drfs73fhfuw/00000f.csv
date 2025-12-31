@@ -1,0 +1,3 @@
+"0","trt_differences = wide_again_df %>%"
+"0","  mutate(Trt_Diff = Trt_A - Trt_B)"
+"0","trt_differences"

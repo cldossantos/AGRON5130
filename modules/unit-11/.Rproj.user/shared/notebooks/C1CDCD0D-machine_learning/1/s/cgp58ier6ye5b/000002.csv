@@ -1,0 +1,4 @@
+"0","complete_dataset = testData %>%"
+"0","  select(-corn) %>%"
+"0","  rename(corn=corn_pred) %>%"
+"0","  rbind(trainPartition)"

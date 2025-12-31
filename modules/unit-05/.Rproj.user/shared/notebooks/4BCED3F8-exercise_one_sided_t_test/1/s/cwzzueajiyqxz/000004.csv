@@ -1,0 +1,3 @@
+"0","alpha_05_1side = qt(0.95, 9)"
+"0","shadeDist(xshade=alpha_05_1side, ""dt"", parm2 = 9, lower.tail = FALSE)"
+"0",""

@@ -1,0 +1,2 @@
+"0","soybean_model = aov(yield ~ tillage + fungicide + tillage:fungicide + Error(block:tillage), data=soybean)"
+"2","Warning: Error() model is singular"

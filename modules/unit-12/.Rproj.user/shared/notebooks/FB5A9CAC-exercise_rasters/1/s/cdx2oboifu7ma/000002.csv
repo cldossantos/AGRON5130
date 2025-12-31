@@ -1,0 +1,2 @@
+"0","finished_data$rec = (37000 - finished_data$var1.pred*5000)"
+"0","finished_data$rec = if_else(finished_data$rec<3000, 0, finished_data$rec)"

@@ -1,0 +1,10 @@
+"0","library(stars)"
+"0",""
+"0","### make grid"
+"0","grd = st_bbox(boundary) %>%"
+"0","  st_as_stars() %>%"
+"0","  st_crop(boundary) "
+"2","although coordinates are longitude/latitude, st_union assumes that they are planar
+"
+"2","although coordinates are longitude/latitude, st_intersects assumes that they are planar
+"

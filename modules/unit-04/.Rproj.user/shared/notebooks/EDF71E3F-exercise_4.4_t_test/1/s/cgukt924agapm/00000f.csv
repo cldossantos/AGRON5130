@@ -1,0 +1,2 @@
+"0","apple = read.csv(""data/apple_genotype.csv"")"
+"0","head(apple)"

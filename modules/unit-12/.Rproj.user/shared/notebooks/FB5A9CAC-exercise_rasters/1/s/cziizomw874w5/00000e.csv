@@ -1,0 +1,4 @@
+"0","v = variogram(measure~1, selected_data)"
+"0","m = fit.variogram(v, vgm(""Sph""))"
+"2","linear model has singular covariance matrix"
+"0","plot(v, model = m)"

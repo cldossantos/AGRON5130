@@ -1,0 +1,3 @@
+"0","diffs = soybean_wide %>%"
+"0","  mutate(diff = A-B)"
+"0","diffs"

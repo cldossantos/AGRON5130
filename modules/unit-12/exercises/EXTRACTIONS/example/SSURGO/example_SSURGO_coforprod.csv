@@ -1,0 +1,27 @@
+plantsym,plantsciname,plantcomname,siteindexbase,siteindex.l,siteindex.r,siteindex.h,fprod.l,fprod.r,fprod.h,cokey,cofprodkey
+FRAM2,Fraxinus americana,white ash,Lloyd 1971a (170),NA,71,NA,NA,72,NA,20682944,29090042
+ACRU,Acer rubrum,red maple,Lloyd 1971b (094),NA,71,NA,NA,43,NA,20682944,29090043
+QUPA2,Quercus palustris,pin oak,Broadfoot 1963 (860),NA,90,NA,NA,72,NA,20682944,29090044
+PODE3,Populus deltoides,eastern cottonwood,Broadfoot 1960 (710),NA,98,NA,NA,129,NA,20682944,29090045
+ACSA3,Acer saccharum,sugar maple,,NA,NA,NA,NA,NA,NA,20682945,29090046
+FRAM2,Fraxinus americana,white ash,,NA,NA,NA,NA,NA,NA,20682945,29090047
+FRPE,Fraxinus pennsylvanica,green ash,,NA,NA,NA,NA,NA,NA,20682945,29090048
+LITU,Liriodendron tulipifera,tuliptree,,NA,NA,NA,NA,NA,NA,20682945,29090049
+QUAL,Quercus alba,white oak,"Carmean 1971, 1972 (804)",65,65,65,43,43.8,48,20682945,29090050
+QUMA2,Quercus macrocarpa,bur oak,,NA,NA,NA,NA,NA,NA,20682945,29090051
+QUPA2,Quercus palustris,pin oak,,NA,NA,NA,NA,NA,NA,20682945,29090052
+QURU,Quercus rubra,northern red oak,Schnur 1937 (820),65,65,70,43,43.5,48,20682945,29090053
+QUAL,Quercus alba,white oak,"Carmean 1971, 1972 (804)",NA,80,NA,NA,57,NA,20682946,29090054
+QURU,Quercus rubra,northern red oak,Schnur 1937 (820),NA,80,NA,NA,57,NA,20682946,29090055
+QUVE,Quercus velutina,black oak,"Carmean 1971, 1972 (808)",NA,80,NA,NA,57,NA,20682946,29090056
+ACRU,Acer rubrum,red maple,Lloyd 1971b (094),66,70,71,43,43.1,44,20682960,29090090
+ACSA2,Acer saccharinum,silver maple,,NA,NA,NA,NA,NA,NA,20682960,29090091
+FRPE,Fraxinus pennsylvanica,green ash,,NA,NA,NA,NA,NA,NA,20682960,29090092
+PODE3,Populus deltoides,eastern cottonwood,Broadfoot 1960 (710),98,98,98,123,128.6,129,20682960,29090093
+QUBI,Quercus bicolor,swamp white oak,,NA,NA,NA,NA,NA,NA,20682960,29090094
+QUMA2,Quercus macrocarpa,bur oak,,NA,NA,NA,NA,NA,NA,20682960,29090095
+QUPA2,Quercus palustris,pin oak,Broadfoot 1963 (860),85,89,90,72,72,72,20682960,29090096
+TIAM,Tilia americana,American basswood,,NA,NA,NA,NA,NA,NA,20682960,29090097
+CACO15,Carya cordiformis,bitternut hickory,,NA,NA,NA,NA,NA,NA,20682960,29090098
+FRAM2,Fraxinus americana,white ash,Lloyd 1971a (170),71,71,71,67,71.8,77,20682960,29090099
+FRNI,Fraxinus nigra,black ash,,NA,NA,NA,NA,NA,NA,20682960,29090100

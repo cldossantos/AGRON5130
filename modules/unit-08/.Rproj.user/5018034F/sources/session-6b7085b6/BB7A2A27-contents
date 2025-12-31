@@ -1,0 +1,303 @@
+---
+title: Exercise -- Mean Tables
+output: html_document
+---
+
+# Introduction
+Rarely have I seen a statistics course that addresses how to present your summarise your data for others to use.  Sure, you learn about tests and P-values.  But how do you summarise your data for a report publication or presentation?  I don't want to go too deep in the weeds, but I want you to be aware how to organize your data, and how R can be used to present it.
+
+# Case Study: Corn Nitrogen Source and Timing
+This is the same dataset we used for practice in the linear contrasts exercise.  Seven N fertilizer treatments (6 combinations of source and timing, plus one unfertilized control) were tested in a randomized complete block trial near Whitehouse, Ohio.
+
+```{r}
+library(tidyverse)
+corn_n = read.csv("data/corn_nitrogen_source_timing.csv")
+head(corn_n)
+```
+
+
+## Calculating Means
+We can quicly calculate means using the LSD.test() function from the *agricolae* package.
+
+```{r}
+corn_n_model = aov(yield ~ block + trt, data=corn_n)
+summary(corn_n_model)
+
+library(agricolae)
+lsd = LSD.test(corn_n_model, "trt")
+lsd
+```
+
+We can create a separate table with just the $groups section:
+```{r}
+trt_means=lsd$groups
+trt_means
+```
+One thing we need to fix are the row_names.  These are our treatment names and we want them in a column for our final table.  The *rownames_to_column()* argument quickly fixes this (and is a trick it took me quite a while to figure out!).  The rownames_to_column function takes one argument, *vars = ""*, which tells R what to name the new column.
+
+```{r}
+table_w_trt_column = trt_means %>%
+  rownames_to_column(var = "trt")
+
+table_w_trt_column
+```
+
+## Additional Statistics to Include
+It would be good to add some additional statistics to this, particularly the standard error of the difference and the number of replicatons.  We can calculate the standard error of the difference from the Error Mean Square  given in the LSD output.  First, let's start by retrieving the error mean square from the $statistics section of our lsd output.  This is a case where we can use multiple dollar signs to drill down through the list and dataframe within the list, to get to the individual statistic.
+```{r}
+ems = lsd$statistics$MSerror
+ems
+```
+
+Here is another important trick.  Analyses of variance and LSD outputs rarely report the standard error of the difference.  But we can quickly calculate it if we know the error mean square and the number of replicates:
+
+SED = sqrt(2 *EMS / r)
+
+Where r is the number of replicates.  We will set r as a variable and call it into the equation (that way we can call it into our table later as well.)
+
+```{r}
+r = 4
+
+sed = sqrt(2 * ems/r)
+sed
+```
+
+
+Now we can add the standard error of the difference and the number of replicates to the bottom of the column yield.  We will put the name of the statistic in the "treatment" column and the value of the statistic in the "yield" column.  All we need to do is use the *add_row()* function and tell R what the value of treatment and yield are in this new row.
+```{r}
+table_w_stats = table_w_trt_column %>%
+  add_row(trt="SED", yield=sed) %>%
+  add_row(trt="Number of Reps", yield=r)
+
+table_w_stats
+
+
+
+```
+
+
+## Making a Presentation-Quality Table
+At this point, our table content is complete.  If we are going to include this in a document or presentation, however, we need to spruce it up a little.  While there are multiple packages to create tables in R, I think that the *gt* table is one you are most likely to use.  
+
+We'll start loading the gt package, then using the *gt()* function to flow in the means table we have created above.  This will create a preliminary table.
+```{r}
+library(gt)
+
+gt_tbl = gt(table_w_stats)
+
+gt_tbl
+```
+
+### Choose Decimal Places
+One of the first things we notice is that the means in our middle column, yield, has have way too many decimal places.  We can correct this with the *fmt_number()* function.  This function takes two arguments.  First, "columns - vars(yield) tells R which column to format.  The second argument, "decimals=1", tells the number of decimal places to round to. 
+
+```{r}
+gt_tbl %>%
+  fmt_number(columns = vars(yield), decimals = 1) 
+
+```
+
+### Adjust Table Width
+Our table looks a little skinny, so let's adjust the width.  We can do this with the cols_width function.  The "everything() argument tells R to set each of the columns to the same width.  "~200px" sets the width at 200px.
+
+```{r}
+gt_tbl %>%
+  fmt_number(columns = vars(yield), decimals = 1) %>%
+  cols_width(everything() ~ "200px")  
+
+```
+
+### Align Columns
+We use the *cols_align()* function to align our columns.  The first argument to this function, "cols_align = ", specifies whether the column(s) should be aligned to the left, center, or right.  The second argument, "columns = vars()" tells R which columns to which the alignment should be applied.
+
+```{r}
+gt_tbl %>%
+  fmt_number(columns = vars(yield), decimals = 1) %>%
+  cols_width(everything() ~ "200px")  %>%
+  cols_align(align = "left", columns = vars(trt)) %>%
+  cols_align(align = "center", columns = vars(yield, groups)) 
+
+```
+
+### Assign Formal Column Headers
+While it is great to use simple column names when we are processing our data, when we go to present a table we should use more formal column headings.  We use the function *cols_label()*.  We specify the current column name and desired name in our argument.  For example, the current name of the left column is trt, but we want to rename it "Treatment".
+
+The second argument is a little fancier.  We want to rename our column so that it includes "Yield" and the measurement units, "bu/acre".  But we want to use the more scientifically accepted practice of foregoing the forward-slash "/" and instead write "bu acre-1" where the "-1" is in superscript.  
+
+To get a superscript "-1", we need to use a couple of html arguments: "<sup>" specifices the following text is superscript; </sup> ends the superscript text.
+
+So our text argument is "Yield (bu acre<sup>-1</sup>)".  To have R render it in html, however, we need to place our text string inside the *html()* function.
+
+```{r}
+gt_tbl %>%
+  fmt_number(columns = vars(yield), decimals = 1) %>%
+  cols_width(everything() ~ "200px")  %>%
+  cols_align(align = "left", columns = vars(trt)) %>%
+  cols_align(align = "center", columns = vars(yield, groups)) %>%
+  cols_label(trt = "Treatment",
+             yield = html("Yield (bu acre<sup>-1</sup>)"),
+             groups = "LSD Groupings") 
+
+```
+
+### Table Aesthetics
+At this point, our table is essentially complete.  But we would like tweak a couple of things.  The first thing we want to do is remove those "NA"s and just leave those cells blank.  The *sub_missing()* function will take care of that for us.  The first argument, "columns = TRUE", tells R to search the entire table for occurrences of "NA".  The second argument, missing_text = "", specifies they be replaced with a blank ("").
+
+
+```{r}
+gt_tbl %>%
+  fmt_number(columns = vars(yield), decimals = 1) %>%
+  cols_width(everything() ~ "200px")  %>%
+  cols_align(align = "left", columns = vars(trt)) %>%
+  cols_align(align = "center", columns = vars(yield, groups)) %>%
+  cols_label(trt = "Treatment",
+             yield = html("Yield (bu acre<sup>-1</sup>)"),
+             groups = "LSD Groupings") %>%
+  sub_missing(columns = TRUE, missing_text = "")
+```
+
+Finally, we would like to make a couple of the lines a little wider: the top and bottom lines of the table, as well as the line under the column labels.  We can do this with the *tab_options()* function, which then allows us to format dozens of table aspects: lines, fonts, background colors, etc.  We will use a table of "trio.border" arguments to widen those three lines.
+
+
+```{r}
+gt_tbl %>%
+  fmt_number(columns = vars(yield), decimals = 1) %>%
+  cols_width(everything() ~ "200px")  %>%
+  cols_align(align = "left", columns = vars(trt)) %>%
+  cols_align(align = "center", columns = vars(yield, groups)) %>%
+  cols_label(trt = "Treatment",
+             yield = html("Yield (bu acre<sup>-1</sup>)"),
+             groups = "LSD Groupings") %>%
+  sub_missing(columns = TRUE, missing_text = "") %>%
+  tab_options(table.border.top.width = 4,
+              table.border.bottom.width = 4,
+              column_labels.border.bottom.width = 4)
+
+
+
+```
+
+### Saving Your Table
+Finally, we can assign our table to an object, "corn_n_gt", and save is as an .html file to use it in other documents.
+```{r}
+corn_n_gt =  gt_tbl %>%
+  fmt_number(columns = vars(yield), decimals = 1) %>%
+  cols_width(everything() ~ "200px")  %>%
+  cols_align(align = "left", columns = vars(trt)) %>%
+  cols_align(align = "center", columns = vars(yield, groups)) %>%
+  cols_label(trt = "Treatment",
+             yield = html("Yield (bu acre<sup>-1</sup>)"),
+             groups = "LSD Groupings") %>%
+  sub_missing(columns = TRUE, missing_text = "") %>%
+  tab_options(table.border.top.width = 4,
+              table.border.bottom.width = 4,
+              column_labels.border.bottom.width = 4)
+
+gtsave(corn_n_gt, "corn_n_means_table.html")
+```
+
+We could go on and on, but that is enough for now, and should get you pretty far.  More information on the gt() package can be found at: https://gt.rstudio.com/index.html.  
+
+# Practice: Canola
+```{r}
+canola = read.csv("data/canola_gd.csv")
+head(canola)
+```
+
+Since the focus of this exercise is table-building, I will generate the initial lsd means table for you.
+```{r}
+library(agricolae)
+
+canola_model = aov(yield ~ block + cultivar, data = canola)
+
+lsd_canola = LSD.test(canola_model, "cultivar")
+lsd_canola
+```
+
+First, extract the $groups table from the canola_lsd output.  
+```{r}
+canola_means = lsd_canola$groups
+```
+
+Next, we need to convert our row names to a column
+```{r}
+canola_table_w_trt_column = canola_means %>%
+  rownames_to_column(var="cultivar")
+
+canola_table_w_trt_column
+```
+
+Finally, we need to calculate the SED and number of reps and add those to the table
+```{r}
+r = 4
+MSE = lsd_canola$statistics$MSerror
+
+SED = sqrt(2*MSE/r)
+
+canola_table_w_stats = canola_table_w_trt_column %>%
+  add_row(cultivar="SED", yield=SED, groups="") %>%
+  add_row(cultivar="Number of Reps", yield=r, groups="")
+
+canola_table_w_stats
+```
+
+
+
+
+At this point, the easiest way for you to make your table is to tweak the code below (this is why coding is so powerful).
+
+You will need to:
+
+* change the name of the data.frame from which you are building the table (line 1)
+* change the number of decimals in the fmt_number table to zero (line 2)
+* substitute "cultivar" for treatment wherever it occurs in the code (lines 3 and 5)
+* change the formal heading for the first column from "Treatment" to "Cultivar"
+
+```{r}
+canola_means_table = gt(canola_table_w_trt_column) %>%
+  fmt_number(columns = vars(yield), decimals = 1) %>%
+  cols_width(everything() ~ "200px")  %>%
+  cols_align(align = "left", columns = vars(trt)) %>%
+  cols_align(align = "center", columns = vars(yield, groups)) %>%
+  cols_label(trt = "Treatment",
+             yield = html("Yield (bu acre<sup>-1</sup>)"),
+             groups = "LSD Groupings") 
+```
+
+
+# Practice: Broccoli LSD
+Common bean was grown with organic practices following four previous crops.
+```{r}
+bean = read.csv("data/common_bean.csv")
+head(bean)
+
+```
+
+## Create the LSD Groups table
+```{r}
+library(agricolae)
+# model statement
+# LSD.test
+# extract groups table from lsd output
+# use rownames_to_column to create new column with rownames
+```
+
+## Prepare the table contents
+```{r}
+# r = number of reps
+# extract MSE from lsd output
+# calculate SED
+# use add_rows to add SED and r to lsd groups table
+
+```
+
+## Create the gt() table
+```{r}
+# recycle table from above: 
+# change data.frame you feed to gt (line 1)
+# adjust decimals as appropriate (line 2)
+# change variable references for treatment and, if appropriate, yield (lines 3-5)
+# change column labels (lines 5-7)
+# 
+```
+

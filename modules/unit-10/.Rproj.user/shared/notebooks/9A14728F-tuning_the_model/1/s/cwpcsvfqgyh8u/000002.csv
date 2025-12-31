@@ -1,0 +1,1 @@
+"0","model_wo_sand = lm(corn ~ ppt + whc + silt + clay + om, data = ia_and_il_corn)"

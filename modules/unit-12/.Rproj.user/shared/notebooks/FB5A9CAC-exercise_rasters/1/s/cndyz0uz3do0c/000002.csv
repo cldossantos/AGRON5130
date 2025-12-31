@@ -1,0 +1,5 @@
+"0","library(gstat)"
+"0",""
+"0","kriged_data = gstat::krige(formula = measure~1, selected_data, grd, model=m)"
+"1","[using ordinary kriging]
+"

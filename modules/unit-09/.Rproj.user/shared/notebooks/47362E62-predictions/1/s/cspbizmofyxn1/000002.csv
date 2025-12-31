@@ -1,0 +1,4 @@
+"0","soil_model = lm(yield~phosphorus)
+"
+"2","Error in eval(predvars, data, env) : object 'yield' not found
+"

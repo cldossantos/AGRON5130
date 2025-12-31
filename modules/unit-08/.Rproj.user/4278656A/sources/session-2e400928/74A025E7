@@ -1,0 +1,28 @@
+{
+    "id": "74A025E7",
+    "path": "/cloud/project/exercises/exercise_means_plots.Rmd",
+    "project_path": "exercises/exercise_means_plots.Rmd",
+    "type": "r_markdown",
+    "hash": "750001131",
+    "contents": "",
+    "dirty": false,
+    "created": 1697317099304.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "chunk_output_type": "inline",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "47,203",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1697389538,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1700683112874,
+    "read_only": false,
+    "read_only_alternatives": []
+}

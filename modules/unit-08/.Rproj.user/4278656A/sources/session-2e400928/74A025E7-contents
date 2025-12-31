@@ -1,0 +1,123 @@
+---
+title: "Means Separation Plots"
+output: html_notebook
+---
+
+THIS EXERCISE IS ONLY PARTIALLY WRITTEN.  DO NOT BEGIN IT UNTIL I SEND OUT AN ANNOUNCEMENT.
+
+
+We learned in this unit how treatment means could be plotted along with error bars or means groupings to help the reader infer treatment differences.  Remember, if you are using an LSD or Tukey's test to separate means, you should represent those means with a bar plot.
+
+We will use the same dataset as in the textbook.
+```{r}
+library(tidyverse)
+
+saffron = read.csv("data/saffron.csv")
+head(saffron)
+
+
+```
+
+# Plotting Means with Error Bars
+As you learned in the lesson, error bars extend one standard error of the difference above and below the top of each bar in a bar plot.  To draw these bars, then, we need to calculate the standard error of the difference.
+
+## Solving for the Standard Error of the Difference
+The first step, then, is to reproduce the LSD or HSD output as you learned in exercise_lsd_hsd.
+
+```{r}
+saffron$block = as.factor(saffron$block)
+saffron_model = aov(corm_number ~ block + rate, saffron)
+summary(saffron_model)
+```
+
+And then calculate the LSD.  You will notice in the LSD output there is no standard error of the difference.
+```{r}
+library(agricolae)
+lsd = LSD.test(saffron_model, "rate")
+lsd
+```
+
+This is one area where I hate on statistical software: none I know just spits out the standard error of the difference, even though that is what is being used to calculate the LSD!  
+
+I don't know why this is the case.  In many cases, you will see a bar chart with the individual standard errors calculated within each treatment.  Honestly, if you created that bar chart, no one would criticize you.  That doesn't mean, however, it makes sense.
+
+When we compare means following any analysis, including ANOVA, we don't use their individual standard errors.  We estimate a pooled standard error from all treatments in the analysis, whether that be 2 treatments (a simple t-test) or 20.
+
+One of the reasons I switched from SAS to R was at least I could write code to automatically pull this out of the table!
+
+Remember, the LSD is the product of the minimum ("critical) t-value of a difference for it to be significant -- multiplied by the standard error of the difference.  Or, conversely, the standard error of the difference is equal to the LSD divided by the t-value.
+
+From our table above we can extract those values:
+```{r}
+lsd_value <- lsd$statistics$LSD
+t_value <- lsd$statistics$t.value
+```
+
+And then calculate the standard error of the difference by dividing lsd_value by t_value:
+
+```{r}
+std_err_diff <- lsd_value / t_value
+```
+
+Now we are ready to generate our plot!
+
+## Creating the Bar Chart
+A basic bar plot  has a bar representing each treatment mean. The treatment level is indicated along the x (horizontal) axis.  The sample mean is indicated along the y (vertical) axis.  The bar height indicates the sample mean.  
+
+```{r}
+saffron_means %>%
+  ggplot(aes(x=rate, y=corm_number)) +
+  geom_bar(stat="identity", color="black", fill = "darkolivegreen")
+```
+
+The *theme()* function is a powerful tool that can be used to format about every part of the plot.  Here, we can use it to increase the readability of our axis text (tick labels) and axis title.  These adjustments can be particularly useful if we want to screen-grab our plot and paste it into a presentation.
+
+
+```{r}
+saffron_means %>%
+  ggplot(aes(x=rate, y=corm_number)) +
+  geom_bar(stat="identity", color="black", fill = "darkolivegreen")+
+  theme(axis.text = element_text(size=12),
+        axis.title = element_text(size=16))
+```
+
+This plot, however, does not provide the viewer any sense of whether corm number is significantly different among treatments.  For that purpose, we can add error bars.
+
+```{r}
+saffron_means %>%
+  ggplot(aes(x=rate, y=corm_number)) +
+  geom_bar(stat="identity", color="black", fill = "darkolivegreen") +
+  theme(axis.text = element_text(size=12),
+        axis.title = element_text(size=16)) +
+  geom_errorbar(aes(ymin=corm_number-std_err_diff, ymax=corm_number+std_err_diff), width=0.4, size=1)
+
+```
+
+These error bars stretch from one standard error of the mean below the sample mean to one standard error of the mean above the sample mean.  As a general rule of thumb, the least significant difference is approximately 2 standard errors of the mean.  If the error bars from two treatment levels don't overlap, then the two treatments are likely different.  We can see in the plot that the corm number for the 1X and 3X fertilizer rates are very similar.    
+
+Alternatively, we could set the error bar height equal to the least significant difference itself.
+
+```{r}
+saffron_means %>%
+  ggplot(aes(x=rate, y=corm_number)) +
+  geom_bar(stat="identity", color="black", fill = "darkolivegreen") +
+  geom_errorbar(aes(ymin=corm_number-5.63, ymax=corm_number+5.63), width=0.4, size=1) +
+  theme(axis.text = element_text(size=12),
+        axis.title = element_text(size=16))
+
+```
+
+This allows the viewer to use the actual LSD to separate treatment means.  If the range of the error bar from one treatment does not include the mean of another treatment, then the two treatments are not equal.
+
+Significant differences among treatments can also be indicated by including letter groupings from an LSD or Tukey's test.
+
+```{r}
+lsd$groups %>%
+  rownames_to_column(var="rate") %>%
+  ggplot(aes(x=rate, y=corm_number)) +
+  geom_bar(stat="identity", color="black", fill = "darkolivegreen") +
+  geom_text(aes(x=rate, y=corm_number+15, label=groups), size=6) +
+  theme(axis.text = element_text(size=12),
+        axis.title = element_text(size=16))
+
+```

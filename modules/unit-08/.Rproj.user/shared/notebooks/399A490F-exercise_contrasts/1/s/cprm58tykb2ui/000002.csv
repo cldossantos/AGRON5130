@@ -1,0 +1,6 @@
+"0","canola$cultivar = as.factor(canola$cultivar)"
+"0","class(canola$cultivar)"
+"1","[1]"
+"1"," ""factor"""
+"1","
+"

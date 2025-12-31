@@ -1,0 +1,7 @@
+"0","cluster_ready_data = cluster_vars_only %>%"
+"0","  scale()"
+"0",""
+"0","cluster_ready_data %>%"
+"0","  as.data.frame() %>%"
+"0","  filter(row_number() <= 10) %>%"
+"0","  select(cum_gdd, ppt, clay)"

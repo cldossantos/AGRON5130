@@ -1,0 +1,14 @@
+"0","title: Exercises -- Linear Contrasts
+output: html_document
+---
+
+
+# Introduction
+Linear contrasts are different from least significant difference (LSD) or Tukey's honest significant difference (HSD) tests in that they can test groups of treatments.  As we learned in the lecture, the simplest way to think of a linear constrast is as a t-test between two groups.
+
+We also learned in the lecture that we use contrast coefficients to define these groups.  The coefficients for one group should add up to 1; the coefficients of the other group should add up to -1.  That way, we subtract the average value for treatments in one group from the average value for treatments in the other group.
+
+# Case Study: Winter Canola Cultivar Trial.
+Six winter canola cultivars were tested in a randomized complete block trial in Manitoba.  Yield is in kg / ha."
+"2","/bin/sh: 1: ---: not found
+"

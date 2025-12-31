@@ -1,0 +1,133 @@
+---
+title: "Unit 2 Assignment"
+output: html_notebook
+---
+
+# Question 1a
+Load the peanut_uniformity dataset and assign it to the dataset "peanut".
+```{r}
+peanut = read.csv("data/peanut_uniformity.csv")
+```
+
+
+# Question 1b
+Review the dataset using the *head()* function.
+```{r}
+head(peanut)
+```
+
+# Question 1d
+Create a quick histogram of yield using the *hist()* function.
+```{r}
+hist(peanut$yield)
+```
+
+# Question 1e
+Calculate the mean yield and assign it to the variable "peanut_mu".  Calculate the standard deviation of the yield and assign it to the variable "peanut_sigma". 
+```{r}
+peanut_mu = mean(peanut$yield)
+peanut_sigma = sd(peanut$yield)
+
+```
+
+# Question 1f
+Plot the distribution and calculate the probability of yields less than 1.5.
+```{r}
+library(fastGraph)
+
+shadeDist(xshade = 1.5, 
+          ddist = "dnorm", 
+          parm1 = peanut_mu, 
+          parm2 = peanut_sigma,
+          lower.tail = TRUE)
+
+```
+
+# Question 1g
+Calculate the probability of values greater than 3.5.
+```{r}
+shadeDist(xshade = 3.5, 
+          ddist = "dnorm", 
+          parm1 = peanut_mu, 
+          parm2 = peanut_sigma,
+          lower.tail = FALSE)
+```
+
+Question 1h
+Calculate the probability of values equal or greater than 1.6 and less than 2.9.
+```{r}
+shadeDist(xshade = c(1.6,2.9), 
+          ddist = "dnorm", 
+          parm1 = peanut_mu, 
+          parm2 = peanut_sigma,
+          lower.tail = FALSE)
+```
+
+# Question 2a
+Load the file "data/merriweather_yield_map/merriweather_yield_map.shp" using the *st_read()* function and assign it to the soybean dataframe.
+```{r}
+library(sf)
+soybean = st_read("data/merriweather_yield_map/merriweather_yield_map.shp")
+
+```
+
+# Question 2b
+Review the data using the *head()* function.
+```{r}
+head(soybean)
+```
+
+# Question 2c
+Plot the "yield_bu" column of the soybean dataset
+```{r}
+plot(soybean["yield_bu"])
+```
+
+# Question 2d
+Create a simple histogram of "yield_bu" using the *hist()* function
+```{r}
+hist(soybean$yield_bu)
+```
+
+# Question 2e
+Calculate the mean yield and call it "soybean_mu".  Calculate the standard deviation of yield and call it "soybean sigma".
+```{r}
+soybean_mu = mean(soybean$yield_bu)
+soybean_sigma = sd(soybean$yield_bu)
+
+```
+
+# Question 2f
+What is the probability of observing a yield equal to or greater than 90 bu/ac?
+```{r}
+shadeDist(xshade = 90, 
+          ddist = "dnorm", 
+          parm1 = soybean_mu, 
+          parm2 = soybean_sigma,
+          lower.tail = FALSE)
+```
+
+# Question 2g
+What is the probability of observing a yield between 75 and 85?
+```{r}
+shadeDist(xshade = c(75,85), 
+          ddist = "dnorm", 
+          parm1 = soybean_mu, 
+          parm2 = soybean_sigma,
+          lower.tail = FALSE)
+```
+
+Question 2h
+If the probability of observing a value less than 65.8 is 5%, about how many observations out of 100 would you expect to have a value less than or equal to 65.8.  
+```{r}
+soybean_mu - 1.64*soybean_sigma
+
+```
+
+```{r}
+shadeDist(xshade = 65.75, 
+          ddist = "dnorm", 
+          parm1 = soybean_mu, 
+          parm2 = soybean_sigma,
+          lower.tail = TRUE)
+```

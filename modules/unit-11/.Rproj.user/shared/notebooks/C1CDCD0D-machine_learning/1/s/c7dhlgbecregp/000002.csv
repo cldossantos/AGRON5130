@@ -1,0 +1,7 @@
+"0","set.seed(112020)"
+"0","kmean_silt_gdd = kmeans(km_animation_data, 3)"
+"0",""
+"0","kmean_silt_gdd$centers %>%"
+"0","  as.data.frame() %>%"
+"0","  rownames_to_column(""cluster"") %>%"
+"0","  kableExtra::kbl()"

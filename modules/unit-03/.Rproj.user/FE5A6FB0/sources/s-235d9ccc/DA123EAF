@@ -1,0 +1,26 @@
+{
+    "id": "DA123EAF",
+    "path": "/cloud/project/lecture/sample_statistics_091220.Rmd",
+    "project_path": "lecture/sample_statistics_091220.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1599939363484.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "cursorPosition": "615,44",
+        "scrollLine": "0",
+        "docOutlineVisible": "0",
+        "last_setup_crc32": ""
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1599939360,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1599939366211,
+    "read_only": false,
+    "read_only_alternatives": []
+}

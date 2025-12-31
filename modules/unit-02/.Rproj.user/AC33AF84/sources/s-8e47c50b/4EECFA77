@@ -1,0 +1,25 @@
+{
+    "id": "4EECFA77",
+    "path": "/cloud/project/assignment/unit_2_assignment_key.Rmd",
+    "project_path": "assignment/unit_2_assignment_key.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1611279473445.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "chunk_output_type": "inline",
+        "cursorPosition": "120,162",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1611280537,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1611280537942,
+    "read_only": false,
+    "read_only_alternatives": []
+}

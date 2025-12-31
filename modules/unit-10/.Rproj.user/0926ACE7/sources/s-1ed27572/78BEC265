@@ -1,0 +1,26 @@
+{
+    "id": "78BEC265",
+    "path": "/cloud/project/lecture/multiple_linear_and_nonlinear_regression.Rmd",
+    "project_path": "lecture/multiple_linear_and_nonlinear_regression.Rmd",
+    "type": "r_markdown",
+    "hash": "2499379227",
+    "contents": "",
+    "dirty": false,
+    "created": 1617150393911.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "3,14",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1617150470,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1617150470722,
+    "read_only": false,
+    "read_only_alternatives": []
+}

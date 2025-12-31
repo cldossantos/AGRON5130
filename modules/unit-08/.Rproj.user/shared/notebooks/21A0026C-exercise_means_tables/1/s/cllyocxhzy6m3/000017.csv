@@ -1,0 +1,8 @@
+"0","gt_tbl %>%"
+"0","  fmt_number(columns = c(yield), decimals = 1) %>%"
+"0","  cols_width(everything() ~ ""200px"")  %>%"
+"0","  cols_align(align = ""left"", columns = c(trt)) %>%"
+"0","  cols_align(align = ""center"", columns = c(yield, groups)) %>%"
+"0","  cols_label(trt = ""Treatment"","
+"0","             yield = html(""Yield (bu acre<sup>-1</sup>)""),"
+"0","             groups = ""LSD Groupings"") "

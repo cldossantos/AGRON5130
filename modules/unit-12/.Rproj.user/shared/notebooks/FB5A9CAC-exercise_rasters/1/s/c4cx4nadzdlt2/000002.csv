@@ -1,0 +1,5 @@
+"0","### make grid"
+"0","grd = st_bbox(boundary) %>%"
+"0","  st_as_stars() %>%"
+"0","  st_crop(boundary) "
+"0",""

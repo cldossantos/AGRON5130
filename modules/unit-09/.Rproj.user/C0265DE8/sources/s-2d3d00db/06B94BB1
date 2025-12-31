@@ -1,0 +1,27 @@
+{
+    "id": "06B94BB1",
+    "path": "/cloud/project/lecture/correlation_and_simple_regression.Rmd",
+    "project_path": "lecture/correlation_and_simple_regression.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1616460140444.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "587,49",
+        "scrollLine": "584",
+        "last_setup_crc32": ""
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1616466764,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1616466764802,
+    "read_only": false,
+    "read_only_alternatives": []
+}

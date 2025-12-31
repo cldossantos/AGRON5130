@@ -1,0 +1,8 @@
+"0","testData$corn_pred = predict(knnFit, testData)"
+"0",""
+"0","testData %>%"
+"0","  ggplot(aes(x=corn, y=corn_pred)) +"
+"0","  geom_point() +"
+"0","  geom_smooth(method = ""lm"") +"
+"0","  labs(x=""Actual Yield (bu)"", y=""Predicted Yield (bu)"")"
+"0",""

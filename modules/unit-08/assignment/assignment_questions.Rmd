@@ -1,0 +1,91 @@
+---
+title: Unit 8 Assignment
+output: html_document
+---
+
+# Question 1a (1 pt)
+Four foliar biostimulant treatments were compared for their effect on apple yield: 
+
+* Control (no foliar)
+* Calcium 
+* Calcium + Silicon and Zinc, 
+* Calcium + Seaweed extract
+
+Yield was measured in tons per hectare.
+
+Read in the "data/apple.csv" file.
+```{r}
+library(tidyverse)
+library(agricolae)
+
+```
+
+# Question 1b (1pt)
+Conduct the Analysis of Variance on the treatments and show the results.
+```{r}
+
+```
+
+# Question 1c (2pts) 
+Separate the means using the Least Significant Difference test.  Present the LSD test output.
+```{r}
+
+```
+
+# Question 1d (2 pts)
+Separate the means using Tukey's Honest Significant Difference test.  Present the HSD test output.
+```{r}
+
+```
+
+# Question 1e (1 pt)
+What difference in means separation do you notice between the LSD and HSD tests?
+
+# Questsion 2a (1 pt)
+Conduct a linear contrast to compare the yields of calcium plus other ingredients to calcium alone.  Don't panic, I will walk you through this during the next few questions.  Start by examining the order of treatments in the the foliar_trt factor.
+
+```{r}
+
+```
+
+# Question 2b (1 pt)
+Completing the contrast matrix, K_additives_vs_calcium.  
+```{r}
+
+```
+
+# Question 2c (1 pt)
+Create the new linear model to use with the contrast.  Remember the effects side of the equation should only have 0 and foliar_trt.
+```{r}
+
+```
+
+# Question 2d (1 pt)
+Now, run the contrast.  Remember to use the *summary()* function to view the model results.
+```{r}
+library(multcomp) # don't delete this
+
+```
+
+# Question 2e (1 pt)
+What do you conclude?  Does calcium + additional ingredients produce greater apple yield than calcium alone?
+
+# Question 3a (1 pt)
+Create a basic bar plot with letter groupings above the bars.  Let's break this into two steps.  First, let's extract the "groups" table from the LSD output above.  Then let's convert the row names to a column, "trt".
+```{r}
+
+```
+
+# Question 3b (2pt)
+Now, let's create the plot.  It doesn't need to be pretty for this assignment -- you should only need four lines of code to complete the plot:
+
+* the first line should just contain your data.frame name and %>% 
+* the second line should start the ggplot and declare your x and y aesthetics 
+* the third line should draw your bars using the geom_bar() function
+* the fourth line should draw the letters above the bars, using the geom_text() function
+
+```{r}
+
+```
+
+

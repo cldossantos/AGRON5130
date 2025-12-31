@@ -1,0 +1,26 @@
+{
+    "id": "04E1B710",
+    "path": "/cloud/project/lecture/intro_and_population_statistics_073020.Rmd",
+    "project_path": "lecture/intro_and_population_statistics_073020.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1610047248215.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "cursorPosition": "113,0",
+        "scrollLine": "109",
+        "docOutlineVisible": "1",
+        "last_setup_crc32": ""
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1610391132,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1611518199307,
+    "read_only": false,
+    "read_only_alternatives": []
+}

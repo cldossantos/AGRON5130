@@ -1,0 +1,4 @@
+"0","beet_model = lm( , data = )"
+"2","Error in terms.formula(formula, data = data) : 
+  argument is not a valid model
+"

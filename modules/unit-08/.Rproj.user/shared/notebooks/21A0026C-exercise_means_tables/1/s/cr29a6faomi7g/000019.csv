@@ -1,0 +1,2 @@
+"0","gt_tbl %>%"
+"0","  fmt_number(columns = c(yield), decimals = 1) "

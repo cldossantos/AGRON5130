@@ -1,0 +1,238 @@
+---
+title: Exercise -- LSD and Tukey's HSD
+output: html_document
+---
+
+# Introduction
+In the lecture, we learned two ways of grouping treatment means: by *Least Significant Difference" and by *Tukey's HSD (Honest Significant Difference.  Both of these tests can be run very quicly in R.
+
+# Case Study: Common Bean
+The yield of organically-grown common bean was assessed following four crops: conventional broccoli, green_manure, fallow, and organic broccoli.   Yield is in tons per hectare.  We wish to separate the treatment means.
+
+```{r}
+common_bean = read.csv("data/common_bean.csv")
+head(common_bean)
+```
+
+First, we need to create our linear model and run our analysis of variance.  The trial is a randomized complete block design, so our linear model is:
+
+fresh_weight = mu + block + prev_crop + error
+
+Our model statement in R is:
+```{r}
+common_bean_model = aov(fresh_weight ~ block + prev_crop, data=common_bean)
+```
+
+Our analysis of variance is:
+```{r}
+summary(common_bean_model)
+```
+
+We see the effect of previous crop is significant, so now we want to separate the treatment means.
+
+# Least Significant Difference
+Both the least significant test and Tukey's Honest Significant Test will be run using functions from the *agricolae* package.  We load the agricolae package to our session using the *library()* command
+
+```{r}
+library(agricolae)
+```
+
+After this.  We can run the least significant test using tne *LSD.test()* function.  This argument takes two arguments: a linear model, and the treatment we wish to separate (which must be given in quotes).  We can simply reference the common_bean_model created above.
+```{r}
+lsd_common_bean = LSD.test(common_bean_model, "prev_crop")
+lsd_common_bean
+```
+
+The test results are returned in a list, which in R is a collection of objects grouped under one name ("lsd_common_bean" in our code above).  We can reference different parts of this list the same way you would reference columns within a data frame: using the dollar sign to separate the list name and the object.  For example, if we just wanted to look at our $statistics, we would type:
+```{r}
+lsd_common_bean$statistics
+```
+
+We can reference the means groupings, as well:
+```{r}
+lsd_common_bean$groups
+```
+
+This selectivity is handy if we are writing a report and just want to reference part of the output.
+
+In the grouping above, we see that common bean fresh weight was statistically similar following conventional broccoli, fallow, and green manure.  Common bean fresh weight following organic broccoli, however, was statistically less than following the other three treatments.
+
+# Tukey HSD
+We can separate the means, very similarly, using Tukey's Honest Significant Difference.  We use the *HSD.test()* function.  The first two arguments are the same as for the LSD.test(): the linear model and treatment (in quotes) we wish to separate.  We add a third argument, "group = TRUE".  This tells the HSD.test to return a letter-grouping of treatment means.  
+
+```{r}
+common_bean_hsd = HSD.test(common_bean_model, "prev_crop", group = TRUE)
+common_bean_hsd
+
+```
+
+The HSD.test output, like the lsd output is a list.  We can again reference individual tables within it:
+
+```{r}
+common_bean_hsd$groups
+```
+
+# Practice: Apple
+Apple yield was measured after treatment with four biostimulants.  The design was a randomized complete block.  The yield was measured in tons per hectare.
+```{r}
+apple = read.csv("data/apple.csv")
+```
+
+## Analysis of Variance
+Run the analysis of variance.  Your results should be:
+
+            Df Sum Sq Mean Sq F value  Pr(>F)   
+block        1   0.40    0.40   0.076 0.78800   
+foliar_trt   3 162.10   54.03  10.345 0.00156 **
+Residuals   11  57.45    5.22                   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+## Least Significant Difference
+Run the Least Significant Difference test on the treatment means.  Your results should look like:
+
+$statistics
+   MSerror Df     Mean       CV  t.value     LSD
+  5.222995 11 47.96522 4.764676 2.200985 3.55682
+
+$parameters
+        test p.ajusted     name.t ntr alpha
+  Fisher-LSD      none foliar_trt   4  0.05
+
+$means
+                yield      std r      LCL      UCL      Min      Max      Q25      Q50      Q75
+conv         45.70984 1.678378 4 43.19478 48.22489 44.44665 48.15233 44.71817 45.12018 46.11185
+conv+calcium 44.08293 1.274706 4 41.56788 46.59798 42.34804 45.30697 43.58313 44.33835 44.83815
+conv+seaweed 51.90854 2.073312 4 49.39349 54.42359 50.18903 54.78184 50.51099 51.33165 52.72920
+conv+si+zn   50.15958 3.246956 4 47.64452 52.67463 46.88179 54.60709 48.55789 49.57471 51.17639
+
+$comparison
+NULL
+
+$groups
+                yield groups
+conv+seaweed 51.90854      a
+conv+si+zn   50.15958      a
+conv         45.70984      b
+conv+calcium 44.08293      b
+
+attr(,"class")
+[1] "group"
+
+
+## Tukey's HSD
+Run the Honest Significant Difference test on the treatment means.  Your results should look like:
+
+$statistics
+   MSerror Df     Mean       CV      MSD
+  5.222995 11 47.96522 4.764676 4.863468
+
+$parameters
+   test     name.t ntr StudentizedRange alpha
+  Tukey foliar_trt   4         4.256143  0.05
+
+$means
+                yield      std r      Min      Max      Q25      Q50      Q75
+conv         45.70984 1.678378 4 44.44665 48.15233 44.71817 45.12018 46.11185
+conv+calcium 44.08293 1.274706 4 42.34804 45.30697 43.58313 44.33835 44.83815
+conv+seaweed 51.90854 2.073312 4 50.18903 54.78184 50.51099 51.33165 52.72920
+conv+si+zn   50.15958 3.246956 4 46.88179 54.60709 48.55789 49.57471 51.17639
+
+$comparison
+NULL
+
+$groups
+                yield groups
+conv+seaweed 51.90854      a
+conv+si+zn   50.15958     ab
+conv         45.70984     bc
+conv+calcium 44.08293      c
+
+attr(,"class")
+[1] "group"
+
+
+# Practice: Wheat Treatment with Mildew
+
+Four foliar treatments against powdery mildew in wheat were tested in Rothemsted, England, for their effect on grain yield.  The same fungicide was tested with four timings: 0 (none), 1 (early), 2 (late), R (repeated).
+
+The treatment was a randomized complete block design.  Yield was measured in tons per hectare.
+
+```{r}
+wheat_mildew = read.csv("data/mildew.csv")
+head(wheat_mildew)
+```
+
+## Analysis of Variance
+Run the analysis of variance on the response of wheat yield to fungicide treatment.  Your results should look like: 
+
+            Df Sum Sq Mean Sq F value   Pr(>F)    
+block        8  5.085  0.6356   17.53 2.79e-08 ***
+trt          3  3.129  1.0432   28.77 4.05e-08 ***
+Residuals   24  0.870  0.0363                     
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+## Least Significant Difference
+Run the Least Significant Difference test on the treatment means.  Your results should look like:
+
+$statistics
+     MSerror Df     Mean       CV  t.value       LSD
+  0.03625532 24 5.801944 3.281802 2.063899 0.1852542
+
+$parameters
+        test p.ajusted name.t ntr alpha
+  Fisher-LSD      none    trt   4  0.05
+
+$means
+      yield       std r      LCL      UCL  Min  Max  Q25  Q50  Q75
+R  5.942222 0.4649403 9 5.811228 6.073217 5.06 6.54 5.76 6.01 6.18
+T0 5.310000 0.4519956 9 5.179006 5.440994 4.38 5.82 5.16 5.26 5.73
+T1 5.867778 0.4602928 9 5.736783 5.998772 5.04 6.45 5.59 5.89 6.26
+T2 6.087778 0.3347304 9 5.956783 6.218772 5.63 6.48 5.76 6.14 6.43
+
+$comparison
+NULL
+
+$groups
+      yield groups
+T2 6.087778      a
+R  5.942222     ab
+T1 5.867778      b
+T0 5.310000      c
+
+attr(,"class")
+[1] "group"
+
+
+## Tukey's Honest Significant Difference Test
+Run the HSD test on the treatment means.  Your results should look like:
+
+$statistics
+     MSerror Df     Mean       CV       MSD
+  0.03625532 24 5.801944 3.281802 0.2476109
+
+$parameters
+   test name.t ntr StudentizedRange alpha
+  Tukey    trt   4         3.901262  0.05
+
+$means
+      yield       std r  Min  Max  Q25  Q50  Q75
+R  5.942222 0.4649403 9 5.06 6.54 5.76 6.01 6.18
+T0 5.310000 0.4519956 9 4.38 5.82 5.16 5.26 5.73
+T1 5.867778 0.4602928 9 5.04 6.45 5.59 5.89 6.26
+T2 6.087778 0.3347304 9 5.63 6.48 5.76 6.14 6.43
+
+$comparison
+NULL
+
+$groups
+      yield groups
+T2 6.087778      a
+R  5.942222      a
+T1 5.867778      a
+T0 5.310000      b
+
+attr(,"class")
+[1] "group"

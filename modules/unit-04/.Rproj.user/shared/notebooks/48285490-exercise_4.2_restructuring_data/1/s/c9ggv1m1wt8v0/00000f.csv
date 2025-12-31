@@ -1,0 +1,4 @@
+"0","long_df = wide_df %>%"
+"0","  gather(Treatment, Value, Trt_A:Trt_B)"
+"0",""
+"0","long_df"

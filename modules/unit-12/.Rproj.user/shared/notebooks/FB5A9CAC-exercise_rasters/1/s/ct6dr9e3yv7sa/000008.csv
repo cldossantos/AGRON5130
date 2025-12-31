@@ -1,0 +1,4 @@
+"0","grd %>%"
+"0","  leaflet()  %>%"
+"0","  addProviderTiles(provider = providers$Esri.WorldImagery) %>%"
+"0","  addStarsImage()"

@@ -1,0 +1,25 @@
+{
+    "id": "382992E4",
+    "path": "/cloud/project/exercises/exercise_t_distribution.Rmd",
+    "project_path": "exercises/exercise_t_distribution.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1611673898595.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "chunk_output_type": "inline",
+        "cursorPosition": "115,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1611674050,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1611674050426,
+    "read_only": false,
+    "read_only_alternatives": []
+}

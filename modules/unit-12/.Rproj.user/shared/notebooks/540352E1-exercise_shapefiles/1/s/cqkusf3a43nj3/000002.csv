@@ -1,0 +1,2 @@
+"0","library(RColorBrewer)"
+"0","palette_om = colorBin(palette = ""RdYlGn"", single_attribute_data$measure)"

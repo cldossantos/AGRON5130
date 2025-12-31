@@ -1,0 +1,5 @@
+"0","soybean_group = soybean %>%    # build new dataframe, soybean_group, on summary of soybean dataframe"
+"0","  group_by(tillage, fungicide) %>%   # summarise based on interaction of tillage and fungicide"
+"0","  summarise(yield = mean(yield)) %>%   # summarise by means across replications"
+"0","  ungroup()    # ungroup for further processing"
+"2","`summarise()` regrouping output by 'tillage' (override with `.groups` argument)"

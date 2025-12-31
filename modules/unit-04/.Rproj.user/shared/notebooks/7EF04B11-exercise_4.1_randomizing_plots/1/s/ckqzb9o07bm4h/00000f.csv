@@ -1,0 +1,4 @@
+"0","treatment_name=c(""A"", ""B"")"
+"0",""
+"0","plot_plan = design.rcbd(trt = treatment_name, r=4)"
+"0",""

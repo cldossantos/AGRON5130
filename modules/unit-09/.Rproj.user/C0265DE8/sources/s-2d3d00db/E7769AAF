@@ -1,0 +1,26 @@
+{
+    "id": "E7769AAF",
+    "path": "/cloud/project/exercises/simple_linear_regression.Rmd",
+    "project_path": "exercises/simple_linear_regression.Rmd",
+    "type": "r_markdown",
+    "hash": "3983654528",
+    "contents": "",
+    "dirty": false,
+    "created": 1616548231081.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "34,105",
+        "scrollLine": "30"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1616548288,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1616548288731,
+    "read_only": false,
+    "read_only_alternatives": []
+}

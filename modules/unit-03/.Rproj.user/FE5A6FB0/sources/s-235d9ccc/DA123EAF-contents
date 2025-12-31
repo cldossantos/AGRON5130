@@ -1,0 +1,725 @@
+---
+title: "Sample Statistics"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+### Introduction
+In the previous two units, we studied populations and how to summarise them with statistics when the *entire* population was measured.  In other words, the measurce of center (the "mean") and measure of spread ("standard deviation") were the summary of all observations.
+
+In the case of yield monitor, these are appropriate statistics.  In most every other agricultural reality, however, we cannot measure every individual in a population.  Instead, we only have enough *sample* the population, that is, measure a subset of individuals from the population.
+
+This, of course, raises questions.  Was the sample (our subset) representative of the population?  If we took another random sample, would we calculate a similar mean or standard deviation?  And, perhaps, how far off could the mean of our sample be from the true population mean?
+
+In other words, there is always uncertainty that statistics calculated from samples represent the true values of a population.  You might even say we lack complete confidence that a mean value calculated from a sample will closely estimate the mean of a population.
+
+Enter statistics.  We can measure the variance of sample means to estimate the distribution of sample means around the true population mean.  Indeed, this is fundamental concept of research and statistics -- using the measured variance of sample statistics to determine how accurate the are in predicting population statistics.
+
+### Samples
+To measure the variation of sample means, we need at least two samples to compare.  Ideally we can gather even more.  As we will see, the more samples included in our estimates of the population mean, the more accurate we are likely to be.
+
+A second comment, which may seem intuitive -- but at the retail level may be overlooked -- is randomization.  Samples, for example individual plants, or areas where yield will be measured, are ideally selected at random.  In reality, the plants or areas selected for measures may be less than random. When I used to count weed populations, we used square quadrats (frames) to consistently define the area that was measured.  We would throw them into different areas of the plot and count weeds where ever they landed.
+
+The most important thing about selecting samples, however, is that the researcher work to minimize bias.  Bias is when the samples selected consistently overestimate or underestimate the population mean.  The most aggregious example of this would be a researcher who consistently and purposely sampled the highest- or lowest-measuring parts of a field.  
+
+But bias can enter in other ways.  For example, if our weed populations were very uneven, our thrown quadrat might be more likely to skid to a stop in weedy areas.  A researcher might unconsciously choose taller plants to sample.  In August, we might be tempted to sample a corn field from the edge than walk into that sweltering, allergenic hell. 
+
+Remember, our goal is to represent a population as accurately and as unbiasedly as our resources allow.  Accuracy means our sample means are close to the population mean.  Unbiased means our sample means are equivalently scattered above and below the population mean.
+
+
+![Accuracy versus Bias](bias_v_accuracy.png)
+
+## Case Study
+Once more, we will work with the Iowa soybean yield dataset from Units 1 and 2.
+
+```{r, yield_dataset, include=FALSE}
+library(sf)
+library(tidyverse)
+library(rcompanion)
+library(plotly)
+
+yield = st_read("data/merriweather_yield_map/merriweather_yield_map.shp")
+
+```
+
+Let's review the structure of this dataset:
+```{r, review_structure}
+
+head(yield)
+
+```
+
+And map the field:
+```{r, plot_field}
+plot(yield["yield_bu"])
+```
+
+In Unit 2, we learned how to describe these data using the normal distribution model.  We learned about how the area under the normal distribution curve corresponds to the proportion of individuals within a certain range of values.  We also discussed how this proportion gave way to inferences about probability.  For example, the area under the curve that corresponded with yields from 70.0 to 79.9 represented the proportion of individuals in the yield population.  But it also represented the probability that, were you to measure selected areas at random, you would measure a yield between 70.0 and 79.9.
+
+
+### Describing the Distribution of Sample Means
+In the last unit, we sampled the yield from 1000 locations in the field and counted the number of observations that were equal to or greater than 70 and equal to or less than 80.
+
+What would happen if we only sampled from 1 location.  What would be our sample mean and how close would it be to the population mean?
+
+```{r}
+set.seed(1776)
+yield_sample = sample(yield$yield_bu, 1) %>%
+      as.data.frame()
+names(yield_sample) = c("yield")
+ggplot(yield_sample, aes(x=yield)) +
+  geom_histogram(fill="white", color="black") +
+  geom_vline(xintercept = mean(yield$yield_bu), color = "red") +
+  geom_vline(xintercept = mean(yield_sample$yield), color = "blue") +
+  lims(x=c(55,105))
+```
+
+
+What would happen if we only sampled twice?
+
+```{r}
+set.seed(1776)
+yield_sample = sample(yield$yield_bu, 2) %>%
+      as.data.frame()
+names(yield_sample) = c("yield")
+ggplot(yield_sample, aes(x=yield)) +
+  geom_histogram(fill="white", color="black") +
+  geom_vline(xintercept = mean(yield$yield_bu), color = "red") +
+  geom_vline(xintercept = mean(yield_sample$yield), color = "blue") +
+  lims(x=c(55,105))
+```
+
+What would happen if we only sampled four times?
+
+```{r}
+set.seed(1776)
+yield_sample = sample(yield$yield_bu, 4) %>%
+      as.data.frame()
+names(yield_sample) = c("yield")
+ggplot(yield_sample, aes(x=yield)) +
+  geom_histogram(fill="white", color="black") +
+  geom_vline(xintercept = mean(yield$yield_bu), color = "red") +
+  geom_vline(xintercept = mean(yield_sample$yield), color = "blue") +
+  lims(x=c(55,105))
+```
+
+What would happen if we only sampled 15 times?
+
+```{r}
+set.seed(1776)
+yield_sample = sample(yield$yield_bu, 15) %>%
+      as.data.frame()
+names(yield_sample) = c("yield")
+ggplot(yield_sample, aes(x=yield)) +
+  geom_histogram(fill="white", color="black") +
+  geom_vline(xintercept = mean(yield$yield_bu), color = "red") +
+  geom_vline(xintercept = mean(yield_sample$yield), color = "blue") +
+  lims(x=c(55,105))
+```
+
+Nineteen times?
+```{r}
+set.seed(1776)
+yield_sample = sample(yield$yield_bu, 19) %>%
+      as.data.frame()
+names(yield_sample) = c("yield")
+ggplot(yield_sample, aes(x=yield)) +
+  geom_histogram(fill="white", color="black") +
+  geom_vline(xintercept = mean(yield$yield_bu), color = "red") +
+  geom_vline(xintercept = mean(yield_sample$yield), color = "blue") +
+  lims(x=c(55,105))
+```
+
+Below we have a very powerful demonstration app which we will return to sever times in this lesson.  The top plot shows the population distribution -- that is, the counts for every individual observation in our soybean field.
+
+The middle plot features a histogram that shows the distribution of our sample values.  The slider in the upper left controls the number of samples.  Slide it to the right to increase the number of samples.  As the number of samples increases, their distribution will become more normal in shape.  
+
+The histogram in the middle plot is overlaid with two vertical reference lines.  The red line is $\sigma$, the population mean.  This line is fixed at about 80.1.  The blue line is $\bar{x}$, the sample mean.  The sample mean changes with the number of samples.  It never permanently converges on the population mean, but their distance generally decreases as the number of samples increases.
+
+
+```{r}
+library(shiny)
+
+ui = fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("no_samples", "Select number of samples", min = 1, max = 100, step=1, value = 2)
+    ),
+    mainPanel(
+      plotOutput("populationPlot", height="300px"),
+      plotOutput("sampleDist", height="300px"),
+      plotOutput("CLT", height="300px")
+    )
+  )
+)
+
+server = function(input, output){
+  
+  output$populationPlot = renderPlot({
+    ggplot(yield, aes(x=yield_bu)) +
+      geom_histogram(fill="white", color="black") +
+      lims(x=c(55, 105)) +
+      geom_text(aes(x=100, y=300), label=paste0("SD = ", round(sd(yield$yield_bu), 2)), size=8)
+  })
+  
+  sampleData=reactive({
+    set.seed(1995)
+    sample_list = list()
+    for(i in c(1:1000)){
+      samples = mean(sample(yield$yield_bu, input$no_samples), na.rm = TRUE) %>%
+        as.data.frame()
+      sample_list[[i]] = samples
+    }
+    sample_list_df = do.call(rbind.data.frame, sample_list)
+    names(sample_list_df) = "yield"
+    sample_list_df
+  })
+  
+  output$sampleDist = renderPlot({
+    set.seed(1995)
+    samples = sample(yield$yield_bu, input$no_samples, replace=TRUE) %>%
+        as.data.frame()   
+    names(samples) = "yield"
+    pop_mean = mean(yield$yield_bu)
+    sample_mean = mean(samples$yield)
+    ggplot(samples, aes(x=yield)) +
+      geom_histogram(fill="white", color="black") +
+      geom_vline(xintercept = pop_mean, color = "red") +
+      geom_vline(xintercept = sample_mean, color = "blue") +
+      lims(x = c(55,105), y=c(0,14)) +
+      geom_text(aes(x=100, y=7.5), label = paste0("\u03bc", " = ", round(pop_mean,1)), color="red", size=8) +
+      geom_text(aes(x=100, y=6), label = paste0("\u03c3", " = ", round(sample_mean,1)), color="blue", size=8)
+  })
+  
+  output$CLT = renderPlot({
+    set.seed(2003)
+    sample_list = list()
+    for(i in c(1:1000)){
+      samples = mean(sample(yield$yield_bu, input$no_samples,replace=TRUE), na.rm = TRUE) %>%
+        as.data.frame()
+      sample_list[[i]] = samples
+    }
+    sample_list_df = do.call(rbind.data.frame, sample_list)
+    names(sample_list_df) = "yield"
+    pop_mean = mean(yield$yield_bu)
+    ggplot(sample_list_df, aes(x=yield)) +
+      geom_histogram(fill="white", color="black") +
+      geom_vline(xintercept = pop_mean, color = "red") +
+      lims(x=c(55,105), y=c(0,600)) +
+      geom_text(aes(x=100, y=300), label=paste0("SEM = ", round(sd(sample_list_df$yield), 2)), size=8)
+      # lims(x=c(55, 105)) +
+      # annotate(geom = "text", label = paste0("population mean = ", round(pop_mean,1)), x=Inf, y=Inf, vjust=0.5, color="red", size=8,  )
+    
+      # geom_text(aes(x=85, y=0.15), label = paste0("sample mean = ", round(sample_mean,1)), color="blue", size=8, hjust=0)
+  })  
+}
+
+shinyApp(ui, server, options = list(height="1000px"))
+
+```
+
+The bottom plot is another normal distribution.  This dataset shows the distribution of sample means.  It was created by generating 1000 sample means, based on the number of samples selected with the slider.  If you select the number of samples to be 5, then the dataset consists is generated by taking five random samples and calculating their mean -- and repeating this process 1000 times.
+
+There are two important things one should notice about this plot.  First, the sample means are normally distributed.  This illustrates a key concept that makes statistical tests possible -- and yet is given the most boring, confusing name imaginable: Central Limit Theorem.  Second, as the number of samples selected increases, the distribution of sample means narrows in width, meaning the sample means are distributed more closely around the population mean.  
+
+### Central Limit Theorem
+
+The Central Limit Theorem states that sample means are normally distributed around the population mean.  This concept is so powerful because it allows us to calculate the probability that that a sample mean is a given distance away from the population mean.  In our yield data, for example, the Central Limit Theorem allows us to assign a probability that we would observe a sample mean of 75 bushels/acre, if the population mean is 80 bushels per acre.  More on how we calculate this in a little bit.
+
+What is even more powerful about the Central Limit Theorem is that our sample means are likely to be normally distributed, even if the population does not follow a perfect normal distribution.
+
+Let's take this concept to the extreme.  Suppose we had a population where every value occurred with the same frequency.  This is known as a uniform distribution.  Then let's review this with the same app as above.
+
+
+
+```{r}
+yield_uni = rep(seq(from=60, to=99.9, by=0.1), 15)
+yield_uni_df = yield_uni %>%
+  as.data.frame
+names(yield_uni_df) = "yield_bu"
+
+ui = fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("no_samples", "Select number of samples", min = 1, max = 100, step=1, value = 2)
+    ),
+    mainPanel(
+      plotOutput("populationPlot", height="300px"),
+      plotOutput("sampleDist", height="300px"),
+      plotOutput("CLT", height="300px")
+    )
+  )
+)
+
+server = function(input, output){
+  
+  output$populationPlot = renderPlot({
+    ggplot(yield_uni_df, aes(x=yield_bu)) +
+      geom_histogram(fill="white", color="black", breaks=c(-Inf, seq(54.99,104.9, 2.5))) +
+      lims(x=c(55, 105)) +
+      geom_text(aes(x=100, y=300), label=paste0("SD = ", round(sd(yield_uni_df$yield_bu), 2)), size=8)
+  })
+  
+  sampleData=reactive({
+    set.seed(1995)
+    sample_list = list()
+    for(i in c(1:1000)){
+      samples = mean(sample(yield$yield_bu, input$no_samples), na.rm = TRUE) %>%
+        as.data.frame()
+      sample_list[[i]] = samples
+    }
+    sample_list_df = do.call(rbind.data.frame, sample_list)
+    names(sample_list_df) = "yield"
+    sample_list_df
+  })
+  
+  output$sampleDist = renderPlot({
+    set.seed(1995)
+    samples = sample(yield_uni_df$yield_bu, input$no_samples, replace=TRUE) %>%
+        as.data.frame()   
+    names(samples) = "yield"
+    pop_mean = mean(yield_uni_df$yield_bu)
+    sample_mean = mean(samples$yield)
+    ggplot(samples, aes(x=yield)) +
+      geom_histogram(fill="white", color="black") +
+      geom_vline(xintercept = pop_mean, color = "red") +
+      geom_vline(xintercept = sample_mean, color = "blue") +
+      lims(x = c(55,105), y=c(0,14)) +
+      geom_text(aes(x=100, y=7.5), label = paste0("\u03bc", " = ", round(pop_mean,1)), color="red", size=8) +
+      geom_text(aes(x=100, y=6), label = paste0("\u03c3", " = ", round(sample_mean,1)), color="blue", size=8)
+  })
+  
+  output$CLT = renderPlot({
+    set.seed(2003)
+    sample_list = list()
+    for(i in c(1:1000)){
+      samples = mean(sample(yield_uni_df$yield_bu, input$no_samples,replace=TRUE), na.rm = TRUE) %>%
+        as.data.frame()
+      sample_list[[i]] = samples
+    }
+    sample_list_df = do.call(rbind.data.frame, sample_list)
+    names(sample_list_df) = "yield"
+    pop_mean = mean(yield_uni_df$yield_bu)
+    ggplot(sample_list_df, aes(x=yield)) +
+      geom_histogram(fill="white", color="black") +
+      geom_vline(xintercept = pop_mean, color = "red") +
+      lims(x=c(55,105), y=c(0,600)) +
+      geom_text(aes(x=100, y=300), label=paste0("SEM = ", round(sd(sample_list_df$yield), 2)), size=8)
+      # lims(x=c(55, 105)) +
+      # annotate(geom = "text", label = paste0("population mean = ", round(pop_mean,1)), x=Inf, y=Inf, vjust=0.5, color="red", size=8,  )
+    
+      # geom_text(aes(x=85, y=0.15), label = paste0("sample mean = ", round(sample_mean,1)), color="blue", size=8, hjust=0)
+  })  
+}
+
+shinyApp(ui, server, options = list(height="1000px"))
+
+
+```
+
+We can see from the top plot that the distribution is uniform.  The distribution appears like a rectangle because all inividual values are occurring at the same frequency.
+
+The middle plot again shows us the frequency of different sample values.  What do we notice as we increase the number of samples?  As it did for the normal distribution, the frequencies of sample values from the uniform distribution approximates that of the uniform population distribution from which they were drawn.  As the number of samples increases, their distribution becomes more rectangular.
+
+But what happens in the bottom plot, which shows the distribution of samples?  As the number of samples per sample mean increases, the distribution of sample means narrows in width -- just the same as when the samples were pulled from the normally-distributed population.  When we take multiple samples, even from a uniform population, their mean will approach the population mean as the sample number increases.      
+
+
+### Standard Error
+When we describe the spread of a normally-distributed population -- that is, all of the individuals about which we want to make inferences -- we use the population mean and standard deviation.
+
+When we sample (measure subsets) of a population, we again use two statistics.  The *sample mean* describes the center of the samples..  The spread of the sample means is described by the *standard error of the mean* (often abbreviated to *standard error*).  The standard error is related to the standard deviation as follows:
+
+$$SE = \frac{\sigma}{\sqrt n} $$
+
+The standard error, SE, is equal to the standard deviation, divided by the square root of the number of samples.  This denominator is very important -- it means that our standard error grows as the number of samples increases.  Why is this important?  
+
+The sample mean is an estimate of the true population mean.  The distribution around the sample mean describes not only the sample means, the range of possible values for the true mean.  I realize this is a fuzzy concept.  By studying the distribution of our sample values, we are able to describe the probability that the population mean is a given value.
+
+To better understand this, lets look at an animation similar to the one above, except we have replaced the histogram with the sample distribution curve.  The animation shows how the distribution curve changes as the number of sampes (n in the equation above) increases.  The sample distribution curve is plotted in black.  The population mean is plotted as a vertical blue line.
+
+
+```{r}
+library(shiny)
+
+  hist_list = list()
+  for(i in c(2:100)){
+    set.seed(1776)
+    yield_sample = sample(yield$yield_bu, i) %>%
+        as.data.frame()
+    hist_data = hist(yield_sample$., breaks = seq(from=55, to=105, by=5), plot = FALSE)
+    plot_data = cbind(hist_data$mids, hist_data$density) %>%
+      as.data.frame()
+    names(plot_data) = c("midpoints", "density")
+    plot_data$no_of_samples = i
+    plot_data$sample_mean = mean(yield_sample$.)
+    plot_data$std_dev = sd(yield_sample$.)
+    plot_data$std_err = plot_data$std_dev/sqrt(i)
+    plot_data$pop_mean = mean(yield$yield_bu)
+    hist_list[[i]] = plot_data
+    i = i+1
+  }
+
+
+  hist_df = do.call(rbind.data.frame, hist_list) %>%
+  group_by(no_of_samples) %>%
+  summarise(sample_mean = mean(sample_mean),
+            std_err = mean(std_err))
+
+
+x = seq(from=50, to=110, length=1000)
+
+y_values = hist_df %>%
+  group_by(no_of_samples) %>%
+  do(y_val = dnorm(x, mean = .$sample_mean, sd = .$std_err)) %>%
+  ungroup() %>%
+  select(-no_of_samples) %>%
+  unnest(cols=c(y_val))
+
+
+x_values = hist_df %>%
+  group_by(no_of_samples) %>%
+  do(x_val = x) %>%
+  unnest(cols=c(x_val))
+
+plot_data = cbind(x_values, y_values) %>%
+  as.data.frame()
+
+
+ui = fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("no_samples", "Select number of samples", min = 2, max = 100, step=1, value = 2, 
+                  animate = animationOptions(interval = 200))
+    ),
+    mainPanel(
+      plotOutput("plot", height="300px")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  output$plot = renderPlot({
+    plot_data %>%
+      filter(no_of_samples==input$no_samples) %>%
+      ggplot(aes(x=x_val, y=y_val)) +
+      geom_point(color="black") +
+      geom_vline(aes(xintercept=mean(yield$yield_bu)), color = "blue") +
+      lims(y=c(0,0.5))
+  })
+
+}
+
+shinyApp(ui, server)
+```
+
+
+
+You should take away two important observations from this.  First, as the number of samples increases, the distribution curve narrows in width and increases in height.  Second, the sample distribtuion curve always includes the true population mean.  As a bonus, not that the curve in this animation is first centered about 15 bushels below the population mean and then approaches it as the sample number increases.    
+
+It matters that the distribution curve narrows as the number of samples increases.  Why?  Because the narrower curve describes a narrower range of possible values for the population mean.  It increases our confidence that the population mean is close to the sample mean.
+
+Also note as the number of samples increases from 2 to 10, the shape and location of the distribution curve changes more profoundly than it does as the number of samples increases, say, from 51 to 60.  If you take away nothing else from this lesson, understand whether you collect 2 or 3 samples has tremendous implications for your estimate of the population mean.  4 samples is much better than 3.  Do everything you can to fight for those first few samples.  Collect as many as you can afford, especially if you are below 10 samples.
+
+
+
+### The t-Distribution
+In the last unit, we used the Z-distribution to calculate the probability of observing an individual of a given value in a population, given its population mean and standard deviation.  Recall that about 68% of individuals were expected to have values within one standard deviation, or Z, of the population mean.  Approximately 95% of individuals were expected to have values within 1.96 standard deviations of the population mean.  Alternatively, we can ask what the probability is of observing individuals of a particular or greater value in the population, given its mean and standard deviation.
+
+We can ask a similar question of our sample data: what is the probability the population mean is a given value or greater, given the sample mean?  As with the Z-distribution, the distance between the sample mean and hypothesized population mean will determine this probability.  
+
+There is one problem, however, with using the Z-distribution: it is only applicable when the population standard deviation is *known*.  When we sample from a population, we do not know it's true standard deviation.  Instead, we are estimating it from our samples.  This requires we use a different distribution: the t-distribution.
+
+The t-distribution differs from the Z-distribution in that its shape changes as the number of samples increases.  Notice in the animation above that when the number of samples is low, the distribution is wider and has a shorter peak.  As the number of samples increase, the curve becomes narrower and taller.  This has implications for the relationship between the distance of a hypothetical population mean from the sample mean, and the probability of it being that distant.
+
+We can prove this to ourselves using the shadeDist function in R that was introduced in the last unit.  The first argument to this function is c(-1,1), which tells r how many standard errors to shade above and below the population mean (0 in this demonstration).  The second argument, "dt", simply tells R to use the t-distribution.  
+
+```{r}
+library(fastGraph)
+shadeDist( c(-1, 1), "dt", parm2 = 4, lower.tail = FALSE )
+```
+
+The last argument, "lower.tail = FALSE, tells R to shade the area between the t-values and zero and calculate its probability.  If we set that argument to "TRUE", R would shade the area beyond the t-values and calculate its probability.
+
+The third argument, parm1 = 2, requires greater explanation.  2 is the degrees of freedom.  Whenever we use sample data, the degrees of freedom is equal to one less than the number of samples.  In this example, 2 degrees of freedom means 3 samples were taken from the population.  
+
+With 4 degrees of freedom, there is about a 63% probability the population mean is within 1 standard error of the mean.  Let's decrease the sample mean to 3 degrees of freedom
+
+```{r}
+library(fastGraph)
+shadeDist( c(-1, 1), "dt", parm2 = 3, lower.tail = FALSE )
+```
+
+With only 3 degrees of freedom (4 samples), there is only a 61% probability the population mean is within one standard error of the mean.
+
+Now change the parm2 from 3 to 1, which would be our degree of freedom if we only had two samples.  You should see the probability that the population mean is within 1 standard error of the sample mean fall to 50%.
+
+Set parm2 to 10 degrees of freedom (11 samples), and the probability should increase to about 66%.  Set parm2 to 30 degress of freedom, and the probability the population mean is within 1 standard error of the mean increases to 67%.  When parm2 is 50 degrees of freedom (51 samples) the probability is about 68%.  At this point, the t-distribution curve approximates the shape of the z-distribution curve.
+
+
+We can sum up the relationship between the t-value and probability with this plot.  The probability of the popualation mean being within one standard error of the population mean is represented by by the red line.  The probability of of the population mean being within 2 standard errors of the mean is represented by the blue line.  As you can see, the probability of the population mean being within 1 or 2 standard errors of the sample mean increases with the degrees of freedom (df).  Exact values can be examined by tracing the curves with your mouse.
+
+```{r}
+
+df = c(1:100) %>%
+  as.data.frame()
+names(df) = "df"
+
+p_from_tdf = df %>%
+  mutate(p1 = ((pt(1, df)) -0.5) * 2) %>%
+  mutate(p2 = ((pt(2, df)) -0.5) * 2) %>%
+  gather(t, p, p1, p2) %>%
+  mutate(t=gsub("p", "", t)) 
+  
+
+
+p = p_from_tdf %>%
+  ggplot(aes(x=df, y=p, group=t)) +
+  geom_point(aes(color=t))
+ggplotly(p)
+```
+
+
+Conversely, the t-value associated with a given proportion / probability will also decrease as the degrees of freedom increasae.  The read line represents the t-values that define the area with a 68% chance of including the population mean.  The blue line represents the t-values that define the area with a 95% chance of including the population mean.  Exact values can be examined by tracing the curves with your mouse. Notice the t-value associated with a 68% chance of including the population mean approaches 1, while the t-value associated with a 95% chance approaches about 1.98.
+
+```{r}
+
+df = c(2:100) %>%
+  as.data.frame()
+names(df) = "df"
+
+
+t_from_pdf = df %>%
+  mutate(t68 = qt(0.84, df)) %>%
+  mutate(t95 = qt(0.975, df)) %>%
+  gather(p, t, t68, t95) %>%
+  mutate(p=gsub("t", "", p)) 
+
+p = t_from_pdf %>%
+  ggplot(aes(x=df, y=t, group=p)) +
+  geom_point(aes(color=p))
+ggplotly(p)
+
+```
+
+
+
+
+
+
+*Takeaway:* the number of samples affects not only the standard error, but the t-distribution curve we use to solve for the probability that a value will occur, given our sample mean.
+
+
+
+### Confidence Interval
+The importance of the number of samples the standard error, and the t-distribution becomes even more apparent with the use of confidence interval.  A confidence interval is a range of values around the sample mean that are selected to have a given probability of including the true population mean.  Suppose we want to define, based on a sample size of 4 from the soybean field above, a range of values around our sample mean that has a 95% probability of including the true sample mean.
+
+The 95% confidence interval is equal to the sample mean, plus and minus the product of the standard error and t-value associated with 0.975 in each tail:
+
+$$CI = \bar x + t \times se$$
+
+Where CI is the confidence interval, t is determined by the degrees of freedom, and se is the standard error of the mean
+
+Since the t-value associated with a given probability in each tail decreases with the degrees of freedom, the confidence interval narrows as the degrees of freedom increase -- even when the standard error is unaffected.  
+
+Lets sample our yield population 4 times, using the same code we did earlier
+
+```{r}
+# setting the seed the same as before means the same 4 samples will be pulled
+set.seed(1776)
+# collect 4 samples 
+yield_sample = sample(yield$yield_bu, 4) 
+#print results
+yield_sample
+```
+
+We can then calculate the sample mean, sample standard deviation, and standard error of the mean.
+
+```{r}
+sample_mean = mean(yield_sample)
+sample_sd = sd(yield_sample)
+sample_se = sample_sd/sqrt(4)
+
+sample_mean
+sample_se
+```
+
+We can then determine the t-value we need to construct our confidence interval and multiply it by our standard error to determine the confidence interval.  To get the upper limit of the 95% confidence interval, we request the t-value above which only 2.5% of the samples are expected to exist.  In other words, we ask R for the t-value below which 95% of the samples are expected to exist.
+
+```{r}
+# t-value associated with 3 df
+upper_t = qt(0.975, 3)
+upper_t
+
+```
+
+We can then add this to the sample mean to get our upper confidence limit.
+
+```{r}
+upper_limit = sample_mean + upper_t
+upper_limit
+```
+
+We can repeate the process to determine the lower limit.  This time, however, we ask R for the t-value below which only 2.5% of the samples are expected to exist.
+
+```{r}
+lower_t = qt(0.025, 3)
+lower_t
+
+lower_limit = sample_mean + lower_t
+lower_limit
+
+```
+
+You will notice that "lower_t", the t-value that measures from the sample mean to the lower limit of the confidence interval, is just the negative of "upper_t".  Since the normal distribution is symmetrical around the mean, we can just determine the upper limit and use its negative as the lower limit of our confidence interval.
+
+Finally, we can put this all together and express it as follows.  The confidence interval for the population mean, based on the sample mean is:
+
+$$ CI = 80.2 \pm 3.2 $$
+
+We can also express the interval by its lower and upper confidence limits.
+$$(77.0, 83.4)$$
+We can confirm this interval includes the true population mean, which is 80.1.
+
+
+
+
+## Confidence Interval and Probability
+
+Lets return to the concept of 95% confidence.  This means if we were to collect 100 sets of 4 samples each, 95% of them would estimate confidence intervals that include the true population mean.  The remaining 5% would not.  
+
+Below is a plot of 20 random sample means and their confidence intervals, based on sets of 4 samples.  Confidence intervals that include the population mean are colored black; those that don't are colored red.  Press the "Click to Sample" several times and observe how many intervals include the population mean (the blue horizontal line).  Note: the plot may take a few seconds to render.
+
+```{r}
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      actionButton("resample", "Click to Sample")
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  observeEvent(input$resample, {
+    output$plot = renderPlot({
+      hist_list = list()
+      for(i in c(1:20)){
+        yield_sample = sample(yield$yield_bu, 4) %>%
+            as.data.frame()
+        plot_data =data.frame(sample_no = i)
+        plot_data$no_of_samples = 4
+        plot_data$sample_mean = mean(yield_sample$.)
+        plot_data$std_dev = sd(yield_sample$.)
+        plot_data$std_err = plot_data$std_dev/sqrt(4)
+        plot_data$pop_mean = mean(yield$yield_bu)
+        hist_list[[i]] = plot_data
+        i = i+1
+      }
+      
+      hist_df = do.call(rbind.data.frame, hist_list) %>%
+        group_by(sample_no) %>%
+        summarise(sample_mean = mean(sample_mean),
+                  std_err = mean(std_err),
+                  no_of_samples = mean(no_of_samples)) %>%
+        ungroup() %>% 
+        mutate(t_value = qt(0.975,3)) %>%
+        mutate(upper_limit = sample_mean + t_value*std_err) %>%
+        mutate(lower_limit = sample_mean - t_value*std_err) %>%
+        mutate(error_bar_length = t_value*std_err) %>%
+        mutate(pop_mean = mean(yield$yield_bu)) %>%
+        mutate(color_name = if_else(upper_limit<pop_mean | lower_limit>pop_mean, "red", "black"))
+      
+      
+      hist_df %>%
+        ggplot(aes(x=sample_no, y=sample_mean, group=color_name)) +
+        geom_point() +
+        geom_errorbar(aes(x=sample_no, ymin=lower_limit, ymax=upper_limit, color=color_name)) +
+        geom_hline(aes(yintercept=mean(yield$yield_bu)), color="blue") +
+        # scale_color_manual(values = c("red", "black")) +
+        scale_color_identity()
+    })
+  })
+}
+
+shinyApp(ui, server)
+
+
+```
+
+Again, both the standard error and the t-value we use for calculating the confidence interval decrease as the number of samples decrease, so the confidence interval itself will decrease as well.
+
+
+```{r eval=FALSE, include=FALSE}
+
+set.seed(1776)
+i=2
+hist_list = list()
+for(i in c(2:100)){
+  yield_sample = sample(yield$yield_bu, i) %>%
+      as.data.frame()
+  plot_data$no_of_samples = i
+  plot_data$sample_mean = mean(yield_sample$.)
+  plot_data$std_dev = sd(yield_sample$.)
+  plot_data$std_err = plot_data$std_dev/sqrt(i)
+  plot_data$pop_mean = mean(yield$yield_bu)
+  hist_list[[i]] = plot_data
+  i = i+1
+}
+  
+hist_df = do.call(rbind.data.frame, hist_list) %>%
+  group_by(no_of_samples) %>%
+  summarise(sample_mean = mean(sample_mean),
+            std_err = mean(std_err)) %>%
+  ungroup() %>% 
+  mutate(df = no_of_samples - 1) %>%
+  mutate(t_value = qt(0.975,df)) %>%
+  mutate(upper_limit = sample_mean + t_value*std_err) %>%
+  mutate(lower_limit = sample_mean - t_value*std_err) %>%
+  mutate(error_bar_length = t_value*std_err) %>%
+  mutate(pop_mean = mean(yield$yield_bu)) %>%
+  mutate(color_name = if_else(upper_limit<pop_mean | lower_limit>pop_mean, "red", "black"))
+
+
+
+
+ui = fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("no_samples", "Select number of samples", min = 2, max = 100, step=1, value = 2, 
+                  animate = animationOptions(interval = 200))
+    ),
+    mainPanel(
+      plotOutput("plot", height="300px")
+    )
+  )
+)
+
+server = function(input, output ){
+  output$plot = renderPlot({
+    hist_df %>%
+      filter(no_of_samples == input$no_samples) %>%
+      ggplot(aes(x=0, y=sample_mean, group=color_name)) +
+        geom_point(size = 6) +
+      geom_hline(aes(yintercept=mean(yield$yield_bu)), color="blue", size=2, alpha=0.3) +
+      geom_errorbar(aes(x=0, ymin=lower_limit, ymax=upper_limit, color=color_name), width=0.2, size=2) +
+      # scale_color_manual(values = c("red", "black")) +
+      scale_color_identity() +
+      lims(x=c(-1, 1), y=c(0, 160)) + 
+      coord_flip()
+  })
+}
+
+shinyApp(ui, server)
+
+```
+
+As the number of samples increases, the confidence interval shrinks.  95 out of 100 times, however, the confidence interval will still include the true population mean.  In other words, as our sample size increases, our sample mean becomes less biased (far to either side of the population mean), and it's accuracy (the proximity of the sample mean and  population mean) increases.  In conclusion, the greater the number of samples, the better our estimate of the population mean.
+
+In the next unit, we will use these concepts to analyze our first experimental data: a side by side trial where we will us the confidence interval for the difference between two treatments to test whether they are different.

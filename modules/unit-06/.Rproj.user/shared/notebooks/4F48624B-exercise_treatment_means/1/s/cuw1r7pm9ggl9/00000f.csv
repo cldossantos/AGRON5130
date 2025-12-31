@@ -1,0 +1,5 @@
+"0","barley_means = barley_data %>%"
+"0","  group_by(gen) %>%"
+"0","  summarise(yield_mean=mean(yield))"
+"0",""
+"0","barley_means"

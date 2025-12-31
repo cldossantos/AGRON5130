@@ -1,0 +1,136 @@
+---
+title: "Exercise -- SSURGO"
+output: html_document
+---
+
+# Introduction
+In this lesson, we saw how the Soil Survey Geographic Database (SSURGO) database can be accessed to gain further insight into fields.
+
+This isn't an exercise so much as a demonstration how those data can be obtained and plotted through R.  It is hear for your use or reference, but not a required part of this lesson.  
+
+We can load our shapefile just as we have done before.  For reasons explained below, it is important to name the dataset "field".
+
+```{r}
+library(sf)
+library(tidyverse)
+library(leaflet)
+
+field = st_read("data/yield shape.shp")
+```
+
+
+First, let's create a yield map, just as we learned to in the "shapefile" exercise.  If you have not completed that exercise, please do so before continuing.
+
+```{r}
+palette_yield = colorBin("RdYlGn", field$Yld_Vol_Dr)
+
+field %>%   # starts with om dataset
+  leaflet() %>%    # starts leaflet
+  addCircleMarkers(
+    fillColor = ~palette_yield(Yld_Vol_Dr),
+    fillOpacity = 0.8,
+    weight = 0,
+    radius=0.1
+  ) %>%    # adds markers as points
+  addProviderTiles(provider = providers$Esri.WorldImagery) %>%
+  addLegend(values = ~Yld_Vol_Dr,
+            pal = palette_yield)
+```
+
+This is the one and only time in this course when I will ask you just to run a chunk of code without explaining it line-by-line.  As long as your spatial feature object (the field shapefile) is named "field", just run this chunk as it is.
+
+```{r}
+
+##### Run this as-is: Do not modify !! #######
+
+
+
+library(FedData)
+library(sp)
+soil_data_sp = as(field, "Spatial")
+soil_map = get_ssurgo(soil_data_sp, "example")
+soil_sf = st_as_sf(soil_map$spatial) %>%
+  st_set_crs(4326)
+
+mu_point = soil_map$tabular$mapunit %>%
+  dplyr::select(musym, muname, mukey)
+
+# get measures of sand, silt, clay, etc
+horizon_diagnostics = soil_map$tabular$chorizon %>%
+  select(hzname, sandtotal.r, silttotal.r, claytotal.r, om.r, awc.r, ksat.r, cec7.r, cokey, chkey)
+
+# soil texture class
+texture = soil_map$tabular$chtexturegrp %>%
+  filter(rvindicator=="Yes") %>%
+  select(texdesc, chkey)
+
+# percent slope and drainage class
+slope = soil_map$tabular$component %>%
+  select(drainagecl, slope.r, mukey, cokey)
+
+parent_material = soil_map$tabular$copm %>%
+  filter(pmorder==1 | is.na(pmorder)) %>%
+  select(pmkind, copmgrpkey, copmkey)
+
+pm_group = soil_map$tabular$copmgrp %>%
+  select(cokey, copmgrpkey)
+
+component = soil_map$tabular$component %>%
+  select(mukey, cokey)
+
+all_soil_data = mu_point %>%
+  left_join(component) %>%
+  left_join(horizon_diagnostics) %>%
+  group_by(mukey) %>%
+  filter(chkey==min(chkey)) %>%
+  ungroup() %>%
+  left_join(texture) %>%
+  left_join(slope) %>%
+  left_join(pm_group) %>%
+  left_join(parent_material) %>%
+  select(-c(copmgrpkey, copmkey, musym, cokey)) 
+
+complete_soil_data = soil_sf %>%
+  rename_all(tolower) %>%
+  mutate(mukey = as.numeric(mukey)) %>%
+  left_join(all_soil_data)
+
+
+
+```
+
+The soil variables included in the *complete_soil_data* datset are:
+
+"sandtotal.r"   -   Percent Sand
+"silttotal.r"   -   Percent Silt
+"claytotal.r"   -   Percent Clay
+"om.r"          -   Percent Organic Matter
+"awc.r"         -   Available Water Holding Capacity
+"ksat.r"        -   Saturated Hydraulic Conductivity (drainage)
+"cec7.r"        -   Cation Exchange Capacity
+"texdesc"       -   Soil Textural Class (based on percent sand, silt, anda clay)
+"drainagecl"    -   Drainage Class (based on hydraulic conductivity)
+"slope.r"       -   Slope (percent change per 100 ft travelled)
+
+
+We can plot any of the above variables by referencing them as "complete_soil_data$" plus the variable of interest.
+
+We can then create a leaflet plot as we have elsewhere in this unit.
+```{r}
+library(grDevices)
+pal_om = colorNumeric("RdYlGn", complete_soil_data$om.r)
+
+complete_soil_data %>%
+  leaflet() %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery) %>%
+  addCircleMarkers(
+    radius = 4,
+    weight=0,
+    fillColor = ~ pal_om(om.r),
+    opacity = 0.8,
+    popup = as.character(complete_soil_data$om.r)
+  )
+
+```
+
+

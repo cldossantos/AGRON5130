@@ -1,0 +1,4 @@
+"0","```r
+mu = mean(yield)
+sigma = sd(yield)
+```"

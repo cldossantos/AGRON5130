@@ -1,0 +1,3 @@
+"0","new_stalk_data$yield = predict(model_circumference, new_stalk_data)"
+"0",""
+"0","new_stalk_data"

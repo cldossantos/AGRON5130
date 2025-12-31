@@ -1,0 +1,23 @@
+{
+    "id": "B88570F0",
+    "path": "/cloud/project/exercises/exercise_restructuring_data.Rmd",
+    "project_path": "exercises/exercise_restructuring_data.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1601224680371.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "chunk_output_type": "inline"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1597438848,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1597438848,
+    "read_only": false,
+    "read_only_alternatives": []
+}

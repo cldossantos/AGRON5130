@@ -1,0 +1,95 @@
+---
+title: "One-Sided Hypotheses"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+# Introduction
+We learned in the lesson there are times when it is appropriate to use a one-sided hypothesis.  A one-sided hypothesis specifies how two treatments will rank in a trial, for example that variety B will have greater yield than variety A:
+
+Ho: A >= B
+Ha: A < B 
+
+A two-sided hypothesis, in contrast, only specifies that variety A and variety B will be different:
+Ho: A = B
+Ha: A <> B
+
+As we learned in the lecture, the one sided t-test requires a lesser difference for significance than the two-sided test.  Given 9 degrees of freedom, and a standard error of the difference of 1, for example, a difference equal to or greater than 2.26 -- or equal to or less than -2.26 -- between treatments would need to be observed between treatments for the two-sided test to be significant.
+
+```{r}
+library(tidyverse)
+library(fastGraph)
+alpha_05_2side = qt(0.975, 9)
+shadeDist(c(-alpha_05_2side, alpha_05_2side), "dt", parm2 = 9, lower.tail = TRUE)
+
+```
+
+In a one-sided test, a lower difference, between treatments, 1.83, is required for significance at the p < 0.05 level.  
+
+```{r}
+alpha_05_1side = qt(0.95, 9)
+shadeDist(xshade=alpha_05_1side, "dt", parm2 = 9, lower.tail = FALSE)
+
+```
+
+# Case Study: Groundnut
+In this study, the wet weight of groundnut, in kg/plot, was measured for two genotypes, coded A and C.  The plots were paired.
+
+```{r}
+groundnut = read.csv("data/groundnut.csv")
+head(groundnut)
+
+groundnut %>%
+  group_by(gen) %>%
+  summarise(wet = mean(wet))
+
+```
+
+# One-Sided T-Test
+In the last unit, we learned to use the *t.test()* function to conduct a paired two-sided t-test. Let's first analyze the groundnut data that way.
+
+Out hypotheses are 
+
+```{r}
+t.test(wet ~ gen, groundnut, paired=TRUE)
+```
+
+We see we have a p-value of 0.0649.  The two genotypes do not produce different wet weights of groundnuts at the p < 0.05 level of significance.
+
+Now lets run the one-sided test.  To specify our hypothesis properly, we need to know which treatment will be the *subtractant*: the number that is subtracted. This is really important.  In R, the treatment which comes *second* in alphabetical order is subtracted from the treatment that comes *first*.
+
+Let's say our hypotheses are these:
+Ho: A >= C
+Ha: A < C
+
+To tell R to run the t.test this way, we add the *alternative = ""* argument to our t-test.  If A is greater than C, we will have a positive difference, so we specify *alternative = "greater"*.
+
+```{r}
+t.test(wet ~ gen, groundnut, paired=TRUE, alternative = "greater")
+```
+
+We can now see the p-value for the test is 0.03 -- genotype C produces a greater wet weight of groundnut than geontype A at the p < 0.05 level of significance.
+
+# Practice: Barley
+In this study, yield of a new and old genotype were compared.  Treatments were paired.
+
+```{r}
+barley = read.csv("data/barley.csv")
+```
+
+1) Run a two-sided t.test to compare the yield of the two genotypes. You should get a p-value of 2.158e-06.
+
+2) Run a one-sided t.test to test the hypothesis the new hybrid yields greater than the old hybrid.  Going by alphabetical order, R will subtract the mean of "old" from "new".  Given our hypothesis that the yield of the "new" genotype will be greater than that of the "old", our difference will again be positive.  Again, use the "alternative="greater"* argument with the *t.test()* function.  Your answer should have a p-value = 1.079e-06.
+
+
+# Practice: Strawberry
+The yield of two strawberry genotypes was tested in a paired treatment design.
+
+```{r}
+strawberry = read.csv("data/strawberry.csv")
+```
+
+1) Test the difference between genotypes using a two-sided test.  You should get p-value = 0.055.
+
+2) Test the hypothesis that genotype F is greater than genotype R1.  Since R will subtract R1 from F, our difference will be positive.  You should get p-value = 0.0275.

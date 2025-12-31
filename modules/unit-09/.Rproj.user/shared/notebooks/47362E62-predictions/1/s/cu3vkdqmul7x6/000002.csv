@@ -1,0 +1,2 @@
+"0","model_circumference = lm(yield ~ stalk_circ, data=allometry)"
+"0",""

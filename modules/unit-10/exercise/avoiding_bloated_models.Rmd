@@ -1,0 +1,109 @@
+---
+title: exercise -- avoiding bloated models
+output: html_document
+---
+
+# Introduction
+In the last exercise, we learned how to create a multiple linear regression model with R.  It was a relatively simple process: construct the model using the *lm()* function, then review the coefficients and fit using the tidy() and glance() functions from the broom package.  
+
+It is easy to create models.  Refining them can take a little soul-searching.  In this exercise, we will learn how to construct a covariance matrix to visually inspect for relationships among predictor variables that may weaken our model, calculate partial correlations to quantify those relationships, and how to cross-validate our model to evaluate whether we might be  over-fitting our data  
+
+# Case Study
+We will continue with the model we generated in the previous exercise.
+```{r}
+library(tidyverse)
+county_corn_data = read.csv("data/county_environments.csv")
+
+ia_and_il_corn = county_corn_data %>%
+  filter(state %in% c("IL", "IA"))
+
+ia_and_illinois_model = lm(corn ~ ppt + whc + sand + silt + clay + om, data = ia_and_il_corn)
+```
+
+# Covariance Matrix
+In the last unit, we were introducted to the covariariance matrix, sometimes also called the correlation matrix.  We will generate that again, using the *plot()* function.  First, however, we will want to narrow down the predictor variables to those of interest.  We can use the *select()* function to drop the other variables.
+
+```{r}
+variables_of_interest = ia_and_il_corn %>%
+  dplyr::select(ppt, whc, sand, silt, clay, om)
+
+```
+
+We can now plot our covariance matrix.
+```{r}
+plot(variables_of_interest)
+```
+
+Right away, we notice a strong relationship between sand and silt. Sand might also be associated with organic matter.  Other potential relationships include precipitation and organic matter, or clay and sand.  Next, we will use partial correlations to quantify the strength of correlations between predictor variables.  
+
+# Partial Correlation
+Partial correlation measure the correlation between two variables while holding the other variables in the dataset constant.  In other words, partial correlation measures the true relationship between the two variables, separate from any effect a third variable may be having on them.
+
+We can generate a matrix with partial correlations using the *psych* package and the *partial.r()* function.
+```{r}
+library(psych)
+
+partial.r(variables_of_interest)
+```
+
+The first two tables, $estimate and $p.value, are the most interesting.  Above we noticed a strong relationship between sand and silt and clay.  Looking at the $estimate table, we see their partial correlations are each 1.0.  If we look at the $p.value table, we see we those correlations are also highly significant.  All three are also weakly correlated with precipitation and water holding capacity.  We will need to look at each of these three variables more closely when we go to tune our model.
+
+# Cross-Validation
+In cross validation, we divide our data into two groups.  Most of the data are used to fit or "train" the model.  The remainder of the data are used to "test" how well the model performs by comparing its predictions to the actual observed response of the dependent variable (Y).
+
+We use the *caret* package to cross-validate our data.  Specifically, we use a process called k-fold cross validation.  In k-fold cross-validation, the data are divided into 10 groups.  9 groups are used to train the model, and the remaining group used for the comparison between predicted and observed values.  In the code below, we use 10-fold cross-validation.
+
+The code below is basically plug-and-play.  Everything from library(caret) throught the train.control statement can be left as-is.  The one line that needs to be modified is the train() function.  Replace the terms in brackets below with your desired name for the output, your linear model, and your data frame.
+
+[your model name] = train([your linear model], data=[your data frame], method = "lm", trControl = train.control)
+
+
+```{r}
+library(caret)
+
+# Leave this as-is -- tells R to conduct 10-fold cross validation
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+
+# Modify this with your model and dataset
+model <- train(corn ~ ppt + whc + sand + silt + clay + om, data=ia_and_il_corn, method = "lm", trControl = train.control)
+# Summarize the results
+print(model)
+```
+
+Our model has an Rsquared of about 0.53 and a root mean-sqare error of 10.6.  In our next model, we will tune our model by subtracting variables to see whether model performance might be improved with fewer predictor variables.
+
+
+# Practice: Thompson Corn Data
+In this practice, let's take our corn model from the last exercise and inspect it for evidence of collinearity.
+
+```{r}
+thompson_corn = read.csv("data/thompson_corn.csv")
+
+thompsom_model =  lm(yield ~ rain6 + rain7 + temp6 + temp7, thompson_corn)
+```
+
+Plot the covariance matrix.  Do you notice any predictor variables that appear correlated?
+```{r}
+
+
+```
+
+
+Next, plot the partial correlation matrix.  Are any of the predictor variables significantly correlated with each other?
+```{r}
+
+```
+
+Finally, cross-validate the model by finishing the code below.  Your cross-validated Rsquared should be about 0.537.
+```{r}
+library(caret)
+
+# Define training control
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+
+
+```

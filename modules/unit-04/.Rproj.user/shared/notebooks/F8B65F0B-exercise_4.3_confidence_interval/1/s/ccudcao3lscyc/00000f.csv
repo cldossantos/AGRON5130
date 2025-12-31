@@ -1,0 +1,3 @@
+"0","darwin_diff = darwin_wide %>%"
+"0","  mutate(diff = cross - self)"
+"0","head(darwin_diff)"

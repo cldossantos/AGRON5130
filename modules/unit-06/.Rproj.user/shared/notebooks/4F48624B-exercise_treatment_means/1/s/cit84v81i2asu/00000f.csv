@@ -1,0 +1,3 @@
+"0","ggplot(data=barley_means, aes(x=gen, y=yield_mean)) +"
+"0","  geom_bar(stat=""identity"") +"
+"0","  labs(x = ""Genotype"", y = ""Yield Mean"")"

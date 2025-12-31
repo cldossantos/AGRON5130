@@ -1,0 +1,10 @@
+"0","saffron_means %>%
+  ggplot(aes(x=rate, y=corm_number)) +
+  geom_bar(stat=""identity"", color=""black"", fill = ""darkolivegreen"") +
+  theme(axis.text = element_text(size=12),
+        axis.title = element_text(size=16)) +
+  geom_errorbar(aes(ymin=corm_number-std_err_diff, ymax=corm_number+std_err_diff), width=0.4, size=1)
+"
+"2","Error in ggplot(., aes(x = rate, y = corm_number)) : 
+  object 'saffron_means' not found
+"

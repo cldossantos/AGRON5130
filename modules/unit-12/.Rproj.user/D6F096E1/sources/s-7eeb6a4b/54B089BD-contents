@@ -1,0 +1,325 @@
+---
+title: Exercise -- Rasters
+output: html_document
+---
+
+# Introduction
+In the lecture, we learned that rasters were organized within a grid system, with each cell representing a unique value.  Cells may by colored according to which "bin" their value falls, in order to facilitate the identification of spatial patterns.
+
+# Case Study: Soil Test Data
+The following data were collected from a field in Minnesota.  We will create a lime application map.  To start , we need to load two shape files.  The first shape file contains our soil samples.
+
+
+## Load and Filter Data
+```{r}
+library(tidyverse)
+library(gstat)
+library(sp)
+library(raster)
+library(stars)
+library(leaflet)
+library(leafem)
+
+
+point_data = st_read("data/Folie N & SE_grid_sample.shp", quiet=TRUE)
+head(point_data)
+```
+
+We can see this dataset, much contains POINT geometries -- that is, each row of data is related to a single georeference.
+
+Our second shape file describes the field boundary.  This is very important too -- otherwise we would not know what shape and size our raster should be.
+
+```{r}
+boundary = st_read("data/Folie N &SE_boundary.shp", quiet=TRUE)
+
+head(boundary)
+```
+
+We see the field contains POLYGON geometry and a single row of data, which mainly describes the field name.
+
+Our last step in this section is to filter the data so they only contain buffer pH data.
+
+```{r}
+selected_data = point_data %>%
+  filter(attribute=="Bph")
+```
+
+Without going through all the trouble of building out a map, we can still check the location of our points using leaflet().
+
+```{r}
+selected_data %>%
+  leaflet() %>%
+  addCircleMarkers() %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery)
+```
+
+
+## Build a Grid
+To create a raster that matches the size and shape of our field, we need need to create a frame for R to fill in.  We can do this really easily with the following few lines of code from the *stars* package.  We will name our new raster "grd" and build it from our boundary dataset.  To start, we create a rectangular grid based on the boundary box.  This box extends from the point with the lowest X and Y value in a geometry to the point with the greatest X and Y value.  We can determine these points for our boundary using the *st_bbox* function.
+
+```{r}
+library(stars)
+
+boundary = st_transform(boundary, 3857)
+selected_data = st_transform(selected_data, 3857)
+
+st_bbox(boundary)
+```
+
+The st_as_stars() function coverts the shapefile to a grid for us to fill in with our raster.  The last line uses the *st_crop* function to trim our rectangular raster to the shape of our field.  
+
+```{r}
+library(stars)
+
+
+### make grid
+grd = st_bbox(boundary) %>%
+  st_as_stars() %>%
+  st_crop(boundary) 
+
+
+
+```
+
+We can plot the grid using leaflet.  We create a generic map using the *addProviderTiles()* function.  Lastly, we add the grid using *addStarsImage()*.
+```{r}
+grd %>%
+  leaflet()  %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery) %>%
+  addStarsImage()
+```
+We won't be able to see the individual cells -- they are tiny -- but we can see it matches the shape of our field. 
+
+## Build the Semivariogram
+There are three steps to building a semivariogram:
+
+1) Define relationship between the measure and distance with the *variogram* function.  This is much like defining a linear model before we summarise it.
+2) Fit variogram model using the *fit.variogram* function from the *gstat* package.
+3) Visually confirm the model approximately fits the data, by using the *plot* function to show the individual variances (v) and the model (m).
+
+```{r}
+v = variogram(measure~1, selected_data)
+m = fit.variogram(v, vgm("Sph"))
+plot(v, model = m)
+```
+The *fit.variogram* function takes two arguments.  The first is the name of the data.frame to which the distance, variance ("gamma"), and other statistics should be saved.  
+
+The second argument, vgm("Sph"), tells R to fit the variances with a spherical model.  There are several different models that could be used, but the spherical model is perhaps the most common. 
+
+The model appears to approximately fit the data, so we move to the next step: kriging.
+
+## Kriging
+Kriging is where the map magic happens.  We use our variogram model to predict how related each empty cell in the raster is to each filled cell in the raster, based on their distance.  The strength of that relationship is then used to weight the filled cells as they are averaged to predict the value of each empty cell.
+
+This magic happens with a single line of code, using the *krige* function of the *gstat* package.  There are four arguments to this function:
+
+1) formula: the relationship we are modelling.  "measure ~ 1" means we are modelling the relationship between our measure value and location.  The 1 indicates that the minimum measured value does not have to be equal to zero 
+2) selected_data: the data that are being kriged
+3) grd: the object we created above that contains the framework or templae for the raster we want to create
+4) model=m: tells R to use the semivariogram model, m, we created and inspected above
+
+
+```{r}
+library(gstat)
+
+kriged_data = gstat::krige(formula = measure~1, selected_data, grd, model=m)
+
+
+```
+
+The object that is returned is a list.  The predicted values are found in the first element of that list.  For the sake of clarity, let's extract that part of the list and rename it.
+
+```{r}
+finished_data = kriged_data[1]
+```
+
+## Mapping Kriged Data
+We will again use leaflet to map our data.  We will start out by creating our map and adding provider tiles.
+
+```{r}
+finished_data %>%
+  leaflet() %>%
+  addProviderTiles(providers$Esri.WorldImagery)
+```
+
+We can now add our raster (stars) image to the map using addStarsImage.  We will set the opacity=0.5 so we can see both the field and the test zones.
+
+We will also set the colors to RdYlGn; we need to load the *RColorBrewer* package to use that palette.
+```{r}
+library(RColorBrewer)
+
+finished_data %>%
+  leaflet() %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  addStarsImage(opacity = 0.5,
+                colors="RdYlGn")
+```
+
+Wow, that's pretty.  But are the red areas the high or low areas?  With one more line, we can add the ability to click on any part of the field and see its interpolated soil BpH test value.  *addImageQuery* only requires two arguments: the dataset, and type="Click" to tell R when to show the value in the upper right corner.
+```{r}
+
+finished_data %>%
+  leaflet() %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  addStarsImage(opacity = 0.5,
+                colors="RdYlGn",
+                group = "nutrients") %>%
+  addImageQuery(finished_data,
+                group = "nutrients")
+
+
+```
+
+And, voila, click on any part of the map and the buffer pH is displayed in the upper right corner.
+
+## Building the Recommendation
+Our recommendation only requires two more lines of code.  We will create a new column, "rec", which will consist of the predicted lime application rate based on buffer pH.  If we look at University of Minnesota recommendations, we can see that the recommended rate of 100% effective neutralizing lime is equal to;
+
+$$rate = 37000 - bpH \times 5000   $$
+
+https://extension.umn.edu/liming/lime-needs-minnesota
+
+
+So lets go ahead and do this.  We will plug "var1.pred" -- the generic raster name for the predicted variable -- into the equation above and solve for the recommended rate.
+
+```{r}
+finished_data$rec = (37000 - finished_data$var1.pred*5000)
+```
+
+One last thing: if you look at the recommendation table, however, you see the recommended rate is not given for buffer pH above 6.8.  Thus, if the recommendation is less than 3000, we should set it to zero.  Thus we need to use another function, *if_else*.
+
+The if_else function defines the valuable of a variable, based on three arguments:
+
+1) the condition to be tested
+2) the value of the variable if the condition is true
+3) the value of the variable if the condition is false
+
+```{r}
+finished_data$rec = if_else(finished_data$rec<3000, 0, finished_data$rec)
+```
+
+In the line above, we revise the value of the rec column.  If it is less than 3000, we set the rec to zero.  If it is 3000 or greater, we use it as-is.
+
+## Mapping the Recommendation
+Finally, we can map the recommendation, similar to how we mapped the test levels above.
+
+```{r}
+leaflet(finished_data["rec"]) %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  addStarsImage(opacity = 0.5,
+                colors = "RdYlGn")
+```
+
+## Add Interactivity
+One last thing that would be nice is the ability to click in different parts of the field and see the recommended rate.  We can do that with the *AddImageQuery* function.  There are two arguments.  
+
+The first argument, *finished_data["rec"]* tells R to base values on the "rec" column of the finished_data dataset.  If instead, for example, you wanted to show the value for column named "P_bray" in a dataset named "soil_data", you would use soil_data["P_bray"] in the first line.
+
+The second argument, *type = "click"* tells R to only show the value once you have clicked on an area.
+
+```{r}
+leaflet(finished_data["rec"]) %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  addStarsImage(opacity = 0.5,
+                colors = "RdYlGn") %>%
+  addImageQuery(finished_data["rec"],
+                type = "click")
+```
+
+The green areas above are the ones we should "Go" on -- lime should be applied to them.
+
+# Practice 1
+Take the map above and see if you can create soil K raster for the data above.
+
+1) change the selected data below from "Bph" to "K".
+```{r}
+selected_data = point_data %>%
+  filter(attribute=="Bph")
+
+boundary = st_transform(boundary, 3857)
+selected_data = st_transform(selected_data, 3857)
+
+
+```
+
+2) Create the raster framework.
+```{r}
+### make grid
+grd = st_bbox(boundary) %>%
+  st_as_stars() %>%
+  st_crop(boundary) 
+
+```
+
+3) Create and examine the variogram.  The model should roughly fit the variances.
+```{r}
+v = variogram(measure~1, selected_data)
+m = fit.variogram(v, vgm("Sph"))
+plot(v, model = m)
+```
+
+4) Krige the data and extract the predicted (or interpolated) values,
+```{r}
+kriged_data = gstat::krige(formula = measure~1, selected_data, grd, model=m)
+
+finished_data = kriged_data[1]
+```
+
+5) Create the map of soil K values!
+```{r}
+finished_data %>%
+  leaflet() %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  addStarsImage(opacity = 0.5,
+                colors="RdYlGn") %>%
+  addImageQuery(finished_data,
+                type = "click")
+```
+
+6) Calculate recommended application rates, assuming a 200 bushel/acre yield target.  
+Change the code below accordingly.  The K recommendation formula is:
+
+K recommendation = (1.12 - 0.0056*finished_data$var1.pred)*200
+
+just plug that into the first line of code.  K is not recommended for locations that had a soil test greater than 200 ppm, so adjust your recommendation accordingly using the second line of code.
+
+```{r}
+finished_data$rec = (37000 - finished_data$var1.pred*5000)
+finished_data$rec = if_else(finished_data$rec<3000, 0, finished_data$rec)
+```
+
+7) Plot the recommendated rates:
+```{r}
+leaflet(finished_data["rec"]) %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  addStarsImage(opacity = 0.5,
+                colors = "RdYlGn") %>%
+  addImageQuery(finished_data["rec"],
+                type = "click")
+```
+
+
+
+
+# Practice 2
+Take the map above and see if you can create soil test pH raster for the data above.  You should only need to change "selected_data" to select "Ph".  There is no recommendation rate to create.
+
+
+4) Krige the data and extract the predicted (or interpolated) values.
+```{r}
+kriged_data = gstat::krige(formula = measure~1, selected_data, grd, model=m)
+
+finished_data = kriged_data[1]
+```
+
+5) Create the map of soil K values!
+```{r}
+finished_data %>%
+  leaflet() %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  addStarsImage(opacity = 0.5,
+                colors="RdYlGn") %>%
+  addImageQuery(finished_data,
+                type = "click")
+```
+

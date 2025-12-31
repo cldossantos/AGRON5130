@@ -1,0 +1,21 @@
+geomftname,geomfname,geomfmod,geomfeatid,existsonfeat,rvindicator,cokey,cogeomdkey
+Landform,ground moraines,,1,2,Yes,20682944,31877677
+Landform,till plains,,2,NA,Yes,20682944,31877678
+Landscape,till plains,,NA,NA,Yes,20682944,31877679
+Landform,ground moraines,,1,2,Yes,20682945,31877680
+Landform,till plains,,2,NA,Yes,20682945,31877681
+Landscape,till plains,,NA,NA,Yes,20682945,31877682
+Landform,ground moraines,,1,2,Yes,20682946,31877683
+Landform,till plains,,2,NA,Yes,20682946,31877684
+Landscape,till plains,,NA,NA,Yes,20682946,31877685
+Landform,ground moraines,,1,2,Yes,20682959,31877719
+Landform,till plains,,2,NA,Yes,20682959,31877720
+Landform,end moraines,,3,2,No ,20682959,31877722
+Landscape,till plains,,NA,NA,Yes,20682959,31877721
+Landform,till plains,,3,NA,Yes,20682960,31877724
+Landform,depressions,,1,3,Yes,20682960,31877725
+Landform,drainageways,,2,3,No ,20682960,31877726
+Landscape,till plains,,NA,NA,Yes,20682960,31877723
+Landform,depressions,,1,2,Yes,20682961,31877727
+Landform,till plains,,2,NA,Yes,20682961,31877728
+Landscape,till plains,,NA,NA,Yes,20682961,31877729

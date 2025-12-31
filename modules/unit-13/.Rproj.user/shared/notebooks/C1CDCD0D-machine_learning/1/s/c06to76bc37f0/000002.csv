@@ -1,0 +1,5 @@
+"0","library(broom)"
+"0","model = lm(corn_pred~corn, data=testData)"
+"0","glance(model) %>%"
+"0","  select(r.squared, sigma, p.value) %>%"
+"0","  kableExtra::kbl()"

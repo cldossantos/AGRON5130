@@ -1,0 +1,3 @@
+"0",""
+"0","peanut = read.csv(""data/peanut_sample_1.csv"")"
+"0","head(peanut)"

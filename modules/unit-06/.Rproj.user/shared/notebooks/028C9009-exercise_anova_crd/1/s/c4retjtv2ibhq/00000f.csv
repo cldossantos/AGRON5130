@@ -1,0 +1,1 @@
+"0","barley_model = lm(yield~gen, data = barley_data)"

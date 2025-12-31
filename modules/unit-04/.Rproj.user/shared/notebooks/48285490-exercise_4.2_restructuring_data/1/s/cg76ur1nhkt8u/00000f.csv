@@ -1,0 +1,3 @@
+"0","soybean_wide = soybean %>%"
+"0","  spread(Treatment, Yield)"
+"0","soybean_wide"

@@ -1,0 +1,3 @@
+"0","thompson_corn = read.csv(""data/thompson_corn.csv"")"
+"0",""
+"0","thompsom_model =  lm(yield ~ rain6 + rain7 + temp6 + temp7, thompson_corn)"

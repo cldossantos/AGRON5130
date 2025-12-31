@@ -1,0 +1,80 @@
+---
+title: "Randomizing Plots"
+output: html_notebook
+---
+
+# Introduction
+In the lesson, we discussed the importance of randomizing plots.  R has an incredibly easy
+
+
+# Example 1
+Create an experimental design with 4 replications of treatments "A" and "B".
+
+## The Agricolae Package
+To randomize two-treatment trials with paired treatments, we will use the "agricolae" package of R.  We first install agricolae and load it into our session.
+
+```{r}
+# install.packages("agricolae")
+library(agricolae)
+```
+
+## Randomizing the Plot
+We will use the "design.rcbd" function from the agricolae package.  We need to supply the following arguments to this function:
+- trt: a vector with treatment names
+- r: the number of replications
+
+We will create a vector called "treatment_names", containing treatments "A" and "B".  We will use the argument r=4 to tell R to generate 4 blocks.
+
+```{r}
+treatment_name=c("A", "B")
+
+plot_plan = design.rcbd(trt = treatment_name, r=4)
+
+```
+
+## Working with Lists
+The code above created an object called "plot_plan".  So far in R we have dealt with two kinds of objects: a data frame, which is basically a table of values, and a vector, which can be thought of as a single column of numbers.  "treatment_names" above is an example of a vector.
+
+"plot_plan" is a third type of R object, called a "list".  A list is a collection of other R objects.  It can contain multiple data frames, vectors, single values, etc.  A list is a very useful way to bundle up information, but they can be a little tricky to unpack.
+
+If we just run plot_plan below, we will get two windows.  One will list all of the objects in the list.  The second window will show the plot plan.
+
+```{r}
+plot_plan
+```
+
+We can access this information more directly.  If we type "plot_plan$sketch", we get a plot map of sorts.
+
+```{r}
+plot_plan$sketch
+
+
+```
+
+If we type "plot_plan$book", we get a data frame with the plots, block, and treatment_names.
+
+```{r}
+plot_plan$book
+```
+
+# Example 2
+In a field trial, we wish to compare the biomass of two fiber hemp varieties, "Jerry" and "Bob".  We wish to design a paired experimental design with 10 replications.
+
+```{r}
+hemp_variety = c("Jerry", "Bob")
+
+hemp_plot_plan = design.rcbd(trt = hemp_variety, r=10)
+```
+
+Here is the plot layout:
+```{r}
+hemp_plot_plan$sketch
+```
+
+And here is the table we can cut and paste into our spreadsheet:
+```{r}
+hemp_plot_plan$book
+```
+
+
+

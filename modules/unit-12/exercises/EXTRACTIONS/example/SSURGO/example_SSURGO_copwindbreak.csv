@@ -1,0 +1,82 @@
+wndbrkht.l,wndbrkht.r,wndbrkht.h,plantsym,plantsciname,plantcomname,cokey,copwindbreakkey
+12,12,12,ACRU,Acer rubrum,red maple,20682945,109557544
+12,12,12,ACSA2,Acer saccharinum,silver maple,20682945,109557545
+3,3,3,ALGL2,Alnus glutinosa,European alder,20682945,109557546
+3,3,3,ALINR,Alnus incana ssp. rugosa,speckled alder,20682945,109557547
+2,2,2,ARME6,Aronia melanocarpa,black chokeberry,20682945,109557548
+3,3,3,ASTR,Asimina triloba,pawpaw,20682945,109557549
+3,3,3,COAM3,Corylus americana,American hazelnut,20682945,109557550
+3,3,3,CODR,Cornus drummondii,roughleaf dogwood,20682945,109557551
+5,5,5,FRPE,Fraxinus pennsylvanica,green ash,20682945,109557552
+3,3,3,HAVI4,Hamamelis virginiana,American witchhazel,20682945,109557553
+12,12,12,BENI,Betula nigra,river birch,20682945,109557554
+9,9,9,CAIL2,Carya illinoinensis,pecan,20682945,109557555
+9,9,9,CEOC,Celtis occidentalis,common hackberry,20682945,109557556
+2,2,2,COAM2,Cornus amomum,silky dogwood,20682945,109557557
+9,9,9,NYSY,Nyssa sylvatica,blackgum,20682945,109557558
+2,2,2,PHYSO,Physocarpus,ninebark,20682945,109557559
+2,2,2,CORA6,Cornus racemosa,gray dogwood,20682945,109557560
+2,2,2,COSES,Cornus sericea ssp. sericea,redosier dogwood,20682945,109557561
+3,3,3,CRCR2,Crataegus crus-galli,cockspur hawthorn,20682945,109557562
+3,4.3,5,CRPH,Crataegus phaenopyrum,Washington hawthorn,20682945,109557563
+5,5,5,PRAM,Prunus americana,American plum,20682945,109557564
+9,10.6,11,QUBI,Quercus bicolor,swamp white oak,20682945,109557565
+3,4.3,5,JUVI,Juniperus virginiana,eastern redcedar,20682945,109557566
+2,2,2,LIBE3,Lindera benzoin,northern spicebush,20682945,109557567
+3,3,3,MAIO,Malus ioensis,prairie crabapple,20682945,109557568
+5,5,5,MAPO,Maclura pomifera,osageorange,20682945,109557569
+2,2,2,SACA12,Sambucus canadensis,American elder,20682945,109557570
+3,3,3,TADI2,Taxodium distichum,baldcypress,20682945,109557571
+6,6.8,9,PIAB,Picea abies,Norway spruce,20682945,109557572
+6,6,6,PINI,Pinus nigra,Austrian pine,20682945,109557573
+9,9,9,PIST,Pinus strobus,eastern white pine,20682945,109557574
+12,12,12,PODE3,Populus deltoides,eastern cottonwood,20682945,109557575
+3,3,3,VILE,Viburnum lentago,nannyberry,20682945,109557576
+2,2.4,3,VIOPA2,Viburnum opulus var. americanum,American cranberrybush,20682945,109557577
+9,9,9,QUIM,Quercus imbricaria,Shingle oak,20682945,109557578
+9,9,9,QUMA2,Quercus macrocarpa,bur oak,20682945,109557579
+9,9,9,QUPA2,Quercus palustris,pin oak,20682945,109557580
+9,9,9,QUSH,Quercus shumardii,Shumard's oak,20682945,109557581
+3,3,3,VIPR,Viburnum prunifolium,blackhaw,20682945,109557582
+2,2,2,VITR8,Viburnum trilobum,highbush cranberry,20682945,109557583
+6,6,6,THOC2,Thuja occidentalis,arborvitae,20682945,109557584
+5,5,5,THOC2,Thuja occidentalis,northern white-cedar,20682945,109557585
+3,3,3,VIDE,Viburnum dentatum,arrowwood,20682945,109557586
+2,2.6,3,VIDE,Viburnum dentatum,southern arrowwood,20682945,109557587
+5,5.1,7,ABCO,Abies concolor,white fir,20682960,109557632
+12,12,12,ACRU,Acer rubrum,red maple,20682960,109557633
+12,12,12,ACSA2,Acer saccharinum,silver maple,20682960,109557634
+4,4,4,ALGL2,Alnus glutinosa,European alder,20682960,109557635
+3,3,3,ALINR,Alnus incana ssp. rugosa,speckled alder,20682960,109557636
+2,2,2,ARME6,Aronia melanocarpa,black chokeberry,20682960,109557637
+2,2,3,COAM2,Cornus amomum,silky dogwood,20682960,109557638
+7,7,7,JUVI,Juniperus virginiana,eastern redcedar,20682960,109557639
+12,12,12,BENI,Betula nigra,river birch,20682960,109557640
+9,9,9,CAIL2,Carya illinoinensis,pecan,20682960,109557641
+5,5,5,CALA21,Carya laciniosa,shellbark hickory,20682960,109557642
+5,5,5,CELTI,Celtis,hackberry,20682960,109557643
+2,2,2,CEOC2,Cephalanthus occidentalis,common buttonbush,20682960,109557644
+5,6.9,7,PINI,Pinus nigra,Austrian pine,20682960,109557645
+3,3,3,CODR,Cornus drummondii,roughleaf dogwood,20682960,109557646
+2,2,2,CORA6,Cornus racemosa,gray dogwood,20682960,109557647
+2,2,2,COSES,Cornus sericea ssp. sericea,redosier dogwood,20682960,109557648
+5,5,6,CRPH,Crataegus phaenopyrum,Washington hawthorn,20682960,109557649
+7,7,7,FRPE,Fraxinus pennsylvanica,green ash,20682960,109557650
+11,11.3,12,QUPA2,Quercus palustris,pin oak,20682960,109557651
+5,5,5,LALA,Larix laricina,tamarack,20682960,109557652
+2,2,2,LIBE3,Lindera benzoin,northern spicebush,20682960,109557653
+9,9,9,NYSY,Nyssa sylvatica,blackgum,20682960,109557654
+2,2,2,PHYSO,Physocarpus,ninebark,20682960,109557655
+7,8,8,PIAB,Picea abies,Norway spruce,20682960,109557656
+3,3,4,VIOPA2,Viburnum opulus var. americanum,American cranberrybush,20682960,109557657
+5,5,5,PIPU,Picea pungens,blue spruce,20682960,109557658
+9,9.1,10,PIST,Pinus strobus,eastern white pine,20682960,109557659
+12,12,12,PODE3,Populus deltoides,eastern cottonwood,20682960,109557660
+9,9,9,QUBI,Quercus bicolor,swamp white oak,20682960,109557661
+9,9,9,QUMA2,Quercus macrocarpa,bur oak,20682960,109557662
+2,2,2,VITR8,Viburnum trilobum,highbush cranberry,20682960,109557663
+2,2,2,SACA12,Sambucus canadensis,American elder,20682960,109557664
+4,7.8,12,TADI2,Taxodium distichum,baldcypress,20682960,109557665
+6,6,6,THOC2,Thuja occidentalis,arborvitae,20682960,109557666
+5,5,5,THOC2,Thuja occidentalis,northern white-cedar,20682960,109557667
+3,3,3,VILE,Viburnum lentago,nannyberry,20682960,109557668

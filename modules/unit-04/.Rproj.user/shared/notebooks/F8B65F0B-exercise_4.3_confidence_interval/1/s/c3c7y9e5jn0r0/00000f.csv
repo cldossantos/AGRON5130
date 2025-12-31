@@ -1,0 +1,7 @@
+"0","soybean_wide = soybean %>%"
+"0","  spread(Treatment, Yield)"
+"0",""
+"0","soybean_diff = soybean_wide %>%"
+"0","  mutate(diff = A-B)"
+"0",""
+"0","soybean_diff"

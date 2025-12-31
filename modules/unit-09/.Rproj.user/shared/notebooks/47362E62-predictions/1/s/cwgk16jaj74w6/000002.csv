@@ -1,0 +1,3 @@
+"0","library(tidyverse)"
+"0","allometry = read.csv(""data/corn_allometry.csv"")"
+"0","head(allometry)"

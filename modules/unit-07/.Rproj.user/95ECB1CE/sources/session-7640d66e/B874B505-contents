@@ -1,0 +1,242 @@
+---
+title: Exercise -- Factorial ANOVA
+output: html_document
+---
+
+# Introduction
+For the second exercise this week, we will work with factorial experimental designs.  Remember, a factorial design has two or more factors; within each factor are two or more levels, which we commonly refer to as treatments.  For a factorial design, our analysis becomes a little more complex, but not terribly so.  Factorial experiments may have Completely Randomized Designs or Randomized Complete Block Designs.  The latter is more common.
+
+# Case Study: Biochar
+For our case study, we will use a dataset inspired from a recent paper:
+
+Ahmad, M.; Wang, X.; Hilger, T.H.; Luqman, M.; Nazli, F.; Hussain, A.; Zahir, Z.A.; Latif, M.; Saeed, Q.; Malik, H.A.; Mustafa, A. Evaluating Biochar-Microbe Synergies for Improved Growth, Yield of Maize, and Post-Harvest Soil Characteristics in a Semi-Arid Climate. Agronomy 2020, 10, 1055.
+
+This trial, in Pakistan, looked at the factorial effects of biochar soil amendments and and seed innoculum on maize growth.  I am not an expert on biochar -- it is basically an amendment made from burned crop residues -- a charcoal of sorts.  More information can be found in the paper above, which is open-source. 
+
+```{r}
+library(tidyverse)
+biochar = read.csv("data/biochar_innoculum.csv")
+head(biochar)
+```
+
+I tend to skip over the treatments, so let's discuss them in greater detail.  There are 2 levels of the Innoculation factor: innoculated, or not Innoculated.  There are 7 levels of the factor biochar: one control plus 6 biochar treatments of different sources and rates.  There are 6 blocks.  Yield is reported in tons per hectare.
+
+# ANOVA
+We use the same two lines of code we have used for other analyses of variance.  First, our model statement.  Before we enter that, let's review the linear additive model for this factorial experiment:
+
+Yield = mu + Block + Innoculation + Amendment + Innoculation*Amendment + Error
+
+This includes the effect of Block (which is assumed, by nature of the design, to not interact with the Innoculation or Amendment factors), Innoculation, Amendment, and their interaction, Innoculation*Amendment.
+
+Having identified the linear additive model, we can write out model statement in R.
+```{r}
+biochar_model = aov(Yield ~ Block + Innoculation + Amendment + Innoculation:Amendment, data = biochar)
+
+```
+
+Just the same as for other trials, the statement above defines an object, "biochar" model, and assigns it the output of an analysis of variance (aov), based on our linear model and the dataset "biochar".
+
+We can look at the ANOVA table by using the *summary()* function.
+
+```{r}
+summary(biochar_model)
+```
+
+Looking first at our main effects, we see the effects of both factors, Innoculation aren Amendment, are significant at the P=0.05 level.  The interaction is not significant.
+
+
+# Interaction Plots
+As we learned in the lecture, it is important when analyzing factorial design experiments to plot the interactions between the data.  Although line plots are normally used in the final presentation of qualitative factors like products and practices, they are useful to visualize the nature of interactions.
+
+The first step in creating our plot is to create a dataset of means.  To do this, we need to group our data using the *group_by()* function, calculate the means for each combination of Innoculation and Amendment, and *ungroup()* the data. We can link these functions with "%>%"
+
+```{r}
+grouped_data = biochar %>%     # this feeds the biochar dataset to the next line
+  group_by(Innoculation, Amendment) %>%     # group by the interactions of Innoculation and Amendment
+  summarise(Yield = mean(Yield)) %>%     # calculate the means for the interactions
+  ungroup()    # ungroup the data for further processing
+
+grouped_data
+```
+
+We can now feed our grouped data into ggplot to create our line plot.  The aes() argument tells R that the position of the  points connected by our lines will be determined by their level of the Innoculation factor and their Yield.  It further tells R that lines should be drawn between points with the same level of the Amendment factor. 
+
+```{r}
+grouped_data %>%
+  ggplot(aes(x=Innoculation, y=Yield, group=Amendment)) 
+```
+
+We need to add one more line telling R what shapes (geometries) to draw.  We add the *geom_line* argument.  In it we include an aes() argument to associate line color to with level of Innoclulation.
+
+```{r}
+grouped_data %>%
+  ggplot(aes(x=Innoculation, y=Yield, group=Amendment)) +
+  geom_line(aes(color=Amendment))
+
+```
+Our plot above reflects our ANOVA results.  Maize yield with most amendments decreased when the crop was un-innoculated.  The maize response was flat or even slightly increased for a few levels of Amendment, but the interaction only had a P-value of about 0.32, so the interaction was not significant.  Similarly, the ranking of Amendments changed somewhat with level of Innoculation, but not enough to be significant.
+
+
+# Testing Factors Individually
+Sometimes we may want to know whether one factor has a significant effect at each level of the other factor.
+To do this requires three lines of code.  The last is a little tricky, but we will get there.
+
+The first couple of lines should look familiar.  We take the biochar data.frame, and we use group_by to group it by Innoculation level.
+
+The third line requires further explation.  What we ae doing is telling R to run a separate analysis of variance for Amendment at each level of Innnoculation.  
+
+*aov(.$Yield ~ .$Block + .$Amendment))* is our anova model, but it looks different than the ones we have specified before.  Normally we would just write: *aov(Yield ~ Block + Amendment, data = biochar)*.  We can't do that here, though, because the model is using the data groups fed by the group_by() function just above.  Instead, the ".$" tells R that each term in the model is a column from the data that is being fed to it.  
+
+*tidy* tells R to return the anova as a data.frame()  This allows us to stack the ANOVAs for different levels of Innoculant on top of each other.  *tidy* is part of the *broom* package, so we use *library(broom)* to load that package before we begin.
+
+Finally, *do()* is the magical command that tells R to, well, do something -- anything -- with the groups of data that are fed to it.  
+
+So when we put it all together, the third line tells R to *do* something with the two levels of Innoculant, specifically to create *tidy* data.frames of the analyses of variance for both of them.
+
+```{r}
+library(broom)
+
+biochar %>%
+  group_by(Innoculation) %>%
+  do(tidy(aov(.$Yield ~ .$Block + .$Amendment)))
+
+```
+
+We can see from the output that the effect of Amendment is significant at both levels of Innoculant.
+
+What about the other way around?  We simply take the code above and reverse the positions of Amendment and Innoculation.
+
+```{r}
+biochar %>%
+  group_by(Amendment) %>%
+  do(tidy(aov(.$Yield ~ .$Block + .$Innoculation)))
+
+```
+
+We see the effect of Innoculant on yield is only significant for the Control and Wheat Straw Biochar 2X rate.  It is insignificant with all other levels of Amendment.
+
+# Bar Plots
+Similar to the other exercise, we can also create a bar plot of the treatment means.  We have two factors, however, so we will need to tweak our code.  The first thing to do is to pick one of the factors to be plotted along the X axis.  Lets go with the Amendment factor.  We can create a simple bar graph for our Amendment treatments
+
+```{r}
+ggplot(data=biochar, aes(x=Amendment, y=Yield)) +
+  geom_bar(stat="summary", fun="mean")
+```
+
+The treatment names are running together a little, so lets add a theme argument with "angle = " to pitch those at a 45 degree angle to the axis and "hjust=1) to right-justify them from the axis.
+
+```{r}
+ggplot(data=biochar, aes(x=Amendment, y=Yield)) +
+  geom_bar(stat="summary", fun="mean") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+We can plot the innoculum effect the same way, just substituting "Innoculation" for "Amendment" in our code above.
+
+```{r}
+ggplot(data=biochar, aes(x=Innoculation, y=Yield)) +
+  geom_bar(stat="summary", fun="mean")
+```
+
+Of course, in a factorial experiment, we may want to see both treatments together.  In the plot below, we will plot Amendment along the X axis, Yield on the Y axis, and group the bars by level of Innoculation.  Our plot starts out similar to the Amendment plot above.  But in the first line we need to add the argument "group=Innoculation".  This tells R we will group our bars by the level of innoculation.  
+
+To our second line, we need to add an aesthetics argument (aes).  Why?  Because we want the color of the bar to change with the valuable of a variable, in this case the level of innoculation.  Our complete argmument reads "aes(fill = Innoculation)"
+
+```{r}
+ggplot(data=biochar, aes(x=Amendment, y=Yield, group=Innoculation)) +  # add group statement to this line
+  geom_bar(stat="summary", fun="mean", aes(fill=Innoculation)) +  # add fill statement to this line
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Ok, we've got different colored bars -- but they are stacked!  We want them side-by-side.  So we need to add one more argument to our second line: position="dodge".  This tells R to position the bars so they "dodge" each other.  It's a weird choice of words, but technically it works.
+
+```{r}
+ggplot(data=biochar, aes(x=Amendment, y=Yield, group=Innoculation)) +  # add group statement to this line
+  geom_bar(stat="summary", fun="mean", aes(fill=Innoculation), position="dodge") +  # add fill statement to this line
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+And Voila, we have our plot.  Whew, those color bars are high-contrast, which is great for accessibility.  If we want to change the colors to something closer to our preferred palate, however, 
+
+```{r}
+ggplot(data=biochar, aes(x=Amendment, y=Yield, group=Innoculation)) +  # add group statement to this line
+  geom_bar(stat="summary", fun="mean", aes(fill=Innoculation), position="dodge") +  # add fill statement to this line
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("darkgreen", "orange"))
+```
+
+# Practice
+For practice we have a dataset inspired by "Plant population and row spacing effects on corn: Plant growth, phenology, and grain yield" (2020), published by Brad J. Bernhard  Frederick E. Below in Agronomy Journal.  The article is open source.
+
+In this study, corn was grown with two row spacings and four plant populations.  The trial was a complete random block design.   
+```{r}
+corn = read.csv("data/corn_pop_spacing.csv")
+head(corn)
+
+
+```
+
+We need to do a couple of things to our dataset before we can run an analysis of variance.  We need to reformat the data for block, pop, and spacing.  Although I did not intend to make this part of the exercise, I'm glad it is in here.
+
+ANOVA is based on named effects.  But if we look under the words block, pop, and spacing, we see the expression "<int>".  The problem is that we are using numbers to represent our treatments.  If we run the analysis of variance on these data as-is, our table will look like this:
+
+
+           Df Sum Sq Mean Sq F value   Pr(>F)    
+block        1 17.808  17.808  24.850 3.17e-05 ***
+pop          1  2.028   2.028   2.831  0.10402    
+spacing      1  5.550   5.550   7.745  0.00971 ** 
+pop:spacing  1  1.318   1.318   1.839  0.18633    
+Residuals   27 19.349   0.717                     
+
+If you see nothing wrong, be comforted this has happened to me *many* times.  But look again, particularly at the degrees of freedom.  Do you see it now?  We have four blocks in this trial, so we should have three degrees of freedom.  We have four populations, so again we should have three degrees of freedom.  Our degrees of freedom for population should be equal to the population degrees of freedom (4-1 = 3) times the spacing degrees of freedom (2-1 = 1), or three degrees.
+
+What is going on is R thingks we want to create a regression model, and it will just have to be patient because we don't get to that until Unit 9!  To tell R to run this analysis correctly, let's tell it to treat block, pop, and spacing as the factors they are, rather than as integers.  
+
+We are going to use the "as.factor" command to tell R these variables are factors.  We use the ominous sounding command "mutate" to change our variables. 
+```{r}
+corn_fixed = corn %>%  # the "%>%" tells R to take the corn dataset and use it in the next line of code
+  mutate(block = as.factor(block),  # mutate tells R to change the variables according to the formula given
+         pop = as.factor(pop),
+         spacing = as.factor(spacing))
+```
+
+## ANOVA
+Now, run your ANOVA on the new dataset, corn_fixed.  The degrees of freedom will be correct.  Your ANOVA output should look like:
+
+            Df Sum Sq Mean Sq F value   Pr(>F)    
+block        3 18.791   6.264  12.841 5.53e-05 ***
+pop          3  6.860   2.287   4.688  0.01169 *  
+spacing      1  5.550   5.550  11.379  0.00287 ** 
+pop:spacing  3  4.609   1.536   3.150  0.04645 *  
+Residuals   21 10.243   0.488                     
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+## Test Factors Individually
+Test the effect of spacing at each level of pop.  Your results should look like:
+
+   pop    term         df sumsq meansq statistic p.value
+   <fct>  <chr>     <dbl> <dbl>  <dbl>     <dbl>   <dbl>
+ 1 94000  .$block       3 2.20   0.733      5.93  0.0889
+ 2 94000  .$spacing     1 0.336  0.336      2.72  0.198 
+ 3 94000  Residuals     3 0.371  0.124     NA    NA     
+ 4 109000 .$block       3 6.00   2.00       1.74  0.330 
+ 5 109000 .$spacing     1 4.65   4.65       4.05  0.138 
+ 6 109000 Residuals     3 3.45   1.15      NA    NA     
+ 7 124000 .$block       3 5.88   1.96       3.01  0.195 
+ 8 124000 .$spacing     1 3.72   3.72       5.71  0.0968
+ 9 124000 Residuals     3 1.95   0.651     NA    NA     
+10 139000 .$block       3 8.70   2.90      18.0   0.0201
+11 139000 .$spacing     1 1.46   1.46       9.07  0.0571
+12 139000 Residuals     3 0.482  0.161     NA    NA     
+
+Test the effects of pop at each level of spacing.  Your results should look like:
+
+  spacing term         df sumsq meansq statistic  p.value
+  <fct>   <chr>     <dbl> <dbl>  <dbl>     <dbl>    <dbl>
+1 51      .$block       3  8.24  2.75       5.25  0.0228 
+2 51      .$pop         3  8.06  2.69       5.13  0.0243 
+3 51      Residuals     9  4.71  0.523     NA    NA      
+4 76      .$block       3 11.3   3.76       7.03  0.00984
+5 76      .$pop         3  3.41  1.14       2.13  0.167  
+6 76      Residuals     9  4.81  0.534     NA    NA    

@@ -1,0 +1,163 @@
+---
+title: "Exercise: Split-Plot Design"
+output: html_document
+---
+
+# Introduction
+The split-plot design is similar to the factorial design but, as we learned in the lecture, has two error terms: one for the main factor, and the second for the sub-factor.  This requires we use different R code than for the factorial design.
+
+# Case Study: Corn-Soybean Systems Trial
+A cropping systems trial was conducted in Wisconsin to investigate the combined effects of tillage and in-furrow fungicide on soybean yield.  This dataset was inspired by the following article, which is open-source:
+
+Potratz, DJ, Mourtzinis, S, Gaska, J, Lauer, J, Arriaga, FJ, Conley, SP. Strip‐till, other management strategies, and their interactive effects on corn grain and soybean seed yield. Agronomy Journal. 2020; 112: 72– 80. https://doi.org/10.1002/agj2.20067
+
+The trial was a split-plot design with two levels of tillage (no-till, NT, and strip-till, ST) as the main factor and two levels of fungicide (Fungicide and No Fungicide) as the sub-factor.  There were four replications.  Main factor levels were blocked.
+
+```{r}
+library(tidyverse)
+soybean = read.csv("data/tillage_fungicide_soybean.csv")
+head(soybean)
+```
+
+# ANOVA
+Lets first construct our linear model:
+
+Y = mu + T + Error(B + BT) + F + TF + Error(BF + BTF)
+
+So our anova output should include include the effects of tillage (T), fungicide (F), and their interaction (TF).  We also need to tell R to use the interaction of block and tillage to test the main factor tillage effect.  We code this in R as follows.
+
+```{r}
+soybean_model = aov(yield ~ tillage + fungicide + tillage:fungicide + Error(block:tillage), data=soybean)
+```
+
+Of particular note is the new "Error" term we have added.  This tells R which error to use for testing the tillage effect.
+
+The ANOVA output is created using the *summary()* function.  
+```{r}
+summary(soybean_model)
+```
+
+As we saw in lecture, the ANOVA output for a split-plot experiment includes two tables.  The top table tests the main factor effect.  At the top of that table, it specifies we are using the block:tillage interaction as our error term.  The bottom table tests the sub-factor effect and the interaction between the main factor and the sub-factor.  
+
+We can see tillage did not have an effect.  Fungicide did affect yield.    
+
+# Interaction Plot
+Although the interaction is not singificant, we can still draw a line plot to visualize the relationship between tillage and fungicide effects.  First, we need to create a summary dataset with mean yields for the interactions of tillage and fugicide.
+
+```{r}
+soybean_group = soybean %>%    # build new dataframe, soybean_group, on summary of soybean dataframe
+  group_by(tillage, fungicide) %>%   # summarise based on interaction of tillage and fungicide
+  summarise(yield = mean(yield)) %>%   # summarise by means across replications
+  ungroup()    # ungroup for further processing
+```
+
+
+Then we create our line plot.  We can start the plot with the ggplot() function.  The aes() argument tells R to position the data points according to their tillage level and yield.  It also tells R to group the points by fungicide level.
+
+```{r}
+soybean_group %>%
+  ggplot(aes(x=tillage, y=yield, group=fungicide))
+
+```
+
+
+Next we add line geometries to our plot using geom_line().  We use another aes() argument to tell R to differentiate line color by level of fungicide.
+```{r}
+soybean_group %>%
+  ggplot(aes(x=tillage, y=yield, group=fungicide)) +
+  geom_line(aes(color=fungicide))
+
+```
+
+
+# Bar plot
+We can create a bar plot just as we did for the factorial trial.
+
+First, we tell ggplot with the aes() argument to position the bars according to their tillage level and their yield, and to group means with the same fungicide level together so they are the same color. 
+```{r}
+soybean %>%
+  ggplot(aes(x=tillage, y=yield, group=fungicide))
+```
+
+Then we add our geometry with the geom_bar() argument.  We will add an aes() argument to tell R that bar color should be matched to fungicide level. We also need to use the *stat="summary"* argument that the statistic to be plotted is a summary statistic to be calculated.  The we need to tell it with *fun="mean"* that the statistic to be calculated is the mean.
+
+```{r}
+soybean %>%
+  ggplot(aes(x=tillage, y=yield, group=fungicide)) +
+  geom_bar(aes(fill=fungicide), stat = "summary", fun="mean")
+
+```
+
+Whoops!  We need to add a final argument to geom_bar(), to tell it to plot the two levels of fungicide next to each other, instead of stacking them.  We add *position="dodge"* accordingly. 
+
+```{r}
+soybean %>%
+  ggplot(aes(x=tillage, y=yield, group=fungicide)) +
+  geom_bar(aes(fill=fungicide), stat = "summary", fun="mean", position="dodge")
+
+```
+
+Finally, if we want, we can add a couple of theme() arguments to increase the font size of the axis titles and labels.
+
+```{r}
+soybean %>%
+  ggplot(aes(x=tillage, y=yield, group=fungicide)) +
+  geom_bar(aes(fill=fungicide), stat = "summary", fun="mean", position="dodge") +
+  theme(axis.title = element_text(size=18),
+        axis.text = element_text(size=14))  # element_text() tells R we are modifying the font, as opposed to the position of the axis title
+
+```
+
+# Practice
+The same study above produced a corn dataset.  The main factor was rotation and the sub-factor was fungicide.  
+```{r}
+corn = read.csv("data/rotation_fungicide_corn.csv")
+head(corn)
+
+```
+
+## ANOVA
+Create an analysis of variance for the data above.  Your results should look like:
+
+
+Error: block:rotation
+          Df Sum Sq Mean Sq F value Pr(>F)
+rotation   1   4.99   4.987   0.896   0.38
+Residuals  6  33.39   5.565               
+
+Error: Within
+                   Df Sum Sq Mean Sq F value   Pr(>F)    
+fungicide           1 0.1309  0.1309   64.19 0.000202 ***
+rotation:fungicide  1 0.3492  0.3492  171.19 1.23e-05 ***
+Residuals           6 0.0122  0.0020                     
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+# Test Factors Individually
+First, test the effect of rotation at each level of fungicide.  Your results should look like:
+
+  fungicide    term          df    sumsq   meansq statistic     p.value
+  <fct>        <chr>      <dbl>    <dbl>    <dbl>     <dbl>       <dbl>
+1 Fungicide    .$block        3 16.6     5.52         6385.  0.00000333
+2 Fungicide    .$rotation     1  3.99    3.99         4612.  0.00000703
+3 Fungicide    Residuals      3  0.00259 0.000865       NA  NA         
+4 No Fungicide .$block        3 16.8     5.61         6068.  0.00000359
+5 No Fungicide .$rotation     1  1.35    1.35         1458.  0.0000395 
+6 No Fungicide Residuals      3  0.00277 0.000925       NA  NA         
+
+Second, test the effect of fungicide at each level of rotation.  Your results should look like:
+
+  rotation term           df    sumsq  meansq statistic     p.value
+  <fct>    <chr>       <dbl>    <dbl>   <dbl>     <dbl>       <dbl>
+1 CC       .$block         3 16.7     5.58       4075.   0.00000652
+2 CC       .$fungicide     1  0.0262  0.0262       19.2  0.0220    
+3 CC       Residuals       3  0.00410 0.00137      NA   NA         
+4 CS       .$block         3 16.7     5.56       2049.   0.0000183 
+5 CS       .$fungicide     1  0.454   0.454       167.   0.000997  
+6 CS       Residuals       3  0.00814 0.00271      NA   NA    
+
+
+## Create a line plot to view the interaction between rotation and fungicide.
+
+

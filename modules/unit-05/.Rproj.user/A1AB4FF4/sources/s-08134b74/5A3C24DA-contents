@@ -1,0 +1,62 @@
+---
+title: R Notebook
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+# Introduction
+For this exercise, we will not be analyzing data, but considering the relative importance of Type I and Type II Errors.  Please click "Run Document" (right above the word "Notebook" in the top line) and you will be presented with a quiz.
+
+```{r echo=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(learnr)
+library(shiny)
+```
+
+# Questions
+For each question answer whether the researcher should be more concerned about a Type I or Type II Error.  Remember, a Type I Error occurs when we conclude from our sample means that two treatments are different, where if we were able to measure their populations we would see they are equal.  A Type II error occurs when we conclude from our sample means that two treatments are the same, when in fact their populations are different. 
+
+```{r q1}
+quiz(
+  question("Question 1: You are in the final year of evaluating a new hybrid that will cost the grower $20 more per acre, 
+           and will increase yield about 6 bushels ($22.20 at the market price of $3.70 per bushel).  (An ROI of means the farmer will earn $3 per acre after the increased cost of the seed.)  Would you worry more about a Type I or Type II error?",
+           answer("Type I", correct=TRUE),
+           answer("Type II"),
+           correct = "Correct.  The reward if the new hybrid is better than the old hybrid is relatively small at 1 bushel, or $2.20.  
+           If the yield difference is just a little bit less than 6 bu/ac, however, the grower will lose money by planting the new
+           hybrid."
+  ),
+  question("Question 2: You are in the early stages of a soybean breeding program.  In testing, a 
+           new variety yielded 5 bushels more per acre but was only better than existing varieties at p=0.8.  
+           The new variety would have a cost per acre comparable to the old varieties and could be very popular with growers.  
+           The market price per bushel of soybean is $8.24.
+           Would you worry more a Type I or Type II error?",
+           answer("Type I"),
+           answer("Type II", correct=TRUE),
+           correct = "Correct.  The new variety yielded 5 bu/ac greater than existing varieties.  
+           This difference was not significant at the p=0.05 level, but it was observed and might be significant in a different trial.  
+           To boot, there would be little cost to the grower to plant the new variety.
+           Finally, this is an early trial in the development of the variety.  If it fails to perform as well in subsequent trials,
+           it can be removed from the seed catalog prior to release."
+  ),
+  question("Question 3: You are developing a new vaccine for COVID-19.  You are testing for the frequency of severe, life-threatening 
+  side effects (high blood pressure, heart arrythmia, kidney failure) in patients who receive the vaccine, versus those who are untreated.
+  Would you worry more about a Type I or Type II error?",
+           answer("Type I"),
+           answer("Type II", correct=TRUE),
+           correct = "Correct.  If we wrongly conclude the incidence of these life-threatening conditions in persons who receive 
+           the vaccine is the same as those who are untreated, we will endanger the lives of those receiving the vaccine."
+  ),
+  question("Question 4: You are developing a new vaccine for COVID-19.  
+           The vaccine is expensive ($500 and not covered by insurance),
+           If it doesn't work, recipients will falsely believe they are not susceptible to COVID.  
+           Presence of COVID-19 antibodies and symptoms are compared between populations treated and untreated with the vaccine. 
+           Would you worry more about a Type I or Type II error?",
+           answer("Type I", correct = TRUE),
+           answer("Type II"),
+           correct = "Correct.  The cost of concluding there is a increase in antibodies or decrease in COVID incidence based on samples,
+           when the populations are actually equal, could be disasterous.  Patients will have paid for an expensive treatment.
+           Even worse, they may place themselves in susceptible situations they would have otherwise avoided.")
+)
+```
+

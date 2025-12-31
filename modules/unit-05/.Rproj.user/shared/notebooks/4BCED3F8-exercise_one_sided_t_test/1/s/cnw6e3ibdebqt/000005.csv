@@ -1,0 +1,2 @@
+"0","groundnut = read.csv(""data/groundnut.csv"")"
+"0","head(groundnut)"

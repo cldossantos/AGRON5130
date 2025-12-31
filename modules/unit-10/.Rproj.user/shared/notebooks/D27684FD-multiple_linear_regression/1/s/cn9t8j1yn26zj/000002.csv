@@ -1,0 +1,1 @@
+"0","ia_and_illinois_model = lm(corn ~ ppt + whc + sand + silt + clay + om, data = ia_and_il_corn)"

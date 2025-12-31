@@ -1,0 +1,3 @@
+"0","hemp_variety = c(""Jerry"", ""Bob"")"
+"0",""
+"0","hemp_plot_plan = design.rcbd(trt = hemp_variety, r=10)"

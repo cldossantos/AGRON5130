@@ -1,0 +1,373 @@
+wndbrkht.l,wndbrkht.r,wndbrkht.h,plantsym,plantsciname,plantcomname,cokey,copwindbreakkey
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428362,107624571
+NA,12,NA,PIST,Pinus strobus,eastern white pine,20428362,107624572
+NA,11,NA,BENI,Betula nigra,river birch,20428362,107624573
+NA,11,NA,QUBI,Quercus bicolor,swamp white oak,20428362,107624574
+NA,10,NA,ACSA2,Acer saccharinum,silver maple,20428362,107624575
+NA,10,NA,JUNI,Juglans nigra,black walnut,20428362,107624576
+NA,10,NA,QUMU,Quercus muehlenbergii,chinkapin oak,20428362,107624577
+NA,10,NA,QURU,Quercus rubra,northern red oak,20428362,107624578
+NA,10,NA,QUVE,Quercus velutina,black oak,20428362,107624579
+NA,10,NA,TIAM,Tilia americana,American basswood,20428362,107624580
+NA,9,NA,ASTR,Asimina triloba,common pawpaw,20428362,107624581
+NA,9,NA,PIAB,Picea abies,Norway spruce,20428362,107624582
+NA,8,NA,ACSA3,Acer saccharum,sugar maple,20428362,107624583
+NA,8,NA,CAOV2,Carya ovata,shagbark hickory,20428362,107624584
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428362,107624585
+NA,8,NA,FRAM2,Fraxinus americana,white ash,20428362,107624586
+NA,8,NA,FRNI,Fraxinus nigra,black ash,20428362,107624587
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428362,107624588
+NA,8,NA,JUVI,Juniperus virginiana,eastern redcedar,20428362,107624589
+NA,6,NA,ABCO,Abies concolor,white fir,20428362,107624590
+NA,6,NA,JUCI,Juglans cinerea,Butternut,20428362,107624591
+NA,6,NA,MAMA37,Malus mandshurica,Manchurian crabapple,20428362,107624592
+NA,6,NA,MALUS,Malus,Red Splendor Crabapple,20428362,107624593
+NA,6,NA,MALUS,Malus,Midwest Crabapple,20428362,107624594
+NA,6,NA,MASA9,Malus sargentii,sargent crabapple,20428362,107624595
+NA,6,NA,UNKNOWN,unknown scientific name,radiant crabapple,20428362,107624596
+NA,6,NA,PIBA2,Pinus banksiana,jack pine,20428362,107624597
+NA,6,NA,PIGL,Picea glauca,white spruce,20428362,107624598
+NA,6,NA,PIGLD,Picea glauca var. densata,Black Hills spruce,20428362,107624599
+NA,6,NA,PRSE2,Prunus serotina,black cherry,20428362,107624600
+NA,6,NA,QUAL,Quercus alba,white oak,20428362,107624601
+NA,6,NA,QUMA2,Quercus macrocarpa,bur oak,20428362,107624602
+NA,6,NA,THOC2,Thuja occidentalis,arborvitae,20428362,107624603
+NA,5,NA,CECA4,Cercis canadensis,eastern redbud,20428362,107624604
+NA,5,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428362,107624605
+NA,5,NA,VIPR,Viburnum prunifolium,blackhaw,20428362,107624606
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428362,107624607
+NA,4,NA,PRAM,Prunus americana,American plum,20428362,107624608
+NA,4,NA,SAMBU,Sambucus,elderberry,20428362,107624609
+NA,3,NA,AMELA,Amelanchier,serviceberry,20428362,107624610
+NA,3,NA,COCO6,Corylus cornuta,beaked hazelnut,20428362,107624611
+NA,3,NA,PHYSO,Physocarpus,ninebark,20428362,107624612
+NA,3,NA,PRTO80,Prunus tomentosa,Nanking cherry,20428362,107624613
+NA,3,NA,PRVI,Prunus virginiana,chokecherry,20428362,107624614
+NA,3,NA,VIDE,Viburnum dentatum,southern arrowwood,20428362,107624615
+NA,3,NA,VIED,Viburnum edule,highbush cranberrry,20428362,107624616
+NA,3,NA,VILE,Viburnum lentago,nannyberry,20428362,107624617
+NA,3,NA,VIRA,Viburnum rafinesqueanum,Downy Arrowwood,20428362,107624618
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428362,107624619
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428362,107624620
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428362,107624621
+NA,1,NA,VIAC,Viburnum acerifolium,mapleleaf viburnum,20428362,107624622
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428363,107624623
+NA,11,NA,ACSA2,Acer saccharinum,silver maple,20428363,107624624
+NA,11,NA,PLOC,Platanus occidentalis,American sycamore,20428363,107624625
+NA,11,NA,SALIX,Salix,willow,20428363,107624626
+NA,9,NA,ASTR,Asimina triloba,common pawpaw,20428363,107624627
+NA,8,NA,BENI,Betula nigra,river birch,20428363,107624628
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428363,107624629
+NA,8,NA,FRAM2,Fraxinus americana,white ash,20428363,107624630
+NA,8,NA,FRNI,Fraxinus nigra,black ash,20428363,107624631
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428363,107624632
+NA,8,NA,QUBI,Quercus bicolor,swamp white oak,20428363,107624633
+NA,8,NA,QUMA2,Quercus macrocarpa,bur oak,20428363,107624634
+NA,8,NA,QUPA2,Quercus palustris,pin oak,20428363,107624635
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428363,107624636
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428363,107624637
+NA,6,NA,JUVI,Juniperus virginiana,eastern redcedar,20428363,107624638
+NA,6,NA,MAMA37,Malus mandshurica,Manchurian crabapple,20428363,107624639
+NA,6,NA,MALUS,Malus,Red Splendor Crabapple,20428363,107624640
+NA,6,NA,MALUS,Malus,Midwest Crabapple,20428363,107624641
+NA,6,NA,MASA9,Malus sargentii,sargent crabapple,20428363,107624642
+NA,6,NA,UNKNOWN,unknown scientific name,radiant crabapple,20428363,107624643
+NA,6,NA,THOC2,Thuja occidentalis,arborvitae,20428363,107624644
+NA,5,NA,CECA4,Cercis canadensis,eastern redbud,20428363,107624645
+NA,5,NA,COCO6,Corylus cornuta,beaked hazelnut,20428363,107624646
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428363,107624647
+NA,4,NA,PHYSO,Physocarpus,ninebark,20428363,107624648
+NA,4,NA,PRAM,Prunus americana,American plum,20428363,107624649
+NA,4,NA,SAMBU,Sambucus,elderberry,20428363,107624650
+NA,3,NA,AMELA,Amelanchier,serviceberry,20428363,107624651
+NA,3,NA,PRTO80,Prunus tomentosa,Nanking cherry,20428363,107624652
+NA,3,NA,PRVI,Prunus virginiana,chokecherry,20428363,107624653
+NA,3,NA,SAEX,Salix exigua,sandbar willow,20428363,107624654
+NA,3,NA,VIDE,Viburnum dentatum,southern arrowwood,20428363,107624655
+NA,3,NA,VIED,Viburnum edule,highbush cranberrry,20428363,107624656
+NA,3,NA,VIRA,Viburnum rafinesqueanum,Downy Arrowwood,20428363,107624657
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428363,107624658
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428363,107624659
+NA,2,NA,COAM3,Corylus americana,American hazelnut,20428363,107624660
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428363,107624661
+NA,2,NA,EUBU6,Euonymus bungeanum,Winterberry,20428363,107624662
+NA,2,NA,VILE,Viburnum lentago,nannyberry,20428363,107624663
+NA,2,NA,VIOPA2,Viburnum opulus var. americanum,American cranberry viburnum,20428363,107624664
+NA,1,NA,VIAC,Viburnum acerifolium,mapleleaf viburnum,20428363,107624665
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428392,107625676
+NA,11,NA,ACSA2,Acer saccharinum,silver maple,20428392,107625677
+NA,11,NA,PLOC,Platanus occidentalis,American sycamore,20428392,107625678
+NA,11,NA,SALIX,Salix,willow,20428392,107625679
+NA,9,NA,ASTR,Asimina triloba,common pawpaw,20428392,107625680
+NA,8,NA,BENI,Betula nigra,river birch,20428392,107625681
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428392,107625682
+NA,8,NA,FRAM2,Fraxinus americana,white ash,20428392,107625683
+NA,8,NA,FRNI,Fraxinus nigra,black ash,20428392,107625684
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428392,107625685
+NA,8,NA,QUBI,Quercus bicolor,swamp white oak,20428392,107625686
+NA,8,NA,QUMA2,Quercus macrocarpa,bur oak,20428392,107625687
+NA,8,NA,QUPA2,Quercus palustris,pin oak,20428392,107625688
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428392,107625689
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428392,107625690
+NA,6,NA,JUVI,Juniperus virginiana,eastern redcedar,20428392,107625691
+NA,6,NA,MAMA37,Malus mandshurica,Manchurian crabapple,20428392,107625692
+NA,6,NA,MALUS,Malus,Red Splendor Crabapple,20428392,107625693
+NA,6,NA,MALUS,Malus,Midwest Crabapple,20428392,107625694
+NA,6,NA,MASA9,Malus sargentii,sargent crabapple,20428392,107625695
+NA,6,NA,UNKNOWN,unknown scientific name,radiant crabapple,20428392,107625696
+NA,1,NA,VIAC,Viburnum acerifolium,mapleleaf viburnum,20428392,107625697
+NA,6,NA,THOC2,Thuja occidentalis,arborvitae,20428392,107625698
+NA,5,NA,CECA4,Cercis canadensis,eastern redbud,20428392,107625699
+NA,5,NA,COCO6,Corylus cornuta,beaked hazelnut,20428392,107625700
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428392,107625701
+NA,4,NA,PHYSO,Physocarpus,ninebark,20428392,107625702
+NA,4,NA,PRAM,Prunus americana,American plum,20428392,107625703
+NA,4,NA,SAMBU,Sambucus,elderberry,20428392,107625704
+NA,3,NA,AMELA,Amelanchier,serviceberry,20428392,107625705
+NA,3,NA,PRTO80,Prunus tomentosa,Nanking cherry,20428392,107625706
+NA,3,NA,PRVI,Prunus virginiana,chokecherry,20428392,107625707
+NA,3,NA,SAEX,Salix exigua,sandbar willow,20428392,107625708
+NA,3,NA,VIDE,Viburnum dentatum,southern arrowwood,20428392,107625709
+NA,3,NA,VIED,Viburnum edule,highbush cranberrry,20428392,107625710
+NA,3,NA,VIRA,Viburnum rafinesqueanum,Downy Arrowwood,20428392,107625711
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428392,107625712
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428392,107625713
+NA,2,NA,COAM3,Corylus americana,American hazelnut,20428392,107625714
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428392,107625715
+NA,2,NA,EUBU6,Euonymus bungeanum,Winterberry,20428392,107625716
+NA,2,NA,VILE,Viburnum lentago,nannyberry,20428392,107625717
+NA,2,NA,VIOPA2,Viburnum opulus var. americanum,American cranberry viburnum,20428392,107625718
+NA,11,NA,QUBI,Quercus bicolor,swamp white oak,20428393,107625719
+NA,11,NA,QUMA2,Quercus macrocarpa,bur oak,20428393,107625720
+NA,11,NA,QUPA2,Quercus palustris,pin oak,20428393,107625721
+NA,11,NA,SALIX,Salix,willow,20428393,107625722
+NA,8,NA,ACSA2,Acer saccharinum,silver maple,20428393,107625723
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428393,107625724
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428393,107625725
+NA,5,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428393,107625726
+NA,5,NA,THOC2,Thuja occidentalis,arborvitae,20428393,107625727
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428393,107625728
+NA,4,NA,SAMBU,Sambucus,elderberry,20428393,107625729
+NA,4,NA,VILE,Viburnum lentago,nannyberry,20428393,107625730
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428393,107625731
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428393,107625732
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428393,107625733
+NA,2,NA,PHYSO,Physocarpus,ninebark,20428393,107625734
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428393,107625735
+NA,11,NA,BENI,Betula nigra,river birch,20428393,107625736
+NA,11,NA,PLOC,Platanus occidentalis,American sycamore,20428393,107625737
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428394,107625738
+NA,11,NA,ACSA2,Acer saccharinum,silver maple,20428394,107625739
+NA,11,NA,PLOC,Platanus occidentalis,American sycamore,20428394,107625740
+NA,11,NA,SALIX,Salix,willow,20428394,107625741
+NA,9,NA,ASTR,Asimina triloba,common pawpaw,20428394,107625742
+NA,8,NA,BENI,Betula nigra,river birch,20428394,107625743
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428394,107625744
+NA,8,NA,FRAM2,Fraxinus americana,white ash,20428394,107625745
+NA,8,NA,FRNI,Fraxinus nigra,black ash,20428394,107625746
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428394,107625747
+NA,8,NA,QUBI,Quercus bicolor,swamp white oak,20428394,107625748
+NA,8,NA,QUMA2,Quercus macrocarpa,bur oak,20428394,107625749
+NA,8,NA,QUPA2,Quercus palustris,pin oak,20428394,107625750
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428394,107625751
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428394,107625752
+NA,6,NA,JUVI,Juniperus virginiana,eastern redcedar,20428394,107625753
+NA,6,NA,MAMA37,Malus mandshurica,Manchurian crabapple,20428394,107625754
+NA,6,NA,MALUS,Malus,Red Splendor Crabapple,20428394,107625755
+NA,6,NA,MALUS,Malus,Midwest Crabapple,20428394,107625756
+NA,6,NA,MASA9,Malus sargentii,sargent crabapple,20428394,107625757
+NA,6,NA,UNKNOWN,unknown scientific name,radiant crabapple,20428394,107625758
+NA,6,NA,THOC2,Thuja occidentalis,arborvitae,20428394,107625759
+NA,5,NA,CECA4,Cercis canadensis,eastern redbud,20428394,107625760
+NA,5,NA,COCO6,Corylus cornuta,beaked hazelnut,20428394,107625761
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428394,107625762
+NA,4,NA,PHYSO,Physocarpus,ninebark,20428394,107625763
+NA,4,NA,PRAM,Prunus americana,American plum,20428394,107625764
+NA,4,NA,SAMBU,Sambucus,elderberry,20428394,107625765
+NA,3,NA,AMELA,Amelanchier,serviceberry,20428394,107625766
+NA,3,NA,PRTO80,Prunus tomentosa,Nanking cherry,20428394,107625767
+NA,3,NA,PRVI,Prunus virginiana,chokecherry,20428394,107625768
+NA,3,NA,SAEX,Salix exigua,sandbar willow,20428394,107625769
+NA,3,NA,VIDE,Viburnum dentatum,southern arrowwood,20428394,107625770
+NA,3,NA,VIED,Viburnum edule,highbush cranberrry,20428394,107625771
+NA,3,NA,VIRA,Viburnum rafinesqueanum,Downy Arrowwood,20428394,107625772
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428394,107625773
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428394,107625774
+NA,2,NA,COAM3,Corylus americana,American hazelnut,20428394,107625775
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428394,107625776
+NA,2,NA,EUBU6,Euonymus bungeanum,Winterberry,20428394,107625777
+NA,2,NA,VILE,Viburnum lentago,nannyberry,20428394,107625778
+NA,2,NA,VIOPA2,Viburnum opulus var. americanum,American cranberry viburnum,20428394,107625779
+NA,1,NA,VIAC,Viburnum acerifolium,mapleleaf viburnum,20428394,107625780
+NA,3,NA,PRTO80,Prunus tomentosa,Nanking cherry,20428500,107629542
+NA,2,NA,VILE,Viburnum lentago,nannyberry,20428500,107629543
+NA,2,NA,COAM3,Corylus americana,American hazelnut,20428500,107629544
+NA,6,NA,MALUS,Malus,Red Splendor Crabapple,20428500,107629545
+NA,6,NA,UNKNOWN,unknown scientific name,radiant crabapple,20428500,107629546
+NA,5,NA,COCO6,Corylus cornuta,beaked hazelnut,20428500,107629547
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428500,107629548
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428500,107629549
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428500,107629550
+NA,11,NA,SALIX,Salix,willow,20428500,107629551
+NA,4,NA,PRAM,Prunus americana,American plum,20428500,107629552
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428500,107629553
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428500,107629554
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428500,107629555
+NA,6,NA,THOC2,Thuja occidentalis,arborvitae,20428500,107629556
+NA,11,NA,ACSA2,Acer saccharinum,silver maple,20428500,107629557
+NA,3,NA,VIDE,Viburnum dentatum,southern arrowwood,20428500,107629558
+NA,8,NA,QUPA2,Quercus palustris,pin oak,20428500,107629559
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428500,107629560
+NA,8,NA,FRAM2,Fraxinus americana,white ash,20428500,107629561
+NA,6,NA,JUVI,Juniperus virginiana,eastern redcedar,20428500,107629562
+NA,2,NA,VIOPA2,Viburnum opulus var. americanum,American cranberry viburnum,20428500,107629563
+NA,6,NA,MALUS,Malus,Midwest Crabapple,20428500,107629564
+NA,3,NA,VIED,Viburnum edule,highbush cranberrry,20428500,107629565
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428500,107629566
+NA,3,NA,AMELA,Amelanchier,serviceberry,20428500,107629567
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428500,107629568
+NA,2,NA,EUBU6,Euonymus bungeanum,Winterberry,20428500,107629569
+NA,6,NA,MAMA37,Malus mandshurica,Manchurian crabapple,20428500,107629570
+NA,9,NA,ASTR,Asimina triloba,common pawpaw,20428500,107629571
+NA,4,NA,SAMBU,Sambucus,elderberry,20428500,107629572
+NA,5,NA,CECA4,Cercis canadensis,eastern redbud,20428500,107629573
+NA,3,NA,PRVI,Prunus virginiana,chokecherry,20428500,107629574
+NA,8,NA,QUBI,Quercus bicolor,swamp white oak,20428500,107629575
+NA,11,NA,PLOC,Platanus occidentalis,American sycamore,20428500,107629576
+NA,4,NA,PHYSO,Physocarpus,ninebark,20428500,107629577
+NA,8,NA,BENI,Betula nigra,river birch,20428500,107629578
+NA,3,NA,VIRA,Viburnum rafinesqueanum,Downy Arrowwood,20428500,107629579
+NA,8,NA,FRNI,Fraxinus nigra,black ash,20428500,107629580
+NA,1,NA,VIAC,Viburnum acerifolium,mapleleaf viburnum,20428500,107629581
+NA,3,NA,SAEX,Salix exigua,sandbar willow,20428500,107629582
+NA,6,NA,MASA9,Malus sargentii,sargent crabapple,20428500,107629583
+NA,8,NA,QUMA2,Quercus macrocarpa,bur oak,20428500,107629584
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428501,107629585
+NA,11,NA,BENI,Betula nigra,river birch,20428501,107629586
+NA,11,NA,PLOC,Platanus occidentalis,American sycamore,20428501,107629587
+NA,11,NA,QUBI,Quercus bicolor,swamp white oak,20428501,107629588
+NA,11,NA,QUMA2,Quercus macrocarpa,bur oak,20428501,107629589
+NA,11,NA,QUPA2,Quercus palustris,pin oak,20428501,107629590
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428501,107629591
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428501,107629592
+NA,2,NA,EUBU6,Euonymus bungeanum,Winterberry,20428501,107629593
+NA,11,NA,SALIX,Salix,willow,20428501,107629594
+NA,8,NA,ACSA2,Acer saccharinum,silver maple,20428501,107629595
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428501,107629596
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428501,107629597
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428501,107629598
+NA,4,NA,SAMBU,Sambucus,elderberry,20428501,107629599
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428502,107629600
+NA,12,NA,PIST,Pinus strobus,eastern white pine,20428502,107629601
+NA,11,NA,BENI,Betula nigra,river birch,20428502,107629602
+NA,11,NA,QUBI,Quercus bicolor,swamp white oak,20428502,107629603
+NA,10,NA,ACSA2,Acer saccharinum,silver maple,20428502,107629604
+NA,10,NA,JUNI,Juglans nigra,black walnut,20428502,107629605
+NA,10,NA,QUVE,Quercus velutina,black oak,20428502,107629606
+NA,10,NA,TIAM,Tilia americana,American basswood,20428502,107629607
+NA,9,NA,ASTR,Asimina triloba,common pawpaw,20428502,107629608
+NA,9,NA,PIAB,Picea abies,Norway spruce,20428502,107629609
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428502,107629610
+NA,8,NA,FRAM2,Fraxinus americana,white ash,20428502,107629611
+NA,8,NA,FRNI,Fraxinus nigra,black ash,20428502,107629612
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428502,107629613
+NA,10,NA,QUMU,Quercus muehlenbergii,chinkapin oak,20428502,107629614
+NA,10,NA,QURU,Quercus rubra,northern red oak,20428502,107629615
+NA,6,NA,JUCI,Juglans cinerea,Butternut,20428502,107629616
+NA,6,NA,MAMA37,Malus mandshurica,Manchurian crabapple,20428502,107629617
+NA,6,NA,MALUS,Malus,Red Splendor Crabapple,20428502,107629618
+NA,6,NA,MALUS,Malus,Midwest Crabapple,20428502,107629619
+NA,8,NA,ACSA3,Acer saccharum,sugar maple,20428502,107629620
+NA,8,NA,CAOV2,Carya ovata,shagbark hickory,20428502,107629621
+NA,6,NA,PIBA2,Pinus banksiana,jack pine,20428502,107629622
+NA,6,NA,PIGL,Picea glauca,white spruce,20428502,107629623
+NA,6,NA,PIGLD,Picea glauca var. densata,Black Hills spruce,20428502,107629624
+NA,6,NA,PRSE2,Prunus serotina,black cherry,20428502,107629625
+NA,8,NA,JUVI,Juniperus virginiana,eastern redcedar,20428502,107629626
+NA,6,NA,ABCO,Abies concolor,white fir,20428502,107629627
+NA,6,NA,THOC2,Thuja occidentalis,arborvitae,20428502,107629628
+NA,5,NA,CECA4,Cercis canadensis,eastern redbud,20428502,107629629
+NA,5,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428502,107629630
+NA,5,NA,VIPR,Viburnum prunifolium,blackhaw,20428502,107629631
+NA,6,NA,MASA9,Malus sargentii,sargent crabapple,20428502,107629632
+NA,6,NA,UNKNOWN,unknown scientific name,radiant crabapple,20428502,107629633
+NA,4,NA,SAMBU,Sambucus,elderberry,20428502,107629634
+NA,3,NA,AMELA,Amelanchier,serviceberry,20428502,107629635
+NA,3,NA,COCO6,Corylus cornuta,beaked hazelnut,20428502,107629636
+NA,3,NA,PHYSO,Physocarpus,ninebark,20428502,107629637
+NA,6,NA,QUAL,Quercus alba,white oak,20428502,107629638
+NA,6,NA,QUMA2,Quercus macrocarpa,bur oak,20428502,107629639
+NA,3,NA,VIDE,Viburnum dentatum,southern arrowwood,20428502,107629640
+NA,3,NA,VIED,Viburnum edule,highbush cranberrry,20428502,107629641
+NA,3,NA,VILE,Viburnum lentago,nannyberry,20428502,107629642
+NA,3,NA,VIRA,Viburnum rafinesqueanum,Downy Arrowwood,20428502,107629643
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428502,107629644
+NA,4,NA,PRAM,Prunus americana,American plum,20428502,107629645
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428502,107629646
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428502,107629647
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428502,107629648
+NA,1,NA,VIAC,Viburnum acerifolium,mapleleaf viburnum,20428502,107629649
+NA,3,NA,PRTO80,Prunus tomentosa,Nanking cherry,20428502,107629650
+NA,3,NA,PRVI,Prunus virginiana,chokecherry,20428502,107629651
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428503,107629652
+NA,11,NA,BENI,Betula nigra,river birch,20428503,107629653
+NA,11,NA,PLOC,Platanus occidentalis,American sycamore,20428503,107629654
+NA,11,NA,QUBI,Quercus bicolor,swamp white oak,20428503,107629655
+NA,11,NA,QUMA2,Quercus macrocarpa,bur oak,20428503,107629656
+NA,11,NA,QUPA2,Quercus palustris,pin oak,20428503,107629657
+NA,5,NA,THOC2,Thuja occidentalis,arborvitae,20428503,107629658
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428503,107629659
+NA,11,NA,SALIX,Salix,willow,20428503,107629660
+NA,8,NA,ACSA2,Acer saccharinum,silver maple,20428503,107629661
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428503,107629662
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428503,107629663
+NA,5,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428503,107629664
+NA,2,NA,PHYSO,Physocarpus,ninebark,20428503,107629665
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428503,107629666
+NA,4,NA,SAMBU,Sambucus,elderberry,20428503,107629667
+NA,4,NA,VILE,Viburnum lentago,nannyberry,20428503,107629668
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428503,107629669
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428503,107629670
+NA,4,NA,SAMBU,Sambucus,elderberry,20428504,107629671
+NA,9,NA,ASTR,Asimina triloba,common pawpaw,20428504,107629672
+NA,3,NA,PRVI,Prunus virginiana,chokecherry,20428504,107629673
+NA,8,NA,FRAM2,Fraxinus americana,white ash,20428504,107629674
+NA,6,NA,THOC2,Thuja occidentalis,arborvitae,20428504,107629675
+NA,2,NA,COAM2,Cornus amomum,silky dogwood,20428504,107629676
+NA,1,NA,VIAC,Viburnum acerifolium,mapleleaf viburnum,20428504,107629677
+NA,6,NA,MASA9,Malus sargentii,sargent crabapple,20428504,107629678
+NA,8,NA,QUBI,Quercus bicolor,swamp white oak,20428504,107629679
+NA,4,NA,COSES,Cornus sericea ssp. sericea,redosier dogwood,20428504,107629680
+NA,11,NA,ACSA2,Acer saccharinum,silver maple,20428504,107629681
+NA,3,NA,VIED,Viburnum edule,highbush cranberrry,20428504,107629682
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428504,107629683
+NA,15,NA,PODE3,Populus deltoides,eastern cottonwood,20428504,107629684
+NA,3,NA,SAEX,Salix exigua,sandbar willow,20428504,107629685
+NA,6,NA,MAMA37,Malus mandshurica,Manchurian crabapple,20428504,107629686
+NA,8,NA,FRNI,Fraxinus nigra,black ash,20428504,107629687
+NA,5,NA,CECA4,Cercis canadensis,eastern redbud,20428504,107629688
+NA,2,NA,EUBU6,Euonymus bungeanum,Winterberry,20428504,107629689
+NA,6,NA,UNKNOWN,unknown scientific name,radiant crabapple,20428504,107629690
+NA,11,NA,PLOC,Platanus occidentalis,American sycamore,20428504,107629691
+NA,4,NA,PHYSO,Physocarpus,ninebark,20428504,107629692
+NA,3,NA,AMELA,Amelanchier,serviceberry,20428504,107629693
+NA,8,NA,BENI,Betula nigra,river birch,20428504,107629694
+NA,5,NA,COCO6,Corylus cornuta,beaked hazelnut,20428504,107629695
+NA,2,NA,CEPHA,Cephalanthus,buttonbush,20428504,107629696
+NA,3,NA,VIRA,Viburnum rafinesqueanum,Downy Arrowwood,20428504,107629697
+NA,11,NA,SALIX,Salix,willow,20428504,107629698
+NA,8,NA,QUMA2,Quercus macrocarpa,bur oak,20428504,107629699
+NA,2,NA,VILE,Viburnum lentago,nannyberry,20428504,107629700
+NA,6,NA,CRPH,Crataegus phaenopyrum,Washington hawthorn,20428504,107629701
+NA,3,NA,VIDE,Viburnum dentatum,southern arrowwood,20428504,107629702
+NA,2,NA,COAM3,Corylus americana,American hazelnut,20428504,107629703
+NA,6,NA,MALUS,Malus,Red Splendor Crabapple,20428504,107629704
+NA,2,NA,COFOR,Cornus foemina ssp. racemosa,gray dogwood,20428504,107629705
+NA,8,NA,QUPA2,Quercus palustris,pin oak,20428504,107629706
+NA,4,NA,PRAM,Prunus americana,American plum,20428504,107629707
+NA,8,NA,FRPE,Fraxinus pennsylvanica,green ash,20428504,107629708
+NA,6,NA,JUVI,Juniperus virginiana,eastern redcedar,20428504,107629709
+NA,3,NA,PRTO80,Prunus tomentosa,Nanking cherry,20428504,107629710
+NA,8,NA,CEOC,Celtis occidentalis,common hackberry,20428504,107629711
+NA,6,NA,MALUS,Malus,Midwest Crabapple,20428504,107629712
+NA,2,NA,VIOPA2,Viburnum opulus var. americanum,American cranberry viburnum,20428504,107629713

@@ -1,0 +1,4 @@
+"0","model_circumference %>%"
+"0","  ggplot(aes(x=stalk_circ, y=yield)) +"
+"0","  geom_point() +"
+"0","  geom_smooth(method = ""lm"", se=TRUE)"

@@ -1,0 +1,15 @@
+"0","library(gstat)"
+"0","kriged_data = gstat::krige(formula = measure~1, selected_data, grd, model=m)"
+"2","CRS object has comment, which is lost in output"
+"1","[1]"
+"1"," ""+proj=longlat +datum=WGS84 +no_defs"""
+"1","
+"
+"2","CRS object has comment, which is lost in output"
+"1","[1]"
+"1"," ""+proj=longlat +datum=WGS84 +no_defs"""
+"1","
+"
+"2","Error in predict.gstat(g, newdata = newdata, block = block, nsim = nsim,  : 
+  var1 : data item in gstat object and newdata have different coordinate reference systems
+"

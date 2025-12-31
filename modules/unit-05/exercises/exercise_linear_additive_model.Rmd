@@ -1,0 +1,49 @@
+---
+title: "Linear Additive Model"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Introduction
+The linear additive model may seem a very esoteric concept in data science, but it is critical to understand how we make predictions from statistical models, and how we test whether those models significantly explain the variance in our observations. It also underscores an important concept in statistical modelling: the assumption that the different effects that combine to explain an observed value are *additive*.
+
+# Case Study: Barley Yield
+```{r}
+library(tidyverse)
+barley = read.csv("data/barley.csv")
+head(barley)
+```
+
+How would we go about constructing the linear model for this dataset?  First, we need to calculate the population mean for yield.  Remember, we use "barley$yield" to tell R to calculate the mean for the yield column of the barley dataset.  
+
+```{r}
+barley_mu = mean(barley$yield)
+barley_mu
+```
+
+Now we need to calculate the means for the new and old genotypes.  We need to calculate these separately, so we will need to create subsets for the old and new genotypes.  We can do this most intuitively by using the *tidyverse* package and the *filter()* function.  Remember the pipe ("%>%") command feeds the results of one line of code to the next line.  The first line of the code below creates a new dataset, "barley_old", that is initially equal to the barley dataset.
+
+In the second line of code, however, we use the *filter()* function to subset the data.  We tell R to filter the data to those rows where the value in the "gen" column is equal to "old".  Whenever we use the filter function, we need to use two equal signs -- believe me, it is easy to forget and just use one!  
+
+```{r}
+library(tidyverse)
+
+barley_old = barley %>%
+  filter(gen=="old")
+
+```
+
+Now we can calculate the mean across all observations of the old barley genotype.
+
+```{r}
+barley_old_mean = mean(barley_old$yield)
+barley_old_mean
+```
+
+Finally, we can subtract the population mean from the mean yield of the old barley genotype to calculate the old genotype's effect.
+```{r}
+barley_old_effect = barley_old_mean - barley_mu
+barley_old_effect
+```
+

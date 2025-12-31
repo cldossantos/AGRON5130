@@ -1,0 +1,112 @@
+---
+title: "Population statistics"
+subtitle: "AGRON 5130"
+output: pdf_document
+author: "YOUR NAME HERE"
+---
+
+
+# Question 1
+
+Load the shapefile
+"data/elkhart_ia_yield_map/elkhart_ia_yield_map.shp"
+using the *st_read()* function, and assign it to
+the data frame "soybean"
+
+```{r}
+
+
+```
+
+
+# Question 2
+
+Review the structure of the "soybean" data frame using the *head()* function.
+```{r}
+
+```
+
+# Question 3
+
+Plot the yield map using the *plot()* function.  Remember you need to designate the column to plot.
+```{r}
+
+
+```
+
+# Question 4
+
+Create a histogram of the yield using the *hist()* function.
+
+```{r}
+
+```
+
+# Question 5
+
+Calculate the mean yield.
+
+```{r}
+
+```
+
+# Question 6
+Calculate the median yield
+```{r}
+
+```
+
+# Question 7
+
+Calculate the standard deviation for yield.
+```{r}
+
+```
+
+
+
+# Question 8
+
+Load the planting map "data/moline_il_planting_map/moline_il_planting_map.shp".
+```{r}
+
+```
+
+# Question 9
+Inspect the data using the *head()* function.
+```{r}
+
+
+```
+
+# Question 10
+Map the column "AppldRt", which measures the actual planting rate.
+```{r}
+
+```
+
+# Question 11
+Create an histogram for the actual planting rate using the *hist()* function.
+```{r}
+
+```
+
+#Question 12
+What was the mean actual planting rate?
+```{r}
+
+```
+
+# Question 13
+What was the minimum actual rate planted?
+```{r}
+
+```
+
+# Question 14
+The standard deviation can be used to gauge the consistency of the planting rate.  What was the standard deviation of the actual planting rate?
+```{r}
+
+```
+
+

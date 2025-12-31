@@ -1,0 +1,25 @@
+{
+    "id": "657CAA6A",
+    "path": "/cloud/project/exercises/exercise_confidence_interval.Rmd",
+    "project_path": "exercises/exercise_confidence_interval.Rmd",
+    "type": "r_markdown",
+    "hash": "1564258758",
+    "contents": "",
+    "dirty": false,
+    "created": 1611676735679.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "chunk_output_type": "inline",
+        "cursorPosition": "119,33",
+        "scrollLine": "83"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1611676846,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1611676846283,
+    "read_only": false,
+    "read_only_alternatives": []
+}

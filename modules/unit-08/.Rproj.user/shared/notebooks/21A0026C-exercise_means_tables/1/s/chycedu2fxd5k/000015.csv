@@ -1,0 +1,17 @@
+"0","canola_means_table = gt(canola_table_w_cultivar_column) %>%"
+"0","  fmt_number(columns = c(yield), decimals = 1) %>%"
+"0","  cols_width(everything() ~ ""200px"")  %>%"
+"0","  cols_align(align = ""left"", columns = c(trt)) %>%"
+"0","  cols_align(align = ""center"", columns = c(yield, groups)) %>%"
+"0","  cols_label(trt = ""Treatment"","
+"0","             yield = html(""Yield (bu acre<sup>-1</sup>)""),"
+"0","             groups = ""LSD Groupings"") "
+"1","[1m[33mError[39m in `resolve_cols_i()`:[22m
+[33m![39m Can't subset columns that don't exist.
+[31m✖[39m Column `trt` doesn't exist.
+Backtrace:
+[90m  1. [39m... %>% ...
+[90m  8. [39m[1mgt[22m::cols_align(., align = ""left"", columns = c(trt))
+[90m  9. [39mgt:::resolve_cols_c(...)
+[90m 10. [39m[1m[94mgt:::resolve_cols_i([39m[22m...[1m[94m)[39m[22m
+"

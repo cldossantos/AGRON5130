@@ -1,0 +1,3 @@
+"0","diff_N = length(soybean_diff$diff)"
+"0",""
+"0","diff_se = diff_sd / sqrt(diff_N)"

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="lib/jquery-1.12.4/jquery.min.js"></script>
+<link href="lib/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="lib/leaflet-1.3.1/leaflet.js"></script>
+<link href="lib/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="lib/proj4-2.6.2/proj4.min.js"></script>
+<script src="lib/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="lib/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="lib/leaflet-binding-2.0.4.1/leaflet.js"></script>
+<script src="lib/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="lib/leaflet-providers-plugin-2.0.4.1/leaflet-providers-plugin.js"></script>
+
+</head>
+<body>
+<!-- htmlwidget-container-begin -->
+<div id="htmlwidget-630fbde5e3a5a3a68a33" style="width:504px;height:504px;" class="leaflet html-widget"></div>
+<!-- htmlwidget-container-end -->
+<script type="application/json" data-for="htmlwidget-630fbde5e3a5a3a68a33">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldImagery",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addRasterImage","args":["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAR0AAADkCAYAAAClgPAeAAAFKklEQVR4nO3dUXLaQBBFUcaVjbFyL035SEgRCmMw0tN065wvp8oBJULXPULC4/TXsnwuJzYxxnnsvQ0wiyE2wNauf/B+7LkhwDFcDzeiA0RcwiM6QNSHk5xAkkkHiPo4nbylC+SYdICof9Ex7QAJ/006wgNs7cvIuFIZWNsY5/HlOR1TD7CFhyeShQdY29NRsdwC3vVweXXvm7fcGOAYXrpOR3iAd/04IpZbwKteWl7d+8trbgxwDG/dBiE8wKtWi4blFvCdt5ZX9x5srccC+tokFKYe4J5VJ53bB97icYH6Nvs8HeEB7omEwXILOJ02XF7de6LE8wDzi8fA1APHFZt0bp80/ZzAPHYNgKkHjmWXSed2A/Z8fiBvmoPe1AP97T7pXDP1wDFME53TSXjgCKY9yC23oJ+plle3TD3Q07TROZ2EBzoqc1BbbkF9Uy+vbpl6oIeSB7KpB2oqNelcM/VAXeUPXlMP1DHGeZSPzoX4wPxaRedCfGBeLaNzIT4wn7Inkp/hZDPM6RAHpqkH/nj2h/FWx0zr5dVXBIijWHPaX+O4uWzP4aJza8uiz7ItHEPylMJPXqui04BIHdeM5ywfvR6vt3e6Dd9b8kCe8YVTRefgdn9dtP7HvarzC7mr7gdoR3bYX4LTlzDNxc64Ijy9ic8c2l4c+BNelLA90bkhPLAtB9gDllt9+GEyDzviCeJTn+jMw454gfjUJDhzsTN+QHxqEZ252BlvEJ/5Cc587JAViM+cBGdOdsrKBGh/YjM3OydAiLYnNAAAAAAA0IQz/vAm704+b4zz+LX3RkBVYvMzogMvEpv3iA48SWzW4ZMD4QmCsx6TDtwxW2Qe3eYx27Z+R3TgVO/AvTbGeVTafm+Zc3iVDtjqxjgP53SAKNEBokQHiBIdIEp0gCjRAaJEB4gSHSBKdIAo0QGi3AYBrObRLSWXm1ZFhxK2uD/KL+jbh/90SnBTZg9u+ATiRAeIEh0gSnSAKNEBokQHiBIdIEp0gCjRAaJEB4gSHSBKdIAo0QGiRAeIEh0gSnSAKNEBokQHiBIdIEp0gCjRAaJEB4gSHSBKdIAo0QGiRAeIEh0gSnSAKNEBokQHiBIdIEp0gCjRAaJEB4gSHSBKdIAo0QGiRAeIEh0gSnSAqF97bwBsYYzzuHy9LJ/LntvC/0w6tHMdnHt/Zl+iA0SJDu1ZXs1FdIAo0QGiRAeIEh1a8U7V/FynAwV0uu7IpANEiQ4QJTowuW7nqUQHiBIdIEp0gCjRAaJEB4hycSBMrvrFgLdMOkCU6ABRokMr3ZYiHYkOJXS7KvfIRAeIEh0gSnSAiMsSWXRoxbmf+YkOECU6QJToAFGiA0SJDm04iVyD6NDCo+CI0VxEh/JEpRafp0Mrbvicn+hQ2mXKEZs6LK8oS3BqMulQTqff631EJh1KEZz6RIcyvEvVg+hQkimnLtGhHMGpTXQoRXDqEx3KEJweRIcSBKcP0WF6gtOL6DC1ZflcxjgPb5f3ITpMTWz6ER0gSnSAKNEBokQHiBIdIEp0gCjRAaJEB4gSHSBKdIAo0QGiRAeIEh0gSnSAKNEBokQHiBIdIEp0gCjRAaJEB4gSHSBKdIAo0QGiRAeIEh0gSnSAKNEBokQHiBIdIEp0gCjRAaJEB4gSHSBKdIAo0QGiRAeIEh0gSnSAKNEBokQHiBIdIEp0gCjRAaJEhxKW5XPZextYh+gAUaIDRIkOsLkxzuPytegAUaIDRIkOEDW+/xYgqePlAdfndH4D9tcvUBHKMN0AAAAASUVORK5CYII=",[[43.993616,-92.797675],[43.9863488300859,-92.7885910376074]],1,null,"stars","stars"]}],"limits":{"lat":[43.9863488300859,43.993616],"lng":[-92.797675,-92.7885910376074]}},"evals":[],"jsHooks":[]}</script>
+<!-- htmlwidget-sizing-policy-base64 PHNjcmlwdCB0eXBlPSJhcHBsaWNhdGlvbi9odG1sd2lkZ2V0LXNpemluZyIgZGF0YS1mb3I9Imh0bWx3aWRnZXQtNjMwZmJkZTVlM2E1YTNhNjhhMzMiPnsidmlld2VyIjp7IndpZHRoIjoiMTAwJSIsImhlaWdodCI6NDAwLCJwYWRkaW5nIjowLCJmaWxsIjp0cnVlfSwiYnJvd3NlciI6eyJ3aWR0aCI6IjEwMCUiLCJoZWlnaHQiOjQwMCwicGFkZGluZyI6MCwiZmlsbCI6dHJ1ZX19PC9zY3JpcHQ+ -->
+</body>
+</html>

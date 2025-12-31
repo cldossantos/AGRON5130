@@ -1,0 +1,2 @@
+"0","canola = read.csv(""data/canola_gd.csv"")"
+"0","head(canola)"

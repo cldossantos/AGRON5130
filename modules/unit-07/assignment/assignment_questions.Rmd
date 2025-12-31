@@ -1,0 +1,93 @@
+--- 
+title: Unit 7 Homework
+output: html_document
+---
+
+
+
+# Question 1a (1 pt)
+Fifteen canola entries were compared in a field trial in Mannetoba.  The experimental design was a randomized complete block design with three blocks.
+
+Read in the data from "data/canola_data.csv" and print the first six rows using the *head()* function
+
+```{r}
+```
+
+# Question 1b (2 pt)
+Run the Analysis of Variance for entry and print the results using the *summary()* function.
+```{r}
+
+```
+
+# Question 1c (1 pt)
+What can you conclude about the effect of entry on canola yield?  (Don't read too much into this!  What does the p-value tell you?)
+
+
+# Question 2 (1 pt)
+Five barley genotypes were evaluated for their response to three levels of drought stress in an arid environment.  The experimenal design was a randomzed complete block with the two factors (genotype and drought stress).
+
+Load the data from "data/barley_drought.csv" and print the top six rows using the head() command.
+```{r}
+
+
+```
+
+# Question 2b (2 pt)
+Conduct the Analysis of Variance and print the results using the *summary()* function.
+```{r}
+
+
+```
+
+# Question 2c (1pt)
+What does you initial look tell you about the effects of drought and genotype?  (Are they significant as main effects?  Is their interaction significant?)
+
+# Question 2d (2pt)
+Was every genotype affected by drought stress?  Test the drought response at each level of genotype and answer the question.
+```{r}
+library(tidyverse)
+library(broom)
+
+```
+
+
+# Question 3a (1pt)
+The effects of irrigation and tillage on soil nitrite (NO2) emission was studied in a split-plot design, with irrigation as the main factor and tillage as the sub-factor.  The data are loaded for you and saved to the data.frame named nitrite.  Print the top six rows of the dataset with head(). 
+```{r}
+nitrite = read.csv("data/irrigation_tillage_no2.csv")
+
+```
+
+# Question 3b (2 pt) 
+Conduct an analysis of variance, keeping in mind this is a split-plot trial, and print the results using the summary() function.
+```{r}
+
+
+```
+
+# Question 3c (2 pt)
+Complete the code below to produce an interaction plot for tillage and irrgation. What does this tell you about their interaction?
+```{r}
+nitrite %>%
+  group_by() %>%
+  summarise(NO2 = ) %>%
+  ungroup() %>%
+  ggplot(aes(x=, y = , group = )) +
+  geom_line(aes(color= ))
+
+```
+
+# Extra Credit -- this was a big lesson (2pts)
+Create a randomized complete block design with 3 replicates and 3 potato varieties: "Big", "Head", and "Todd".  Don't eat them raw -- they're bittersweet.  Use seed_no=1993.
+
+Report the treatment assignments (not the plot map).
+
+```{r}
+library(agricolae)
+varieties = c("Big", "Head", "Todd")
+reps = 3
+seed_no =1993
+
+```
+
+

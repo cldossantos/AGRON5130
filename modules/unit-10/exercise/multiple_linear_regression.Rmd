@@ -1,0 +1,73 @@
+---
+title: multiple linear regression
+output: html_document
+---
+
+# Introduction
+In this exercise, we will learn how to fit a multiple linear regression model to data.
+
+# Case Study: Country Corn Yields
+We will use the same dataset as in the lesson.  This time, we will model corn yield as a function of precipitation (ppt), water holding capacity (whc), sand, silt, clay, and organic matter (om) in Iowa and Illinois.  
+
+```{r}
+library(tidyverse)
+county_corn_data = read.csv("data/county_environments.csv")
+head(county_corn_data)
+
+ia_and_il_corn = county_corn_data %>%
+  filter(state %in% c("IL", "IA"))
+
+head(ia_and_il_corn)
+
+```
+
+# Fitting the Model
+Our model statement is the same as that used for single linear regression, except with multiple predictor variables.
+```{r}
+ia_and_illinois_model = lm(corn ~ ppt + whc + sand + silt + clay + om, data = ia_and_il_corn)
+```
+
+# Inspecting the Model
+We will again use the *broom()* package and the *tidy()* function to inspect the model coefficients.
+```{r}
+library(broom)
+tidy(ia_and_illinois_model)
+```
+
+We notice that three of our predictor variables (sand, silt, clay) have p-values greater than 0.05.  What is the overall performance of the model?  Let's use the *glance()* function to find out.
+```{r}
+glance(ia_and_illinois_model)
+```
+
+The model has an r.squared of about 0.52 and is highly significant.  In the next exercise. we will look more closely at our predictor variables and whether all should be included in our final model. 
+
+
+
+# Practice: Thompson Corn Data
+For the first practice, we will use a mult-year study of corn yield in several midwestern states. The study was conducted almost a century ago, so don't be surprised by the yields!  Older data aside, this dataset is a good candidate for multiple linear regression.
+
+To prevent this exercise from getting out of hand, I have reduced the predictor variables to four.  In this practice, you will build the initial model and evaluate its coefficients and fit.
+
+The predictor variables are total June precipitation in inches (rain6), total July precipitation (rain7), mean june temperature (temp6), and mean July temperature (June 7).
+
+Build the initial model of yield as a function of rain6, rain7, temp6, and temp7.
+```{r}
+thompson_corn = read.csv("data/thompson_corn.csv")
+head(thompson_corn)
+
+
+
+```
+
+Use the tidy() function to review the coefficient values.  Your estimates for rain7 and temp7 should be about 4.00 and 2.31.  Which coefficients are significant?  Insignificant?  
+```{r}
+library(broom)
+
+
+```
+
+Examine the model fit using the glance() function.  You should observe an r.squared of 0.55.  How well does the model fit this data?
+```{r}
+
+```
+

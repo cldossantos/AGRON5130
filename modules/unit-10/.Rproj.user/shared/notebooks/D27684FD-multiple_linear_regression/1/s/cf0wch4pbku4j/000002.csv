@@ -1,0 +1,2 @@
+"0","thompson_corn = read.csv(""data/thompson_corn.csv"")"
+"0","head(thompson_corn)"

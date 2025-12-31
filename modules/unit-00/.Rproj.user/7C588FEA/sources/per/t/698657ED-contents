@@ -1,0 +1,98 @@
+---
+title: "Introduction to R programming"
+subtitle: "AGRON 5130"
+author: "YOUR NAME HERE"
+output: pdf_document
+---
+
+## Introduction
+
+My main objectives with this first assignment are to get to know you a
+little better, which will help me shape the class to some extent, and
+verify that your R and R Studio installations are working properly.
+Submit a knitted PDF generated from an R Markdown file to Canvas.
+
+## Question 1
+
+Write a short paragraph introducing yourself. Include:
+
+-   Your background (education or work)
+-   Why you are taking this course
+-   One way you expect to use data or statistics in your professional
+    work
+
+You can replace this text with your answer
+
+## Question 2
+
+Write valid R commands that will conduct the following mathematical
+operations:
+
+a.  $2 + 2$
+
+```{r}
+
+```
+
+b.  $3 \times 9$
+
+```{r}
+
+```
+
+c.  $\sqrt{16}$
+
+```{r}
+
+```
+
+## Question 3
+
+Create a vector named "my_vector" and store the values 2, 4, 6, and 8 in
+this vector.
+
+```{r}
+
+```
+
+## Question 4
+
+Now, let's find out how many elements this vector has. Use the function
+"length" to count the number of values in the object "my_vector".
+
+```{r}
+
+```
+
+## Question 5
+
+Multiply all elements in the object "my_vector" by 2
+
+```{r}
+
+```
+
+## Question 6
+
+Multiply the first element in the object "my_vector" by 1, the second
+element by 2, the third element by 3, and the fourth element by 4.
+\small Hint: You may want to create another vector.
+
+```{r}
+
+```
+
+## Question 7
+
+In your own words, explain at a high level what the following piece of
+code does. You do not need to explain each line.
+
+```{r, eval=FALSE}
+for (i in 1:5) {
+  
+print(i)
+  
+}
+```
+
+You can replace this text with your answer

@@ -1,0 +1,3 @@
+"0","variables_of_interest = ia_and_il_corn %>%"
+"0","  select(ppt, whc, sand, silt, clay, om)"
+"0",""

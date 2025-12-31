@@ -1,0 +1,2 @@
+"0","n_source_timing = read.csv(""data/corn_nitrogen_source_timing.csv"")"
+"0","head(n_source_timing)"

@@ -1,0 +1,4 @@
+"0","soybean_group %>%"
+"0","  ggplot(aes(x=tillage, y=yield, group=fungicide)) +"
+"0","  geom_line(aes(color=fungicide))"
+"0",""

@@ -1,0 +1,17 @@
+"block","irrigation","tillage","NO2"
+"B1","sprinkler","conventional",0.884524362124479
+"B1","sprinkler","notill",0.79071637513961
+"B1","flood","conventional",2.00500877351
+"B1","flood","notill",1.90881176962352
+"B2","sprinkler","conventional",0.587483938465714
+"B2","sprinkler","notill",1.04404465306485
+"B2","flood","conventional",2.30096083544144
+"B2","flood","notill",1.71396171046016
+"B3","sprinkler","conventional",0.649588111244822
+"B3","sprinkler","notill",0.811411778202822
+"B3","flood","conventional",2.34121544008986
+"B3","flood","notill",1.74960422215901
+"B4","sprinkler","conventional",0.663654411983105
+"B4","sprinkler","notill",1.10037834510755
+"B4","flood","conventional",2.35969298139726
+"B4","flood","notill",1.80968879979051

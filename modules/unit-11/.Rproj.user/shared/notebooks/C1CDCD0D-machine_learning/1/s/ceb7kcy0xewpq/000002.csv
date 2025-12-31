@@ -1,0 +1,4 @@
+"0","fit = ctree(classes ~., data=x,"
+"0","            controls = ctree_control(maxdepth = 3))"
+"0",""
+"0","plot(fit)"

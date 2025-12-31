@@ -1,0 +1,153 @@
+---
+title: exercise -- shapefiles
+output: html_document
+---
+
+# Introduction
+If you are downloading data files from your tractor, applicator, or combine, they are probably in shape file format.  Although I will refer to shape file in the singular, a shape file is typically bundled with multiple other files, with the same file name but different extensions: .dbf, .prj, and .shx.  Of these three, the .prj is perhaps the most interesting, as it can be opened to view the projection used to georeference the records in the shape file.
+
+# Case Study
+We will work with another soil test shapefile from Minnesota.
+```{r}
+library(tidyverse)
+library(sf)
+
+soil_test_data = st_read("data/Burnholdt_grid_sample.shp")
+head(soil_test_data)
+```
+
+It is always important to inspect datasets before we analyze them.  A particularly important objective in inspecting a shape file dataset is to see what type of *geometry* it includes: POINT, POLYGON, etc.  Some equipment will use POINT geometry -- ie a single georeference to indicate where the center of the equipment was at the time of measure.  Others will use polygons to represent the width and length of the equipment.  Personally, I find the latter format to be overkill, but I have come across it.  (If you ever run into issues with that format, please feel free to contact me.)
+
+We can confirm our measures here are referenced with POINT geometry.
+
+In this exercise, we want to look at soil organic matter (attribute = Om in this file.), so let's isolate those measures.  We can do so using the *filter()* function
+
+```{r}
+single_attribute_data = soil_test_data %>%
+  filter(attribute=="Om")
+
+```
+
+
+We are now ready to create our first map of the data.  We will use that wonderful mapping application, leaflet.  The code below consists of four lines.
+
+1) "single_attribute_data" tells R which dataset we are going to use to build the map.
+2) "leaflet()" tells R to use that app to build the map
+3) "addCircleMarkers" tells R to draw point geometries.  There are many other arguments we will add later to tell R what colors to use, marker size, and what value (if any) to show when the user clicks on a marker.
+4) "addProviderTiles" tells R what background to use.  This one (my favorite) uses satellite imagery.
+
+
+```{r}
+library(leaflet)
+
+single_attribute_data %>%   # starts with om dataset
+  leaflet() %>%    # starts leaflet
+  addCircleMarkers() %>%    # adds markers as points
+  addProviderTiles(provider = providers$Esri.WorldImagery)
+```
+
+Well, that's cool, but what do the points mean?  Let's add some color to this.  To do this, we need to tie the color of the circles to the organic matter level.  We need to create a palette, which we can do with the *colorBin()* function.
+
+My favorite pallette is the red-yellow-green palette we are used to in yield maps.  We will load the *RColorBrewer* package, which defines both individual colors and palettes.  We will then tell R in the colorBin command to use this palette.
+
+```{r}
+library(RColorBrewer)
+palette_om = colorBin(palette = "RdYlGn", single_attribute_data$measure)
+```
+
+We can then color code our points by adding the *fillColor* argument to our plot code. 
+
+```{r}
+library(leaflet)
+
+single_attribute_data %>%   # starts with om dataset
+  leaflet() %>%    # starts leaflet
+  addCircleMarkers(
+    fillColor = ~palette_om(measure)
+  ) %>%    # adds markers as points
+  addProviderTiles(provider = providers$Esri.WorldImagery)
+```
+
+Let's make a few more tweaks.  First, the colors are so transparent the wash out, so let's increase their opacity using the argument of that name.
+```{r}
+single_attribute_data %>%   # starts with om dataset
+  leaflet() %>%    # starts leaflet
+  addCircleMarkers(
+    fillColor = ~palette_om(measure),
+    fillOpacity = 0.8
+  ) %>%    # adds markers as points
+  addProviderTiles(provider = providers$Esri.WorldImagery)
+```
+
+Next, the blue border detracts from the cells.  We can set its weight to zero so it disappears.
+
+```{r}
+single_attribute_data %>%   # starts with om dataset
+  leaflet() %>%    # starts leaflet
+  addCircleMarkers(
+    fillColor = ~palette_om(measure),
+    fillOpacity = 0.8,
+    weight = 0
+  ) %>%    # adds markers as points
+  addProviderTiles(provider = providers$Esri.WorldImagery)
+```
+
+Let's make the points a little smaller using the *radius* argument, so they don't so overwhelm the field.
+```{r}
+single_attribute_data %>%   # starts with om dataset
+  leaflet() %>%    # starts leaflet
+  addCircleMarkers(
+    fillColor = ~palette_om(measure),
+    fillOpacity = 0.8,
+    weight = 0,
+    radius=6
+  ) %>%    # adds markers as points
+  addProviderTiles(provider = providers$Esri.WorldImagery)
+```
+
+Finally, let's add a legend.  We provide a minimum of two arguments to it.  First *values* tells it that the legend will correspond to the values of measure in our dataset.  Second, *pal =* tells R to use the palette we developed for organic matter.  
+
+```{r}
+single_attribute_data %>%   # starts with om dataset
+  leaflet() %>%    # starts leaflet
+  addCircleMarkers(
+    fillColor = ~palette_om(measure),
+    fillOpacity = 0.8,
+    weight = 0,
+    radius=6
+  ) %>%    # adds markers as points
+  addProviderTiles(provider = providers$Esri.WorldImagery) %>%
+  addLegend(values = ~measure,
+            pal = palette_om)
+            
+```
+
+There are thousands of other ways to modify this plot, but this little bit should get you far!
+
+
+
+# Practice
+Using the code above, plot other soil variable.  Run the code below to see a list of the many different attributes you can examine. 
+```{r}
+unique(soil_test_data$attribute)
+```
+
+Experiment with plugging and playing with the above code. (There is *never* shame in re-using code!!!).  Play with the settings for fillOpacity, weight, and radius until they are to your liking.  Also, try some different palettes: "RdBu", "PRgn", or others (list available at https://www.r-graph-gallery.com/38-rcolorbrewers-palettes.html).
+
+```{r}
+
+palette_soil = colorBin(palette = "RdYlGn", single_attribute_data$measure)
+
+single_attribute_data %>%   # starts with om dataset
+  leaflet() %>%    # starts leaflet
+  addCircleMarkers(
+    fillColor = ~palette_soil(measure),
+    fillOpacity = 0.8,
+    weight = 0,
+    radius=6
+  ) %>%    # adds markers as points
+  addProviderTiles(provider = providers$Esri.WorldImagery) %>%
+  addLegend(values = ~measure,
+            pal = palette_soil)
+```
+

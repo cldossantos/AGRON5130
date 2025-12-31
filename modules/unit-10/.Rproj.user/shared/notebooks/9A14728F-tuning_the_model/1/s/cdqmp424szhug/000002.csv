@@ -1,0 +1,1 @@
+"0","thompsom_model_wo_temp6 =  lm(yield ~ rain6 + rain7 + temp7, thompson_corn)"

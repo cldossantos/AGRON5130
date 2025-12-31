@@ -1,0 +1,3 @@
+"0","library(multcomp)"
+"0",""
+"0","bd_vs_others = glht(canola_contrast_model, linfct = K_bd_vs_others)"

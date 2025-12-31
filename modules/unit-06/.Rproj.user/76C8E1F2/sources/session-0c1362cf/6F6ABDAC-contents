@@ -1,0 +1,123 @@
+---
+title: "Treatment Means"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Introduction
+The next step in a multiple treatment trial is to summarise the treatment means.  Below you will learn how to calculate means and display them using a bar plot.
+
+# Case Study: Barley 
+This is the same dataset we used in the previous exercise.
+```{r}
+library(tidyverse)
+barley_data = read.csv("data/barley_crd.csv")
+head(barley_data)
+```
+
+
+# Calculating Treatment Means
+We can create a new dataset, containing treatment means, using another couple of functions from the *tidyverse* package: *group_by()* and *summarise()*.  We will also use the "pipe", %>%, to feed the results of one line to the next.
+
+We start with "barley %>%", which feeds the barley dataset to the next line.  There, we use the group_by() command to tell R we want to group the observations by gen (genetics).  This means any summary calculations on the data will be done separately by level for the gen factor.  Finally, we tell the data which variables to summarise.  We use the summarise command to tell R to create a new variable, yield_mean, which is equal to the mean of observed yield values for each level of gen.
+
+```{r}
+barley_means = barley_data %>%
+  group_by(gen) %>%
+  summarise(yield_mean=mean(yield))
+
+barley_means
+```
+
+We can see now that our values range from 4.20 to 49.33.  Since the original data only had two decimal places, we should probably round these results.  We can do that quickly using the *mutate()* and *round()* commands to our code.  mutate tells R to create a new column.  The round() function takes two arguments: the variable to round, and the number of decimal places to round to.  In this case, we will create a new variable with the same name, yield_mean, as the old variable.  The value of the new yield mean will be equal to the old yild mean, rounded to two decimal places.
+
+```{r}
+barley_means = barley_data %>%
+  group_by(gen) %>%
+  summarise(yield_mean=mean(yield)) %>%
+  mutate(yield_mean = round(yield_mean, 2))
+
+barley_means
+```
+
+# Plotting the Means
+We can use the *ggplot()* function in R to plot our results.  The first line, the ggplot() statement, uses "data = " to define the data frame, and the aes() argument to declare the aesthetics to be plotted.  Aesthetics are any information in the chart whose position or appearance are dependent on variables from the dataset.  In other words, anything in the chart that might change with the value of an observation.  In this case, the x-position of our data to be plotted will be defined by gen. The y-position will be defined by yield.
+
+The second line defines a "geom", the type of geometry that will be used to represent the data.  In this case, we will use geom_bar() to contstruct a bar plot.  The final thing we need to do is to tell R whether the height of each bar should be determined by the number of observations, another statistical summary, or the value for y we declared in the initial ggplot statement.  In this case, we want to use the value we declared above, yield_mean, to determine the top of the bars.  The stats="identity" tells R to do just that.
+
+```{r}
+ggplot(data=barley_means, aes(x=gen, y=yield_mean)) +
+  geom_bar(stat="identity")
+```
+
+There are all sorts of things we can do in R with our plots.  Say we wanted to change the labels on the x or y axes.  We just add those using the "labs()" option:
+
+```{r}
+ggplot(data=barley_means, aes(x=gen, y=yield_mean)) +
+  geom_bar(stat="identity") +
+  labs(x = "Genotype", y = "Yield Mean")
+```
+
+We can change the bar color by adding the *fill()* command to geom_bar.
+
+```{r}
+ggplot(data=barley_means, aes(x=gen, y=yield_mean)) +
+  geom_bar(stat="identity", fill="darkgreen") +
+  labs(x = "Genotype", y = "Yield Mean") 
+
+```
+
+
+We can include the actual value above each bar by adding a second geometry, geom_text.  The aes() argument to geom_text tells it what variable to use as the label (it also tells it where to place the label).  In addition to the aes() argument, "vjust=-0.03" tells R to adjust the label upward a few points so it doesn't touch the bar.  The font size is increased with "size = 3.5".
+```{r}
+
+ggplot(data=barley_means, aes(x=gen, y=yield_mean)) +
+  geom_bar(stat="identity", fill="darkgreen") +
+  labs(x = "Genotype", y = "Yield Mean") +
+  geom_text(aes(label=yield_mean), vjust=-0.3, size=3.5)
+
+```
+
+
+# Practice: Beet Data
+
+```{r}
+beet_data = read.csv("data/beets_crd.csv")
+head(beet_data)
+```
+
+
+Calculate the yield mean by fertilizer level by completing the code below. 
+```{r}
+beet_means = beet_data %>%
+  group_by() %>%
+  summarise
+```
+
+
+Create a simple bar plot using ggplot() and geom_bar().
+```{r}
+ggplot(data=beet_means, aes(x= , y= )) +
+  geom_bar(stat = )
+```
+
+# Practice: Potato Data
+
+```{r}
+potato_data = read.csv("data/potato_crd.csv")
+head(potato_data)
+
+```
+
+Calculate the mean infection (inf) by treatment (trt) and assign it to the data frame "potato_means".
+```{r}
+
+```
+
+Use the potato_means data frame to create a simple bar plot.
+```{r}
+
+```
+
+

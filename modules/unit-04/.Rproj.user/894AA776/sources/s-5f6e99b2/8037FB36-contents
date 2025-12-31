@@ -1,0 +1,56 @@
+---
+title: "Unit 4 Assignment"
+output: html_notebook
+---
+
+
+# Question 1a (1 pt) 
+Load the dataset "data/cattle_wormer.csv" and examine its top six rows using the head() command.  Calves were divided into two populations, each treated with a different insecticide.  The cattle were paired according to weight, making this a paired experimental design.  Cattle were weighed 133 days after birth.
+```{r}
+
+```
+
+# Question 1b (2 pt)
+Use a t-test to test whether the difference in cattle weight between the two populations is equal to zero.
+```{r}
+
+```
+
+# Question 1c (2 pt)
+What does the p-value tell us about the probability of observing a difference of this amount by chance?
+
+
+# Question 2a (3 pt)
+Create a plot plan for a paired experimental design, with 5 replications, that compares two flea controls, "Itchy" and "Scratchy".  use the *design.rcbd()* function from the agricolae package.  Show the "book" view of the plot plan.
+```{r}
+library(agricolae)
+
+```
+
+# Question 2b (1 pt)
+Show the plot map using the "sketch" view.
+```{r}
+
+```
+
+# Question 3a (1pt)
+Load and examine the "data/tobacco_radiation.csv" dataset.  Tobacco seeds were separated into two populations.  One population was untreated, while the other received a high dose of radiation.  Tobacco seeds were then planted in paired field plots.  Groups of 20 plants were measured, and their combinded heights (in cm) recorded.
+```{r}
+
+```
+
+#Question 3b (2pt)
+Test whether the height difference between the irradiated and non-irradiated populations is equal to zero
+```{r}
+
+```
+
+# Question 3c (1 pt)
+Is the difference significantly different from zero?
+
+# Question 3d (2 pt)
+Convert the data to "wide format" by using the *spread()* function of the "tidyverse" package to create individual columns for each treatment. 
+```{r}
+
+```
+

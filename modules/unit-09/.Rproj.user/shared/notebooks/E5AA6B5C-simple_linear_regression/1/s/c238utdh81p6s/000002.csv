@@ -1,0 +1,1 @@
+"0","plot(model_yield_total_leaves, which=1)  # the ""which=1"" argument tells R to plot the residuals"

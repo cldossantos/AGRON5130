@@ -1,0 +1,5 @@
+"0",""
+"0","wide_again_df = long_df %>%"
+"0","  spread(Treatment, Value)"
+"0",""
+"0","wide_again_df"

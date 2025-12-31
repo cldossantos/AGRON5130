@@ -1,0 +1,95 @@
+fragvol.l,fragvol.r,fragvol.h,fragkind,fragsize.l,fragsize.r,fragsize.h,fragshp,fraground,fraghard,chkey,chfragskey
+0,3,6,,2,4,5,,,,59965255,103245604
+0,3,6,,5,40,75,,,,59965255,103245605
+0,3,6,,2,4,5,,,,59965256,103245606
+0,3,6,,5,40,75,,,,59965256,103245607
+0,3,6,,2,4,5,,,,59965257,103245608
+0,3,6,,5,40,75,,,,59965257,103245609
+0,3,6,,2,4,5,,,,59965258,103245610
+0,3,6,,5,40,75,,,,59965258,103245611
+0,2,3,,2,4,5,,,,59965620,103246099
+0,2,3,,2,4,5,,,,59965621,103246100
+0,2,3,,2,4,5,,,,59965622,103246101
+0,2,3,,2,4,5,,,,59965623,103246102
+0,3,6,,2,4,5,,,,59965628,103246103
+0,3,6,,5,40,75,,,,59965628,103246104
+0,4,7,,2,4,5,,,,59966070,103246419
+0,4,7,,2,4,5,,,,59966071,103246420
+3,6,10,,2,4,5,,,,59966072,103246421
+3,6,10,,5,40,75,,,,59966072,103246422
+0,1,2,,75,162,250,,,,59966072,103246423
+0,5,27,,2,4,5,,,,59966073,103246424
+0,4,27,,5,40,75,,,,59966073,103246425
+0,3,7,,75,162,250,,,,59966073,103246426
+0,2,3,,250,375,500,,,,59966073,103246427
+0,3,7,,75,162,250,,,,59966074,103246428
+0,2,3,,250,375,500,,,,59966074,103246429
+0,5,27,,2,4,5,,,,59966074,103246430
+0,4,27,,5,40,75,,,,59966074,103246431
+0,1,5,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966075,103246432
+0,15,35,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966075,103246433
+0,4,10,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966075,103246434
+0,0,0,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966076,103246435
+0,0,3,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966076,103246436
+0,5,12,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966076,103246437
+0,2,10,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966077,103246438
+0,2,10,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966078,103246439
+0,2,10,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966079,103246440
+0,5,17,,2,4,5,,,,59966080,103246441
+5,5,20,,5,40,75,,,,59966080,103246442
+0,2,3,,75,162,250,,,,59966080,103246443
+0,2,3,,5,40,75,,,,59966081,103246444
+0,2,3,,2,4,5,,,,59966081,103246445
+0,2,3,,2,4,5,,,,59966082,103246446
+0,2,3,,5,40,75,,,,59966082,103246447
+0,2,3,,2,4,5,,,,59966083,103246448
+0,2,3,,5,40,75,,,,59966083,103246449
+0,6,11,,2,4,5,,,,59966084,103246450
+0,2,3,,5,40,75,,,,59966084,103246451
+0,2,10,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966085,103246452
+0,2,10,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966086,103246453
+3,12,30,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966087,103246454
+2,7,17,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966087,103246455
+0,1,3,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966087,103246456
+3,12,30,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966088,103246457
+2,7,17,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966088,103246458
+0,1,3,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966088,103246459
+0,2,5,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966089,103246460
+0,3,5,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966089,103246461
+0,2,10,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966090,103246462
+0,2,10,Mixed rock fragments,2,4,5,Nonflat,Subrounded,Indurated,59966091,103246463
+0,2,3,Mixed rock fragments,2,4,5,Nonflat,Rounded,Indurated,59966359,103247317
+0,0,0,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966359,103247318
+0,0,0,Mixed rock fragments,250,425,600,Nonflat,Subrounded,Indurated,59966359,103247319
+0,0,0,Mixed rock fragments,600,1300,2000,Nonflat,Subrounded,Indurated,59966359,103247320
+0,0,0,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966359,103247321
+0,2,3,Mixed rock fragments,2,4,5,Nonflat,Rounded,Indurated,59966360,103247322
+0,0,0,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966360,103247323
+0,0,0,Mixed rock fragments,250,425,600,Nonflat,Subrounded,Indurated,59966360,103247324
+0,0,0,Mixed rock fragments,600,1300,2000,Nonflat,Subrounded,Indurated,59966360,103247325
+0,0,0,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966360,103247326
+0,2,3,Mixed rock fragments,2,4,5,Nonflat,Rounded,Indurated,59966361,103247327
+0,0,0,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966361,103247328
+0,0,0,Mixed rock fragments,250,425,600,Nonflat,Subrounded,Indurated,59966361,103247329
+0,0,0,Mixed rock fragments,600,1300,2000,Nonflat,Subrounded,Indurated,59966361,103247330
+0,0,0,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966361,103247331
+0,0,0,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966362,103247332
+0,0,0,Mixed rock fragments,250,425,600,Nonflat,Subrounded,Indurated,59966362,103247333
+0,0,0,Mixed rock fragments,600,1300,2000,Nonflat,Subrounded,Indurated,59966362,103247334
+0,0,0,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966362,103247335
+0,2,3,Mixed rock fragments,2,4,5,Nonflat,Rounded,Indurated,59966362,103247336
+0,2,3,Mixed rock fragments,2,4,5,Nonflat,Rounded,Indurated,59966363,103247337
+0,0,0,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966363,103247338
+0,0,0,Mixed rock fragments,250,425,600,Nonflat,Subrounded,Indurated,59966363,103247339
+0,0,0,Mixed rock fragments,600,1300,2000,Nonflat,Subrounded,Indurated,59966363,103247340
+0,0,0,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966363,103247341
+0,2,3,Mixed rock fragments,2,4,5,Nonflat,Rounded,Indurated,59966364,103247342
+0,0,0,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966364,103247343
+0,0,0,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966364,103247344
+0,0,0,Mixed rock fragments,250,425,600,Nonflat,Subrounded,Indurated,59966364,103247345
+0,0,0,Mixed rock fragments,600,1300,2000,Nonflat,Subrounded,Indurated,59966364,103247346
+0,2,3,Mixed rock fragments,2,4,5,Nonflat,Rounded,Indurated,59966365,103247347
+0,0,0,Mixed rock fragments,5,40,75,Nonflat,Subrounded,Indurated,59966365,103247348
+0,0,0,Mixed rock fragments,250,425,600,Nonflat,Subrounded,Indurated,59966365,103247349
+0,0,0,Mixed rock fragments,600,1300,2000,Nonflat,Subrounded,Indurated,59966365,103247350
+0,0,0,Mixed rock fragments,75,162,250,Nonflat,Subrounded,Indurated,59966365,103247351

@@ -1,0 +1,5 @@
+"0","# cluster identification"
+"0","clusters = kmeans(cluster_ready_data, 3)"
+"0",""
+"0","clusters$centers %>%"
+"0","  kableExtra::kbl() "

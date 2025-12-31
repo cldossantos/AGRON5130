@@ -1,0 +1,7 @@
+"0","library(tidyverse)"
+"0","county_corn_data = read.csv(""data/county_environments.csv"")"
+"0",""
+"0","ia_and_il_corn = county_corn_data %>%"
+"0","  filter(state %in% c(""IL"", ""IA""))"
+"0",""
+"0","ia_and_illinois_model = lm(corn ~ ppt + whc + sand + silt + clay + om, data = ia_and_il_corn)"

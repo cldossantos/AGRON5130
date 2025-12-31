@@ -1,0 +1,5 @@
+"0","yield_2 = peanut_2$yield"
+"0","yield_mean_2 = mean(yield_2)"
+"0","yield_sd_2 = sd(yield_2)"
+"0","no_samples_2 = length(yield_2)"
+"0","yield_se_2 = yield_sd_2/sqrt(no_samples_2)"

@@ -1,0 +1,59 @@
+---
+title: assignment_6_questions
+output: html_document
+---
+
+
+# Question 1a (1 pt)
+The effect of tillage on soil organic matter was studied in a Polish trial.  The three treatments were conventional tillage (CT), reduced tillage (RT), and strip-tillage (ST).  Organic matter is measured in percent.  This dataset is simulated but inspired by data publised in: Debska, B.; Jaskulska, I.; Jaskulski, D. Method of Tillage with the Factor Determining the Quality of Organic Matter. Agronomy 2020, 10, 1250.
+
+Read in data file at "data/soil_om_tillage_debska.csv" and use the head command to review the data.
+
+```{r}
+
+```
+
+# Question 1b (1 pt)
+Write a linear additive model explaining the effects that contribute to the observed value.  (Hint: look at question 1c!)
+
+# Question 1c (2pt)
+Use the analysis of variance to test whether the treatment effect accounts for significantly more of the observed variance among plots than the error effect. 
+```{r}
+
+```
+
+# Question 1d (1pt)
+Does the treatment (tillage) effect explain sigificantly more of the observed variance among plots than the error (residuals) effect?
+
+
+# Question 1e (3pt)
+Create a data table containing the tillage treatment means, using the *group_by()* and *summarise()* commands you learned in the exercises, and display it (just type whatever name you gave the table and it will display).
+```{r}
+
+```
+
+
+# Question 2a (1 pt)
+A controlled-environment agriculture study was conducted to test the effect of white, purple, and pink light on Chinese kale biomass.  Biomass is in grams per plant.  This data is simulated but inspired by Zhang, Y.; Ji, J.; Song, S.; Su, W.; Liu, H. Growth, Nutritional Quality and Health-Promoting Compounds in Chinese Kale Grown under Different Ratios of Red:Blue LED Lights. Agronomy 2020, 10, 1248.
+
+Load the data from "data/led_kale_zhang.csv" and display the top six rows
+```{r}
+
+```
+
+# Question 2b (2pt)
+Use the analysis of variance to test whether the kale effect explains significantly more of the observed variance among plants than the error effect.
+```{r}
+
+```
+
+# Question 2c (1pt)
+What can you conclude from the ANOVA results?
+
+
+# Question 2d (3pt)
+Create a table of biomass means by light color and display it.
+```{r}
+kale_means
+```
+

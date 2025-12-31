@@ -1,0 +1,4 @@
+"0","table_w_trt_column = trt_means %>%"
+"0","  rownames_to_column(var = ""trt"")"
+"0",""
+"0","table_w_trt_column"

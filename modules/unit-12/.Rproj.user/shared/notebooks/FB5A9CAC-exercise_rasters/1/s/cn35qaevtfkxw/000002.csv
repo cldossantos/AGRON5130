@@ -1,0 +1,7 @@
+"0","library(RColorBrewer)"
+"0",""
+"0","finished_data %>%"
+"0","  leaflet() %>%"
+"0","  addProviderTiles(providers$Esri.WorldImagery) %>%"
+"0","  addStarsImage(opacity = 0.5,"
+"0","                colors=""RdYlGn"")"

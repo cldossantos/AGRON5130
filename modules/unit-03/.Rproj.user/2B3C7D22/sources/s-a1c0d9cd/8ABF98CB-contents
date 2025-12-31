@@ -1,0 +1,67 @@
+---
+title: "Unit 3 Assignment"
+output: html_notebook
+---
+
+
+# Question 1a (1 pt)
+Load the "data/millet_uniformity.csv dataset" and examine the first six rows using the *head()* function.  Pearl millet yield was sampled in 160 locations within a field in  Kundewadi, Niphad, in the district of Nasik, India.
+```{r}
+
+```
+
+# Question 1b (1.5pt)
+Calculate the mean, standard deviation, and number of observations for yield.
+```{r}
+
+```
+
+# Question 1c (1.5 pt) 
+Calculate the standard error of the mean for yield.
+```{r}
+
+```
+
+# Question 1d (1.5 pt)
+Calculate the t-value (using the *qt()* function, for the mean of yield for calculating a 95% confidence interval.  A 95% confidence interval means we will have 2.5% in each tail, so use 0.975.  Remember, degrees of freedom is one less than the number of observations.
+```{r}
+
+```
+
+#Question 1e (2 pt)
+Calculate the 95% confidence interval from the above statistics
+```{r}
+
+```
+
+
+
+# Question 2a (1 pt)
+Load the "data/safflower_uniformity.csv dataset" and examine the first six rows using the *head()* function.  Safflower yield was sampled 340 times within a safflower field in Eloy, Arizona.
+```{r}
+
+```
+
+# Question 2b (1.5pt)
+Calculate the mean, standard deviation, and number of observations for yield.
+```{r}
+
+```
+
+# Question 2c (1.5 pt) 
+Calculate the standard error of the mean for yield.
+```{r}
+
+```
+
+# Question 2d (1.5 pt)
+Calculate the t-value (using the *qt()* function, for the mean of yield for calculating a 90% confidence interval.  A 90% confidence interval means we will have 5% in each tail, so use 0.95.
+```{r}
+
+```
+
+#Question 2e (2 pt)
+Calculate the 95% confidence interval from the above statistics
+```{r}
+
+```

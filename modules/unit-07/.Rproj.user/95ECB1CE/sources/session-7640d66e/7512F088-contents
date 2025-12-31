@@ -1,0 +1,229 @@
+---
+title: Exercise - Experimental Design
+output: html_document
+---
+
+# Introduction
+Now that you have been introoduced to four powerful experimental designs -- completely randomized, randomized complete block, factorial, and split-plot, how can you use R to create your plot layout and randomize your treatments?  
+
+Of course, R has a package for that.  We will use the *agricolae()* packages and its multiple tools for experimental design.
+
+# Completely Randomized Design
+We have a hemp trial with five varieties: "China Cat", "Eyes", "Scarlet", "Fire", and "Tower".  How do we randomize it?  We use the *design.crd()* function.
+
+```{r}
+library(agricolae)
+
+# First, we need to define the varieties as a vector:
+varieties = c("China Cat", "Eyes", "Scarlet", "Fire", "Tower")
+
+# Then we define the number of replications we want:
+reps = 6
+
+# One more thing we can do is provide a "seed".  A seed tells R where to start in randomizing the plot.  This is often useful in case we need to recreate a set of random numbers.  In case we need to recreate this plot map from scratch, we will provide a seed.
+seed_no = 910
+
+
+# then we just feed these to the design.crd argument
+crd = design.crd(trt=varieties, r=reps, seed = seed_no)
+```
+
+design.crd outputs a list (a collection of R objects).  To view the treatment assignments in our new plot plan, "crd", we add "$book" to the end of it.
+```{r}
+crd$book
+```
+
+
+# Randomized Complete Block Design
+What if we want to block our treatments?  For this, we use the *design.rcbd()* function.  The values we feed to it will be identical to the completely randomized design above.
+
+```{r}
+# First, we need to define the varieties as a vector:
+varieties = c("China Cat", "Eyes", "Scarlet", "Fire", "Tower")
+
+# Then we define the number of replications we want:
+reps = 6
+
+# One more thing we can do is provide a "seed".  A seed tells R where to start in randomizing the plot.  This is often useful in case we need to recreate a set of random numbers.  In case we need to recreate this plot map from scratch, we will provide a seed.
+seed_no = 910
+
+rcbd = design.rcbd(trt = varieties, r=reps, seed = seed_no)
+
+```
+
+We can review our treatment assignments using "rcbd$book".
+```{r}
+rcbd$book
+```
+
+We can save this data.frame to our local directory -- for use in our spreadsheet -- using the *write.csv()* function.
+
+```{r}
+# the write.csv arguments are (name of data.frame, filename, row.names=FALSE)
+write.csv(rcbd$book, "field_book.csv", row.names = FALSE)
+```
+
+
+
+# Factorial Design
+We use the *design.ab()* function to create our plot layout.  
+
+The factorial experimental design is slightly different.  We cannot give R named treatments.  We can only tell it how many treatments are in each factor.  Let's say we wanted to run a factorial experiment with three levels of hemp variety and two levels of soil amdendments.  We would call this a "3 x 2" factorial.
+
+One additonal change is we can tell R whether to arrange our treatments in a completely randomized design or a randomized complete block design.  We will use the *design = "rcbd"* argment to tell R to create a randomized complete block design.  (If we wanted to create a completely randomized design, we would use *design="crd"* instead 
+```{r}
+# the line below tells R that we have three levels of the first factor and two levels of the second factor.
+factors = c(3,2)
+reps = 4
+seed_no=910
+
+fact = design.ab(trt = factors, r = reps, seed = seed_no, design = "rcbd")
+
+```
+
+We can again review our treatment assignments by using *$book*. 
+```{r}
+fact$book
+```
+
+# Split-Plot Design
+Lets say we are going to use equipment to spread our compost.  The applicator creates a 6-meter swath, while our three varieties are being grown in plots 2 meters wide.  We deside to conduct a split plot trial with soil amendment as our main factor and variety as our sub-factor.
+
+For the split plot design, will define the levels of our two factors, varieties and amendments, by name
+
+```{r}
+# First, we need to define the varieties as a vector:
+varieties = c("Eyes", "Scarlet", "Fire")
+
+# Second, we define our amendment treatments
+amendments = c("control", "compost")
+# 
+# Then we define the number of replications we want:
+reps = 4
+
+# One more thing we can do is provide a "seed".  A seed tells R where to start in randomizing the plot.  This is often useful in case we need to recreate a set of random numbers.  In case we need to recreate this plot map from scratch, we will provide a seed.
+seed_no = 910
+
+# The design.split() function is similar to the factorial design.ab function above.  The main difference is we now define a "trt1" and a "trt2".  trt1 is the factor you want in the main plots; trt2 is the factor you want in the subplots.  The other arguments are the same.
+# 
+spdesign = design.split(trt1 = amendments, trt2 = varieties, r=4, seed = seed_no, design = "rcbd")
+```
+
+Our treatment assignments are below:
+```{r}
+spdesign$book
+```
+
+# Practice
+We now have a new hemp trial comparing varieties "Chicago", "New York", and "Detroit".  The critics say they're all on the same "street" (whatever), but we would like to compare them.
+
+## Completely Randomized Design
+Create a completely randomized design with 4 replicates.  Please use seed_no=123 so our results will match.  
+```{r paged.print=FALSE}
+varieties = c("Chicago", "New York", "Detroit")
+reps=4
+seed_no=123
+
+
+
+```
+
+Your plan should look like:
+
+   plots r varieties
+1    101 1  New York
+2    102 1   Detroit
+3    103 1   Chicago
+4    104 2   Chicago
+5    105 2   Detroit
+6    106 3   Chicago
+7    107 3   Detroit
+8    108 2  New York
+9    109 4   Detroit
+10   110 3  New York
+11   111 4   Chicago
+12   112 4  New York
+
+
+## Randomized Complete Block Design
+Create a randomized complete block design using the same three varieties as above.  Please again use seed_no=123 so our results will match.
+
+
+```{r paged.print=FALSE}
+varieties = c("Chicago", "New York", "Detroit")
+reps=4
+seed_no=123
+
+
+```
+
+Your plan should look like:
+
+   plots block varieties
+1    101     1   Detroit
+2    102     1   Chicago
+3    103     1  New York
+4    201     2   Detroit
+5    202     2   Chicago
+6    203     2  New York
+7    301     3  New York
+8    302     3   Chicago
+9    303     3   Detroit
+10   401     4  New York
+11   402     4   Detroit
+12   403     4   Chicago
+
+## Factorial Design
+Now lets take our 3 levels of hemp variety and treat each with two levels of foliar spray (control and kelp).  We will arrange our treatments in blocked (design="rcbd") factorial design.  We will use 2 reps (only to keep our practice data set small -- more reps would be better!).  Please again use seed_no=123
+
+```{r paged.print=FALSE}
+factors = c(3,2)
+reps=2
+seed_no=123
+
+
+```
+
+Your results should look like:
+   plots block A B
+1    101     1 1 1
+2    102     1 3 2
+3    103     1 2 2
+4    104     1 1 2
+5    105     1 3 1
+6    106     1 2 1
+7    107     2 2 2
+8    108     2 1 2
+9    109     2 3 2
+10   110     2 1 1
+11   111     2 3 1
+12   112     2 2 1
+
+
+## Split Plot Design
+Now lets suppose we had a 9-meter spray boom and variety plots that were 3-meters wide.  lets design a split plot trial with foliar spray as the main factor and hemp variety as the subfactor. We will block the main plots (design="rcbd").  Please again use seed_no=123
+
+```{r paged.print=FALSE}
+varieties = c("Chicago", "New York", "Detroit")
+foliar = c("control", "kelp")
+reps=2
+seed_no=123
+
+
+```
+
+Your results should look like:
+
+   plots splots block  foliar varieties
+1    101      1     1 control   Chicago
+2    101      2     1 control  New York
+3    101      3     1 control   Detroit
+4    102      1     1    kelp  New York
+5    102      2     1    kelp   Chicago
+6    102      3     1    kelp   Detroit
+7    103      1     2 control  New York
+8    103      2     2 control   Detroit
+9    103      3     2 control   Chicago
+10   104      1     2    kelp  New York
+11   104      2     2    kelp   Chicago
+12   104      3     2    kelp   Detroit

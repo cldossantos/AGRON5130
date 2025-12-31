@@ -1,0 +1,2 @@
+"0","fertility = read.csv(""data/corn_fertility.csv"")"
+"0","head(fertility)"

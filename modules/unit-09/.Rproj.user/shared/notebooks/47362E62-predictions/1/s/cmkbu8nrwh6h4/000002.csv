@@ -1,0 +1,3 @@
+"0","new_stalk_data %>%"
+"0","  ggplot(aes(x=stalk_circ, y=yield)) +"
+"0","  geom_point()"

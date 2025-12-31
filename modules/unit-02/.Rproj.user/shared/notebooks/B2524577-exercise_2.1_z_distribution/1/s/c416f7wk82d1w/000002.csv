@@ -1,0 +1,12 @@
+"0","```r
+install.packages(\"fastGraph\")
+```"
+"1","trying URL 'https://cran.rstudio.com/bin/windows/contrib/3.6/fastGraph_2.1.zip'
+Content type 'application/zip' length 87319 bytes (85 KB)
+downloaded 85 KB
+"
+"1","package ‘fastGraph’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\559069\AppData\Local\Temp\RtmpaUqHwC\downloaded_packages
+"

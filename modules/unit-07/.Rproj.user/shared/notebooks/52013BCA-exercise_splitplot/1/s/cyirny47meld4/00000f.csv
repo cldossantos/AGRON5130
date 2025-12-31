@@ -1,0 +1,4 @@
+"0","soybean %>%"
+"0","  ggplot(aes(x=tillage, y=yield, group=fungicide)) +"
+"0","  geom_bar(aes(fill=fungicide), stat = ""summary"", fun=""mean"")"
+"0",""

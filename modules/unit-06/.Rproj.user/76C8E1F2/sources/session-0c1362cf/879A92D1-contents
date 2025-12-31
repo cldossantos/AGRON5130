@@ -1,0 +1,88 @@
+---
+title: Completely Randomized Design Anova
+output: html_document
+---
+
+#Introduction  
+In this unit we were introduced to the Analysis of Variance (ANOVA) and the most basic experimental design, the Completely Randomized Design.  Running an analysis of variance for this trial is very easy, as we will now see.  
+
+# Case Study: Barley
+```{r}
+barley_data = read.csv("data/barley_crd.csv")
+head(barley_data)
+```
+
+# ANOVA
+There are two steps to conducting a basic ANOVA analysis.  First, define the model.  We will use the *lm()* function to create a linear model.  We need to provide two arguments to lm().  First, the model itself.  We are going to model yield as a function of gen, that is, that yield differs among levels of gen.  We express this as "yield~gen"  The second argument is simply the dataset in which these variables are located: "barley".  
+```{r}
+barley_model = lm(yield~gen, data = barley_data)
+```
+
+The second step is to use the command *anova()* to generate an ANOVA table from the model.
+
+```{r}
+anova(barley_model)
+
+```
+
+It's that simple.
+
+# Calculating the Coefficient of Variation
+The Coefficient of Variation (CV) is a quality-control measurement for research.  It essentially asks: were our experimental units (plots or pots) consistent enough for us to properyl observe the difference among treatments?  Or was our trial, in essence, sloppy?
+
+Mathematically, the CV is calculated as:
+
+$$CV = \frac{\sqrt{EMS}}{\mu} \times 100 $$
+
+Where MSE is the Error (or Residual) Mean Square and $\mu$ is the population mean.  In the barley example, the EMS is 605.2.  THe population mean for yield is 20.71 
+
+So the CV is equal to:
+$$CV = \frac{\sqrt{605.2}}{20.71} = \frac{24.60}{20.71} = 118.75 $$
+We can quickly calculate this for any model we create using the *cv.model()* function in the *agricolae* package.
+```{r}
+library(agricolae)
+cv.model(barley_model)
+```
+
+This is a really, really large CV.  In fact, I checked my math a few times before I accepted it was correct.  In corn research, I like to see a CV below 10.  For soybean I prefer a CV below 5.  Any greater than that, and a trial will be closely examined and potentially excluded from analysis.  Before using a CV to evaluate the quality of a trial, however, you should be familiar with CVs experienced by previous researchers in your discipline.  
+
+
+
+
+# Practice: Beet Data
+
+```{r}
+beet_data = read.csv("data/beets_crd.csv")
+head(beet_data)
+```
+
+Model the relationship of yield and fert by completing the analysis of variance below.  Your Pr(>F) for fert should be 1.299e-10. 
+```{r}
+beet_model = lm( , data = )
+summary.aov(beet_model)
+```
+
+Calculate the Coefficient of Variance (CV) using the cv.model() function.  Your CV should be 17.38.
+```{r}
+cv.model()
+```
+
+
+# Practice: Potato Data
+
+```{r}
+potato_data = read.csv("data/potato_crd.csv")
+head(potato_data)
+
+
+```
+
+Model the relationship between infection (inf) and treatment (trt) using the analysis of variance.  You should get Pr(>F) = 0.0103.
+```{r}
+
+```
+
+Calculate the Coefficient of Variance (CV) using the cv.model() function.  
+```{r}
+
+```

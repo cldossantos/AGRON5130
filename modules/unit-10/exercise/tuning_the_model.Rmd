@@ -1,0 +1,223 @@
+---
+title: exercise -- tuning the model
+output: html_document
+---
+
+# Introduction
+At this point, we have built the multiple regression model and examined the significance of each predictor variable.  We have also identified correlations between individuals.  We have used cross-validation to measure the model's performance on original data, in order to guard against overfitting the data.
+
+Our final phase of model development is to tune the model.  In tuning the model, we test the effect of dropping out variables we think are collinear -- that is, correlated with each other instead of being independent predictors of yield.
+
+# Case Study
+We continue to work with the model we built in the other exercises.  Lets start by calling up some of our data from the last exercise.
+
+First, our model:
+```{r}
+library(tidyverse)
+county_corn_data = read.csv("data/county_environments.csv")
+
+ia_and_il_corn = county_corn_data %>%
+  filter(state %in% c("IL", "IA"))
+
+ia_and_illinois_model = lm(corn ~ ppt + whc + sand + silt + clay + om, data = ia_and_il_corn)
+```
+
+Then we define our variables of interest.  
+```{r}
+variables_of_interest = ia_and_il_corn %>%
+  select(ppt, whc, sand, silt, clay, om)
+
+```
+
+Next, the partial correlation matrix:
+```{r}
+library(psych)
+partial.r(variables_of_interest)
+
+```
+
+And, finally, for reference, the cross-validation:
+```{r}
+library(caret)
+
+# Define training control
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+# Train the model
+model <- train(corn ~ ppt + whc + sand + silt + clay + om, data=ia_and_il_corn, method = "lm",
+               trControl = train.control)
+# Summarize the results
+print(model)
+```
+
+# Tuning the Model
+In this example, choosing the first term to drop from our model is difficult, given that sand, silt, and clay are similarly correlated with each other.  After reviewing the covariance matrix from the last exercise, however, let's go ahead and drop sand from the sample:
+
+```{r}
+model_wo_sand = lm(corn ~ ppt + whc + silt + clay + om, data = ia_and_il_corn)
+```
+
+How are the remaining coefficients affected?
+```{r}
+library(broom)
+
+tidy(model_wo_sand)
+```
+
+We can see the slope (estimate) for clay is now significant.  Let's check our fit.
+```{r}
+glance(model_wo_sand)
+```
+
+Our r.squared and adj.r.squared have decreased slightly.  Now lets cross-validate our model.
+```{r}
+# Define training control
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+# Train the model
+model <- train(corn ~ ppt + whc + silt + clay + om, data=ia_and_il_corn, method = "lm",
+               trControl = train.control)
+# Summarize the results
+print(model)
+```
+
+Our Rsquared has decreased ever so slightly from our first model.
+
+Now, let's repeat this process, dropping both sand and silt from the model.
+
+```{r}
+model_wo_sand_silt = lm(corn ~ ppt + whc + clay + om, data = ia_and_il_corn)
+```
+
+How are the remaining coefficients affected?
+```{r}
+tidy(model_wo_sand_silt)
+```
+
+All of the remaining slopes are now significant.  Next, our model fit:
+```{r}
+glance(model_wo_sand_silt)
+```
+
+Our r.squared and adj.r.squared have again decreased slightly.  Now lets cross-validate our model.
+```{r}
+# Define training control
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+# Train the model
+model <- train(corn ~ ppt + whc + clay + om, data=ia_and_il_corn, method = "lm", trControl = train.control)
+# Summarize the results
+print(model)
+```
+
+Yes!  We see that our Rsquared is greater than the original model.  Our RMSE (Root Mean Square Error) is also the lowest among the models.  
+
+We could continue this process, perhaps testing what would happen if water-holding capacity (whc) were removed from the model.  But at this point we can see how tuning can reduce the bloat and complexity of our model.  While it may always seem the more data the better, we can now see that is not the case.  From a practical point of view, also, we now have fewer variables to measure and less data to store -- two considerations that can become substantial with larger projects.
+
+
+# Practice
+```{r}
+thompson_corn = read.csv("data/thompson_corn.csv")
+
+thompsom_model =  lm(yield ~ rain6 + rain7 + temp6 + temp7, thompson_corn)
+```
+
+```{r}
+tidy(thompsom_model)
+```
+
+```{r}
+glance(thompsom_model)
+```
+
+```{r}
+library(caret)
+
+# Define training control
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+# Train the model
+model <- train(yield ~ rain6 + rain7 + temp6 + temp7, data=thompson_corn, method = "lm", trControl = train.control)
+# Summarize the results
+print(model)
+```
+
+
+
+```{r}
+thompsom_model_wo_temp6 =  lm(yield ~ rain6 + rain7 + temp7, thompson_corn)
+```
+
+```{r}
+tidy(thompsom_model_wo_temp6)
+```
+
+```{r}
+glance(thompsom_model_wo_temp6)
+```
+
+```{r}
+library(caret)
+
+# Define training control
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+# Train the model
+model <- train(yield ~ rain6 + rain7 + temp7, data=thompson_corn, method = "lm", trControl = train.control)
+# Summarize the results
+print(model)
+```
+
+
+
+# Practice
+Let's synthesize what you found in the first two exercises.  
+
+First, looking at the original model output, we see one of the predictor variables did not have a coefficient whose value was significantly different from zero: temp6.  
+
+Second, looking at the covariance matrix and partial correlation matrix, we note two strong correlations between the predictor variables: temp6 with temp7, and temp6 with rain6.
+
+Both of these suggest that temp6 may not belong in our final model.
+
+With this in mind, create an new model of yield as a function of rain6, rain7, and temp7.
+```{r}
+thompsom_model_wo_temp6 =  lm(yield ~ rain6 + rain7 + temp7, thompson_corn)
+
+```
+
+Lets see the effect on our coefficients.
+```{r}
+tidy(thompsom_model_wo_temp6)
+
+```
+
+You should find all the remaining predictors have slopes significantly different than zero.
+
+What about the effect on model fit?
+```{r}
+glance(thompsom_model_wo_temp6)
+```
+
+You should see an r.squared of 0.54.  That is a slight decrease from our original model.
+
+But what about the cross-validated model?  What is the effect on its Rsquared?
+
+```{r}
+library(caret)
+
+# Define training control
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+# Train the model
+model <- train(yield ~ rain6 + rain7 + temp7, data=thompson_corn, method = "lm", trControl = train.control)
+# Summarize the results
+print(model)
+```
+
+You should see an Rsquared of 0.538.  This suggests that we were correct in removing temp6 from our model.

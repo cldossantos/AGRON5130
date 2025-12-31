@@ -1,0 +1,25 @@
+{
+    "id": "B38F0617",
+    "path": "/cloud/project/lecture/machine_learning.Rmd",
+    "project_path": "lecture/machine_learning.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1606335464274.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "cursorPosition": "5,3",
+        "scrollLine": "0",
+        "last_setup_crc32": ""
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1606335449,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1606338219254,
+    "read_only": false,
+    "read_only_alternatives": []
+}

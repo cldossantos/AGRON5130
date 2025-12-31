@@ -1,0 +1,55 @@
+---
+title: assignment_5
+output: html_document
+---
+
+
+```{r, fig.width=12, fig.height=10}
+strawberry_effects_table = read.csv("data/strawberry_effects_table.csv")
+
+ggplot(strawberry_effects_table) +
+  geom_segment(aes(x=plot, y=0, xend=plot, yend=mu), color="lightblue", size=14) +
+  geom_segment(aes(x=plot, xend=plot, y=trt_bar_min, yend=trt_bar_max), color="lightgreen", size=14) +
+  geom_segment(aes(x=plot, xend=plot, y=err_bar_min, yend=err_bar_max), color="tomato", size=14) +
+  # geom_point(aes(x=plot, y=y), size=4) +
+  geom_text(aes(x=plot, y=mu/2, label= round(mu,1))) +
+  geom_text(aes(x=plot, y=trt_bar_min+(trt_bar_max-trt_bar_min)/2, label=round(trt_effect,1))) +
+  geom_text(aes(x=plot, y=err_bar_min+(err_bar_max-err_bar_min)/2, label=round(error_effect,1))) +
+  geom_segment(aes(x=plot+0.4, xend=plot+0.2, y=y, yend=y), arrow = arrow(length = unit(0.01, "npc")), size=1) +
+  geom_text(aes(x=plot+0.4, y=y, label=round(y,1)), hjust=0) +
+  scale_x_continuous(breaks=c(1:10))
+```
+
+# Question 1a (2pts)
+Given the plot above, write the linear model for the observed value in plot 3, as we did in the exercise.
+
+
+
+# Question 1b (2pts)
+Given the plot above, write the linear model for the observed value in plot 5, as we did in the exercise.
+
+
+
+# Question 2a (2pts)
+You are testing a new fungicide to control Northern Corn Leaf Blight.  Given it also has the potential to improve plant health under heat and drought situations, you plan to charge a price of $20 per acre.  If there is no improvement with the fungicide, the farmer will lose  $20 per acre.  Given this high price, would you be more concerned with a Type I or Type II error.  Why?
+
+
+
+#Question 2b (2 pts)
+You are a sales agronomist with a grower who counts on you to bring them the latest, greatest opportunities to enhance yield.  Their FOMO is pronounced.  You are running a t-test on side-by-side data from a distributor, for a product which would cost $3 per acre but has the potential to increase corn yield up to 4 bushels.  Given the lower product cost and potentially high return on investment, as well as your concerns your customer would be upset at missing an opportunity to boost yield, are you more concerned about a Type I or Type II error in your analysis.  Why?
+
+
+
+# Question 3a (2pts)
+You are testing a new in-furrow fertilizer.  It will cost more to product, hence you will need to charge a greater market price.  Thus, you will only release it if it produces significantly greater yield than your existing in-furrow product.  You cannot afford to release a new product that does not work.  Would you run a one-tailed or two-tailed test on your data?
+
+
+
+# Question 3b (2 pts)
+What would your null and alternative hypotheses be for the test above?
+
+
+
+#Question 4a (3 pts)
+Read in the dataset "data/wheat.csv".  Conduct a one-tailed t_test where the high nitrogen (nitro="H") treatment yields greater than the low nitrogen treatment.  
+

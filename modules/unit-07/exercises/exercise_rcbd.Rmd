@@ -1,0 +1,137 @@
+---
+title: Exercise -- Randomized Complete Block Design
+output: html_document
+---
+
+# Introduction
+While the lecture is long this week, fortunately running the analyses in R is very fast.  We start the exercies with the Randomized Complete Block Design.  To run a Randomized Complete Block Design, we will again use same analysis of variance approach we did last week. We only need two lines of code: the first to define the model we wish to test, and the second to tell R to summarise the results.
+
+# Case Study
+Barley varieties were compared using a Randomized Complete Block Design.  Yield is in grams per plot.  Five varieties were grown in three replicates. 
+
+```{r}
+library(tidyverse)
+barley = read.csv("data/barley_besag.csv")
+head(barley)
+```
+
+# ANOVA
+For this analysis of variance, we need two lines of code.  The first is the model statement:
+```{r}
+barley_model = aov(yield ~ block + gen, data=barley)
+
+```
+
+In the above code:
+
+* barley_model defines the object to which the ANOVA results will be saved
+* "aov" tells R to run an analysis of variance
+* "yield ~ block + gen" tells R our linear additive model.  When using R, we leave out mu and the error term -- R knows to calculate these.
+* "data=barley" tells R to fit our ANOVA model to the barley dataset
+
+Reviewing our results is simple:
+```{r}
+summary(barley_model)
+
+```
+
+In our result above, we see the effect of barley variety (gen) is highly significant.
+
+# Plotting the Results
+Although we get into the presentation of treatment means in more detail late in the course, lets take a quick look at our treatment means.  We will use ggplot.
+
+```{r}
+barley_plot = ggplot(barley, aes(x=gen, y=yield)) +
+  geom_bar(stat = "summary", fun="mean")
+
+
+```
+
+In the plot above:
+* barley is the object to which we are saving the plot
+* ggplot() starts the ggplot function
+* "ggplot(barley, aes(x=gen, y=yield))" tells R that our plot will be based on the barley dataset.  Anything in ggplot that occurs in aes() brackets is an "aesthetic".  An aesthetic is any value that is based on a variable from our plot and changes in value from treatment to treatment.  x=gen tells R the horizontal position of whatever we draw (points, parts, etc.) is determined by the gen variable.  y=yield tells R the vertical position (height) of our object is based on the yield variable.
+* "geom_bar" tells R we want to draw bars with our data.
+* With geom bar, we can also calculate summary statistics on the fly.  stat="summary" tells R we are going to calculate a summary statistic.  fun="mean" tells R to use the mean as that statistic.
+
+Now we can display the plot at any time by running barley_plot:
+```{r}
+barley_plot
+```
+
+This is so drab!  While I don't want you to get bogged down in formatting plots, let's tweak a few details just so you can see the power of ggplot to make publication-quality plots.
+
+Let's change the bar color by adding the "fill" command to our code:
+
+```{r}
+barley_plot = ggplot(barley, aes(x=gen, y=yield)) +
+  geom_bar(stat = "summary", fun="mean", fill="darkolivegreen")
+
+barley_plot
+```
+
+Let's draw a black line around the outside of the bars by adding "color" to our geom_bar statement.
+```{r}
+barley_plot = ggplot(barley, aes(x=gen, y=yield)) +
+  geom_bar(stat = "summary", fun="mean", fill="darkolivegreen", color="black")
+barley_plot
+```
+
+Let's make the outline a little thicker using the size command:
+```{r}
+barley_plot = ggplot(barley, aes(x=gen, y=yield)) +
+  geom_bar(stat = "summary", fun="mean", fill="darkolivegreen", color="black", size=1.5)
+barley_plot
+
+```
+
+The axis titles are little hard to read.  We can change text formatting, legend formatting, and other objects using the "theme" function.  In the theme function below, let's change the "axis.title" size using the "element_text" command and setting the size to 18.
+```{r}
+barley_plot = ggplot(barley, aes(x=gen, y=yield)) +
+  geom_bar(stat = "summary", fun="mean", fill="darkolivegreen", color="black") +
+  theme(axis.title = element_text(size=18))
+barley_plot
+```
+
+Let's similarly increase the size of the axis.text (tick labels) to 14pt. 
+```{r}
+barley_plot = ggplot(barley, aes(x=gen, y=yield)) +
+  geom_bar(stat = "summary", fun="mean", fill="darkolivegreen", color="black") +
+  theme(axis.title = element_text(size=18),
+        axis.text = element_text(size=14))
+barley_plot
+```
+
+Finally, let's rename our axis titles using the lab() command.
+```{r}
+barley_plot = ggplot(barley, aes(x=gen, y=yield)) +
+  geom_bar(stat = "summary", fun="mean", fill="darkolivegreen", color="black") +
+  theme(axis.title = element_text(size=18),
+        axis.text = element_text(size=14)) +
+  labs(x="variety", y="Yield (tons ha-1)")
+barley_plot
+
+```
+
+Like I said, I don't want you to get too bogged down in formatting your plots.  And, yes, a simple plot like this could be made just as quickly in Excel.  But building the plot in R Studio has multiple advantages.  First, you don't have to cut and paste your data to Excel.  Second, you don't have to copy your completed chart back to R or your report document.  You can include it right in your R Notebook with your data.  That way, if you are working on your creative component, you can have one document, instead of multiple documents all over the place.  Third, if you are working on the multiple plots, you can coordinate them by reusing your theme code from plot to plot, rather than having to click and change each field in each plot.  Finally, and most importantly, you have way more options for creating your plot in R than just about any software I know!
+
+
+# Practice
+Navy bean varieties were evaluated in a randomized complete block trial .  
+```{r}
+beans = read.csv("data/besag_beans.csv")
+head(beans)
+```
+
+Run the analysis in R.  Your output should match the following:
+
+             Df Sum Sq Mean Sq F value  Pr(>F)    
+block        23 294256   12794   2.324 0.00182 ** 
+gen           5 719695  143939  26.147 < 2e-16 ***
+Residuals   115 633063    5505                    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+What do you conclude from the analysis of variance?
+
+
