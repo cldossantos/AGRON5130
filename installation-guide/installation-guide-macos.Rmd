@@ -100,5 +100,10 @@ be a problem and should not change this workflow.
 ---
 
 
-You are now ready to start using R and RStudio for this course.
+## 5. Installation complete
 
+If you were able to get to this point without problems, you are now ready to start using R and RStudio for this course.
+
+When you open RStudio, you should see something like the image below:
+
+![](./images/installation-complete.png)

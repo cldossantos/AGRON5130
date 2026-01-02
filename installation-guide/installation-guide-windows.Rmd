@@ -91,7 +91,7 @@ be a problem and should not change this workflow.
 
 ---
 
-## 5. Common Issues and Fixes
+## 4. Common Issues and Fixes
 
 ### RStudio Does Not Open
 - Make sure R is installed **before** RStudio
@@ -99,6 +99,10 @@ be a problem and should not change this workflow.
 
 ---
 
+## 5. Installation complete
 
-You are now ready to start using R and RStudio for this course.
+If you were able to get to this point without problems, you are now ready to start using R and RStudio for this course.
 
+When you open RStudio, you should see something like the image below:
+
+![](./images/installation-complete.png)
