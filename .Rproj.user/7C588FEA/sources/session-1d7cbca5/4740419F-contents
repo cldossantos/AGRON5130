@@ -1,0 +1,104 @@
+---
+title: "Installing R and RStudio"
+subtitle: "macOS"
+date: "2026-01-02"
+author: "Caio dos Santos"
+output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 50
+---
+
+
+# Installing R and RStudio
+
+This guide walks you through installing **R** (the programming language) and
+**RStudio** (the integrated development environment, IDE) on your computer.
+Please follow the steps carefully **in the order shown**.
+
+> **Important:** R and RStudio are separate programs. You must install **R**
+> first, then **RStudio**.
+
+---
+
+## 1. What You Will Install
+
+- **R**: The statistical computing language that runs your code
+- **RStudio**: A user-friendly interface that makes working with R much easier
+
+Both are **free and open source**.
+
+---
+
+## 2. Check Your Operating System
+
+Before starting, confirm which operating system you are using. This guide is specific to  **macOS**.
+
+---
+
+
+## 3. Installation workflow
+
+As of today, the latest stable version of R is 4.5.2. It is possible that when you actually use this
+guide, the version number might differ slightly. That should not
+be a problem and should not change this workflow.
+
+### 3.1. Install R on macOS
+
+1. Go to:
+   
+   https://cran.r-project.org
+   
+     ![](./images/download-page.png)
+
+2. Click **Download R for (macOS)**.
+3. Download the **.pkg** file recommended for your macOS version.
+
+     ![](./images/macos-download.jpeg)
+     
+4. Double-click the downloaded **.pkg** file.
+5. Follow the installation steps and accept the defaults.
+
+     ![](./images/macos-install.jpeg)
+
+6. Finish the installation
+  
+> **Note:** On Apple Silicon (M1/M2/M3) Macs, use the version labeled *Apple
+> silicon arm64* if available.
+
+### 3.2. Install RStudio on macOS
+
+1. Go to:
+   
+   https://posit.co/download/rstudio-desktop/
+
+2. Scroll down to the installer table 
+
+![](./images/rstudio-download.png)
+
+3. Under **Download**, click **RStudio-2025.09.2-418.dmg**. (the RStudio version might be slightly different depending on when you are reading this, but the logic is the same)
+4. Download the macOS `.dmg` file.
+5. Open the `.dmg` file.
+6. Drag **RStudio** into the **Applications** folder.
+
+![](./images/macos-finish-install.jpeg)
+
+7. Eject the disk image.
+
+---
+
+## 4. Common Issues and Fixes
+
+### RStudio Does Not Open
+- Make sure R is installed **before** RStudio
+- Restart your computer
+
+### Permission Errors (macOS)
+- You may need administrator privileges
+- On macOS, check **System Settings → Privacy & Security**
+
+---
+
+
+You are now ready to start using R and RStudio for this course.
+

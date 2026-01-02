@@ -8,17 +8,15 @@
 - [ ] Caio Read and edit
 
 ## Course Syllabus (Canvas page created from your
-PDF document)
-- [ ] Caio Read and edit
+PDF document) - Caio Read and edit
 - [ ] Once you have okayed this Canvas page, we will remove the PDF from Canvas, as students can print this Canvas page (see directions at the top of the Canvas page)
 - [ ] Dr. Harbur’s syllabus still exists in the Canvas Syllabus (Global Navigation), but it has been disabled from student view; you can still see it. (image below)
 - [ ] If you want anything from that syllabus added to yours, please let us know
 - [ ] Several places say “I”, but this wording is from Dr. Harbur — please revise as needed - "Please check the Video Introduction to Working with RStudio Cloud section on Canvas, where I include videos that show you how to install the required software."
 - [ ] Dr. Harbur's Syllabus - (Left hand global navigation)
 
-## Meet Your Instructor
-- [ ] Caio Read and edit
-- [ ] It is suggested by QM that you have a section where you write a short bio, or create a short video introducing yourself to your students
+## Meet Your Instructor - Caio Read and edit
+- [x] It is suggested by QM that you have a section where you write a short bio, or create a short video introducing yourself to your students
 - [ ] You could also include information about communication and office hours
 
 ## Technology and Support
@@ -29,7 +27,6 @@ PDF document)
 - [ ] Please add what needs to be added
 
 ## Course Technology Section
-
 - [ ] What technology needs to be removed and what needs to be added specifically? What is used and what is not used in this course for technology? 
 - [ ] We added your syllabus language about RStudio here
 - [ ] Can you add the technical assistance links?
@@ -38,7 +35,11 @@ PDF document)
 ## Required Computer & Digital Literacy Skills
 - [ ] What needs to be added here to address the use of RStudio?
 - [ ] Please go ahead and add what you think should be included
-Amy added a statement from Dr. Harbur: How do you want to word this: 'Please check the Video Introduction to Working with RStudio Cloud section on Canvas, where I include videos that show you how to install the required software."
+Amy added a statement from Dr. Harbur: How do you
+want to word this: 'Please check the Video
+Introduction to Working with RStudio Cloud section
+on Canvas, where I include videos that show you
+how to install the required software."
 
 ## Academic & Support Resources
 - [ ] This is a standard page used across all Master’s of Agronomy courses
