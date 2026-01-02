@@ -2,10 +2,9 @@
 
 ## Introduction to R programming
 
-- [ ] Installing R and R Studio
+- [x] Installing R and R Studio
     - Windows  (Make sure to mention R Tools)
     - Mac
-    - Linux
 
 - [ ] R Studio interface
     - Explain the interface and different panels
