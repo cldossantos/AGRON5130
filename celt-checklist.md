@@ -9,7 +9,9 @@
 
 - [ ] Caio Read and edit
 
-## Course Syllabus (Canvas page created from your PDF document) - Caio Read and edit
+## Course Syllabus (Canvas page created from your PDF document)
+
+- [ ] Caio Read and edit
 
 - Once you have okayed this Canvas page, we will remove
 the PDF from Canvas, as students can print this
@@ -36,11 +38,13 @@ video introducing yourself to your students
 - [ ] You could also include information about
 communication and office hours
 
+--- 
+
 ## Technology and Support
 
-- [ ] Caio We will need your help with this page
+- Caio We will need your help with this page
 
-## Technology Requirements
+### Technology Requirements
 - [x] What requirements will be needed for RStudio Cloud?
 - [x] Please add what needs to be added
 - We could add the following statement:
@@ -48,18 +52,19 @@ communication and office hours
 Windows, macOS, or Linux with at least 4 GB of RAM
 can run R and RStudio for this course."
 
-## Course Technology Section
+### Course Technology Section
 
 - [ ] What technology needs to be removed and what
 needs to be added specifically? What is used and
 what is not used in this course for technology?
-- [ ] We added your syllabus language about RStudio
+- [x] We added your syllabus language about RStudio
 here
 - [ ] Can you add the technical assistance links?
-- [ ] Could you please verify that the accessibility
-and privacy links are correct?
+- [x] Could you please verify that the accessibility
+and privacy links are correct? - These are correct
 
-## Required Computer & Digital Literacy Skills
+### Required Computer & Digital Literacy Skills
+
 - [ ] What needs to be added here to address the use of RStudio?
 - [ ] Please go ahead and add what you think should be included
 Amy added a statement from Dr. Harbur: How do you
@@ -67,6 +72,9 @@ want to word this: 'Please check the Video
 Introduction to Working with RStudio Cloud section
 on Canvas, where I include videos that show you
 how to install the required software."
+
+
+---
 
 ## Academic & Support Resources
 
