@@ -9,6 +9,8 @@
 
 - [ ] Caio Read and edit
 
+---
+
 ## Course Syllabus (Canvas page created from your PDF document)
 
 - [ ] Caio Read and edit
@@ -29,6 +31,8 @@ RStudio Cloud section on Canvas, where I include
 videos that show you how to install the required
 software."
 - [ ] Dr. Harbur's Syllabus - (Left hand global navigation)
+
+---
 
 ## Meet Your Instructor - Caio Read and edit
 
@@ -83,18 +87,23 @@ Master’s of Agronomy courses
 - [ ] Caio Please review and let us know if there
 is anything you want added or removed
 
+---
+
 ##  Office Hours
 
 - [ ]  Caio Edit the page
 - [ ] The schedule section may still reflect Dr.
 Harbur’s information
 
+---
 
 ## Module: Video Introduction to Working with RStudio Cloud
 
 - [ ] Caio Review pages
 - [ ] Headings and short preview paragraphs were
 added for each video
+
+---
 
 ## Module 1: Basic Principles
 
@@ -104,6 +113,8 @@ to explain how materials help students complete
 assessments (for reviewers) - Please look over You
 will need to write this for the other modules for
 the QM review
+
+--- 
 
 ## DT 1.1 (Discussion) 
 
@@ -118,6 +129,8 @@ a rubric to SpeedGrader if you want
 - [ ] Can be adjusted to whatever you want
 Do you have a specific rubric or grading criteria
 that you want applied to all DT?
+
+---
 
 ## Module 1 Video Pages
 
