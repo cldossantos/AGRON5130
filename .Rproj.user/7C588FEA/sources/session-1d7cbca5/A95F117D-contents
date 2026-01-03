@@ -1,4 +1,5 @@
-# Caio Checklist's  for Review & Input
+# 2025-12-22 - Checklist for Review & Input
+
 
 
 ## Start Here Module
@@ -8,8 +9,7 @@
 
 - [ ] Caio Read and edit
 
-## Course Syllabus (Canvas page created from your
-PDF document) - Caio Read and edit
+## Course Syllabus (Canvas page created from your PDF document) - Caio Read and edit
 
 - Once you have okayed this Canvas page, we will remove
 the PDF from Canvas, as students can print this
@@ -82,8 +82,7 @@ is anything you want added or removed
 Harbur’s information
 
 
-## Module: Video Introduction to Working with
-RStudio Cloud
+## Module: Video Introduction to Working with RStudio Cloud
 
 - [ ] Caio Review pages
 - [ ] Headings and short preview paragraphs were
