@@ -5,6 +5,8 @@
 
 - [x] Caio Read and edit - Looks good to me
 
+Did the course name change?
+
 ---
 
 ## Course Syllabus (Canvas page created from your PDF document)
@@ -20,7 +22,7 @@ Syllabus (Global Navigation), but it has been
 disabled from student view; you can still see it.
 (image below). If you want anything from that
 syllabus added to yours, please let us know
-- [ ] Several places say “I”, but this wording is from
+- [x] Several places say “I”, but this wording is from
 Dr. Harbur — please revise as needed - "Please
 check the Video Introduction to Working with
 RStudio Cloud section on Canvas, where I include
@@ -56,7 +58,7 @@ can run R and RStudio for this course."
 
 ### Course Technology Section
 
-- [ ] What technology needs to be removed and what
+- [x] What technology needs to be removed and what
 needs to be added specifically? What is used and
 what is not used in this course for technology?
 - [x] We added your syllabus language about RStudio
@@ -96,13 +98,16 @@ Harbur’s information
 
 ---
 
+
 ## Module: Video Introduction to Working with RStudio Cloud
 
-- [ ] Caio Review pages
-- [ ] Headings and short preview paragraphs were
+- [x] Caio Review pages
+- [x] Headings and short preview paragraphs were
 added for each video
 
 ---
+
+
 
 ## Module 1: Basic Principles
 
@@ -117,15 +122,16 @@ the QM review
 
 ## DT 1.1 (Discussion) 
 
-- [ ] Caio Edit
-- [ ] Grading criteria/rubric added — please edit
+- [x] Caio Edit
+- [x] Grading criteria/rubric added — please edit
 as you would like (QM requires either a checklist
 for grading or a rubric, but you do not have to
 have both)
-- [ ] When finalized, we can show you how to attach
+- [x] When finalized, we can show you how to attach
 a rubric to SpeedGrader if you want
-- [ ] AI policy added
-- [ ] Can be adjusted to whatever you want
+- [x] AI policy added
+- [x] Can be adjusted to whatever you want
+
 Do you have a specific rubric or grading criteria
 that you want applied to all DT?
 

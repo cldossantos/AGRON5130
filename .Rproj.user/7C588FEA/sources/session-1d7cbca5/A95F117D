@@ -3,7 +3,7 @@
     "path": "~/Dropbox/classes/2026_data-science-for-agricultural-professionals/celt-checklist.md",
     "project_path": "celt-checklist.md",
     "type": "markdown",
-    "hash": "2483764023",
+    "hash": "1257145814",
     "contents": "",
     "dirty": false,
     "created": 1767112279645.0,
@@ -12,16 +12,16 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "109,6",
-        "scrollLine": "93",
-        "marks": "<:67,0\n>:68,-1"
+        "cursorPosition": "174,0",
+        "scrollLine": "148",
+        "marks": "<:103,0\n>:103,0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1767577681,
+    "lastKnownWriteTime": 1767578492,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1767577681403,
+    "last_content_update": 1767578492763,
     "read_only": false,
     "read_only_alternatives": []
 }
