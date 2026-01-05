@@ -1,19 +1,15 @@
 # 2025-12-22 - Checklist for Review & Input
 
 
-
-## Start Here Module
-
-
 ## Homepage
 
-- [ ] Caio Read and edit
+- [x] Caio Read and edit - Looks good to me
 
 ---
 
 ## Course Syllabus (Canvas page created from your PDF document)
 
-- [ ] Caio Read and edit
+- [x] Caio Read and edit
 
 - Once you have okayed this Canvas page, we will remove
 the PDF from Canvas, as students can print this
@@ -30,17 +26,19 @@ check the Video Introduction to Working with
 RStudio Cloud section on Canvas, where I include
 videos that show you how to install the required
 software."
-- [ ] Dr. Harbur's Syllabus - (Left hand global navigation)
+- [x] Dr. Harbur's Syllabus - (Left hand global navigation)
 
 ---
 
-## Meet Your Instructor - Caio Read and edit
+## Meet Your Instructor
+
+- Caio Read and edit
 
 - [x] It is suggested by QM that you have a section
 where you write a short bio, or create a short
 video introducing yourself to your students
-- [ ] You could also include information about
-communication and office hours
+- [x] You could also include information about
+communication and office hours 
 
 --- 
 
@@ -63,14 +61,14 @@ needs to be added specifically? What is used and
 what is not used in this course for technology?
 - [x] We added your syllabus language about RStudio
 here
-- [ ] Can you add the technical assistance links?
+- [ ] Can you add the technical assistance links? - I am not sure which links these would be
 - [x] Could you please verify that the accessibility
 and privacy links are correct? - These are correct
 
 ### Required Computer & Digital Literacy Skills
 
-- [ ] What needs to be added here to address the use of RStudio?
-- [ ] Please go ahead and add what you think should be included
+- [x] What needs to be added here to address the use of RStudio?
+- [x] Please go ahead and add what you think should be included
 Amy added a statement from Dr. Harbur: How do you
 want to word this: 'Please check the Video
 Introduction to Working with RStudio Cloud section
@@ -82,17 +80,18 @@ how to install the required software."
 
 ## Academic & Support Resources
 
-- [ ] This is a standard page used across all
+- This is a standard page used across all
 Master’s of Agronomy courses
-- [ ] Caio Please review and let us know if there
-is anything you want added or removed
+- [x] Caio Please review and let us know if there
+is anything you want added or removed - I think this all 
+looks good.
 
 ---
 
 ##  Office Hours
 
-- [ ]  Caio Edit the page
-- [ ] The schedule section may still reflect Dr.
+- [x]  Caio Edit the page
+- [x] The schedule section may still reflect Dr.
 Harbur’s information
 
 ---
