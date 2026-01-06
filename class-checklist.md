@@ -6,12 +6,13 @@
     - Windows  (Make sure to mention R Tools)
     - Mac
 
-- [ ] R Studio interface
+- [x] R Studio interface
     - Explain the interface and different panels
     - Explain the difference between a script and a markdown file
+    - Explain difference between absolute and relative path
     - Explain how you want them to turn in the assignments on Canvas
 
-- [ ] Explain some important R terms
+- [x] Explain some important R terms
     - Mathematical operations
     - Vectors/Matrices
     - Functions

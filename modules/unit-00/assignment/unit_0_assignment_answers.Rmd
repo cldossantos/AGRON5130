@@ -28,7 +28,7 @@ You can replace this text with your answer
 Write valid R commands that will conduct the following mathematical
 operations:
 
-a.  $2 + 2$
+a.  $18 + 58$
 
 ```{r}
 
