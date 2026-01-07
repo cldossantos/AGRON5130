@@ -122,15 +122,15 @@ the QM review
 
 ## DT 1.1 (Discussion) 
 
-- [x] Caio Edit
-- [x] Grading criteria/rubric added — please edit
+- [ ] Caio Edit
+- [ ] Grading criteria/rubric added — please edit
 as you would like (QM requires either a checklist
 for grading or a rubric, but you do not have to
 have both)
-- [x] When finalized, we can show you how to attach
+- [ ] When finalized, we can show you how to attach
 a rubric to SpeedGrader if you want
-- [x] AI policy added
-- [x] Can be adjusted to whatever you want
+-  AI policy added
+-  Can be adjusted to whatever you want
 
 Do you have a specific rubric or grading criteria
 that you want applied to all DT?
