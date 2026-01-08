@@ -22,6 +22,12 @@
 
 ## Population Statistics
 
+- [ ] Other important concepts
+    - Data Frames
+    - Indexing 
+    - Basic data types
+    - Importing a CSV file
+    
 - [ ]  Summary statistics
     - What is a population vs. a sample
     - Individuals and inference space
