@@ -18,6 +18,7 @@ Markdown file to Canvas.
 
 
 ## Question 1 
+*2 points*
 
 Write a short paragraph introducing yourself. Include:
 
@@ -26,20 +27,23 @@ Write a short paragraph introducing yourself. Include:
 - One way you expect to use data or statistics in your professional work
 
 ## Question 2 
+*1 point each; 3 points total*
 
 Write valid R commands that will conduct the following
 mathematical operations:
 
-a. $2 + 2$
-a. $3 \times 9$
-a. $\sqrt{16}$
+a. $2 + 2$ 
+a. $3 \times 9$ 
+a. $\sqrt{16}$ 
 
 ## Question 3
+*2 points*
 
 Create a vector named "my_vector" and store the
 values 2, 4, 6, and 8 in this vector.
 
 ## Question 4
+*1 point*
 
 Now, let's find out how many elements this vector
 has. Use the function "length" to count the number
@@ -47,10 +51,12 @@ of values in the object "my_vector".
 
 
 ## Question 5
+*2 points*
 
 Multiply all elements in the object "my_vector" by 2
 
 ## Question 6
+*3 points*
 
 Multiply the first element in the object
 "my_vector" by 1, the second element by 2, the
@@ -58,6 +64,7 @@ third element by 3, and the fourth element by 4.
 \small Hint: You may want to create another vector.
 
 ## Question 7 
+*2 points*
 
 In your own words, explain at a high level what the following piece of code does. You do not need to explain each line.
 
