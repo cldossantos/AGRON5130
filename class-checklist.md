@@ -22,7 +22,7 @@
 
 ## Population Statistics
 
-- [ ] Other important concepts
+- [x] Other important concepts
     - Data Frames
     - Indexing 
     - Basic data types

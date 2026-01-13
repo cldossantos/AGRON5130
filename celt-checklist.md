@@ -1,3 +1,62 @@
+#Celt Checklist - 2026-01-12
+
+## Meet Your Instructor
+
+- [x] Zoom or Teams Links: (Update Links to Teams
+Links?) - Replaced the Zoom link with a Teams link
+
+
+## Technology Requirements
+
+- [x] Edit R Cloud Studio Drop Down Section - Edited
+this section to reflect the use of RStudio locally.
+- [x] Can you add the technical assistance links? - 
+Added technical assistance links
+
+
+## Module 1 Overview Page: Basic Principles
+
+## Review and Edit
+
+- [ ] "Completion Requirements" Section: was added to
+explain how materials help students complete
+assessments (for reviewers to understand
+alignment) - Please look over edit DT 1.1
+(Discussion)
+
+- [ ] Review and edit grading criteria (QM requires
+either a checklist for grading or a rubric, but
+you do not have to have both) AI policy added and
+can be adjusted
+
+## Module 1 Video Pages
+
+- [ ] Review and edit and remove
+whatever you want to
+
+## Assignment 1.1
+- [ ] Review and edit grading criteria (QM requires
+either a checklist for grading or a rubric, but
+you do not have to have both) I didn’t get to see
+the assignments before hand you might give a point
+a question, if so then that is the criteria AI
+policy added and can be adjusted
+
+## Module 1 Reflection
+
+- [ ] Review and edit grading criteria (QM requires
+either a checklist for grading or a rubric, but
+you do not have to have both)
+
+## Course Map
+
+- [x] Caio will look at objectives Todd sent to update - 
+Sent this to Todd last week.
+- [ ] Caio will add module 0 objectives
+
+
+----
+
 # 2025-12-22 - Checklist for Review & Input
 
 
@@ -7,7 +66,6 @@
 
 Did the course name change?
 
----
 
 ## Course Syllabus (Canvas page created from your PDF document)
 
@@ -30,7 +88,6 @@ videos that show you how to install the required
 software."
 - [x] Dr. Harbur's Syllabus - (Left hand global navigation)
 
----
 
 ## Meet Your Instructor
 
@@ -42,7 +99,6 @@ video introducing yourself to your students
 - [x] You could also include information about
 communication and office hours 
 
---- 
 
 ## Technology and Support
 
@@ -78,7 +134,6 @@ on Canvas, where I include videos that show you
 how to install the required software."
 
 
----
 
 ## Academic & Support Resources
 
@@ -88,7 +143,6 @@ Master’s of Agronomy courses
 is anything you want added or removed - I think this all 
 looks good.
 
----
 
 ##  Office Hours
 
@@ -96,7 +150,6 @@ looks good.
 - [x] The schedule section may still reflect Dr.
 Harbur’s information
 
----
 
 
 ## Module: Video Introduction to Working with RStudio Cloud
@@ -105,7 +158,6 @@ Harbur’s information
 - [x] Headings and short preview paragraphs were
 added for each video
 
----
 
 
 
@@ -118,7 +170,6 @@ assessments (for reviewers) - Please look over You
 will need to write this for the other modules for
 the QM review
 
---- 
 
 ## DT 1.1 (Discussion) 
 
@@ -135,7 +186,6 @@ a rubric to SpeedGrader if you want
 Do you have a specific rubric or grading criteria
 that you want applied to all DT?
 
----
 
 ## Module 1 Video Pages
 

@@ -1,0 +1,245 @@
+---
+title: "Core Concepts"
+author: "Caio dos Santos"
+output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 50
+---
+
+## Introduction
+
+In the previous videos, we focused on getting
+comfortable with the R environment itself. We
+learned how to:
+
+-   Set up R and RStudio
+-   Work with RStudio projects and relative file
+    paths
+-   Understand the difference between scripts and
+    R Markdown files
+-   Use basic R objects like vectors and matrices
+-   Apply simple functions and loops
+
+Up to this point, we have mostly worked with
+**individual numbers or small, artificial
+examples**. In practice, however, most data
+analysis in agriculture and statistics is done
+using **tables of data** (you can think of an
+Microsoft Excel spreadsheet).
+
+In this video, we will take the next step and
+start working with **realistic data structures in
+R**, focusing on:
+
+-   Data frames\
+-   Basic data types\
+-   Indexing and subsetting\
+-   Importing data from a CSV file
+
+These concepts will form the foundation for
+everything we do next in the course.
+
+--------------------------------------------------
+
+## Data Frames
+
+A **data frame** is the most common data structure
+used for data analysis in R.
+
+Conceptually, a data frame is:
+
+-   A collection of vectors\
+-   Organized into rows and columns\
+-   Where each column represents a variable\
+-   And each row represents an observation
+
+Unlike matrices, **different columns in a data
+frame can have different data types**.
+
+### Creating a Simple Data Frame
+
+```{r}
+my_data <- data.frame(
+  plot = c(1, 2, 3, 4),
+  yield = c(180, 195, 172, 200),
+  treatment = c("A", "A", "B", "B")
+)
+
+my_data
+```
+
+This data frame has:
+
+-   Three variables (`plot`, `yield`, `treatment`)
+-   Four observations
+
+--------------------------------------------------
+
+## Basic Data Types in R
+
+R works with several basic data types. The most
+common ones we will use are:
+
+-   **numeric**: numbers used for calculations
+-   **character**: text
+-   **logical**: TRUE / FALSE
+
+We can inspect the structure of a data frame using
+`str()`.
+
+```{r}
+str(my_data)
+```
+
+Notice that:
+
+-   `plot` and `yield` are numeric
+-   `treatment` is character
+
+Understanding data types is important because R
+behaves differently depending on the type of data
+it is working with.
+
+For example, `"180"` (character) is not the same
+as `180` (numeric).
+
+--------------------------------------------------
+
+## Indexing and Subsetting
+
+Indexing allows us to **extract specific parts of
+an object**.
+
+Square brackets `[ ]` are used for indexing in R.
+
+--------------------------------------------------
+
+### Indexing Vectors
+
+```{r}
+my_data$yield
+```
+
+Extract the first value:
+
+```{r}
+my_data$yield[1]
+```
+
+Extract values greater than 180:
+
+```{r}
+my_data$yield[my_data$yield > 180]
+```
+
+--------------------------------------------------
+
+### Indexing Data Frames by Row and Column
+
+Data frames use the format:
+
+```         
+data_frame[rows, columns]
+```
+
+First row, all columns:
+
+```{r}
+my_data[1, ]
+```
+
+All rows, second column:
+
+```{r}
+my_data[, 2]
+```
+
+First two rows:
+
+```{r}
+my_data[1:2, ]
+```
+
+Leaving a position blank means “all”.
+
+--------------------------------------------------
+
+### Indexing by Column Name
+
+This is preferred over the numerical method.
+Partly because data frames can be rearranged and
+the order of columns can change. This method
+guarantees that you will select the correct column
+even if the order changes.
+
+Extract a column by name:
+
+```{r}
+my_data[, "yield"]
+```
+
+Filter rows based on a condition:
+
+```{r}
+my_data[my_data$treatment == "A", ]
+```
+
+This type of indexing is extremely common when
+analyzing experimental data.
+
+--------------------------------------------------
+
+## Importing a CSV File
+
+So far, we have created data directly in R. Most
+of the time, however, data will come from
+**external files**, such as CSV files.
+
+This is where RStudio projects and relative paths
+become very important.
+
+--------------------------------------------------
+
+### Reading a CSV File
+
+Assuming the CSV file is inside your project
+folder:
+
+```{r}
+my_df <- read.csv("data/first-data-frame.csv")
+my_df
+```
+
+Because we are working inside an R project, we do
+**not** need to use absolute paths.
+
+--------------------------------------------------
+
+### Inspecting Imported Data
+
+Always inspect your data after importing it.
+
+```{r}
+head(my_df)
+```
+
+```{r}
+str(my_df)
+```
+
+```{r}
+summary(my_df)
+```
+
+These functions help you:
+
+-   Confirm the data imported correctly
+-   Check variable types
+-   Identify potential issues early
+
+--------------------------------------------------
+
+Take some time to explore these concepts,
+experiment with the code, and make mistakes —
+that’s part of the learning process.
