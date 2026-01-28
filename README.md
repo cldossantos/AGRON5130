@@ -16,7 +16,7 @@ Agronomy degree program.
 
 | **Week** | **Content** | **Status**
 |-----------------|---------------------------------|-----|
-| Week 1: Jan 20 - 23 |Introduction to R programming|[x]|
+| Week 1: Jan 20 - 23 |Introduction to R programming|- [x]|
 | Week 2: Jan 26 - 30 |Population Statistics |[x]|  
 | Week 3: Feb 2 - 6 | Distributions and Probability |[x]|
 | Week 4: Feb 9 - 13 | Sample Statistics ||
