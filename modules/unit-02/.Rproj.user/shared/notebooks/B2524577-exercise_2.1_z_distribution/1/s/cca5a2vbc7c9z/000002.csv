@@ -1,3 +1,0 @@
-"0","```r
-cotton = read.csv(\"data/cotton_uniformity.csv\")
-```"

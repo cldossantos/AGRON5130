@@ -1,3 +1,0 @@
-"0","```r
-barley = read.csv(\"data/barley_uniformity.csv\")
-```"
