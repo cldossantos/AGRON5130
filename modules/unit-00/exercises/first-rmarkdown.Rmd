@@ -2,3 +2,19 @@
 title: "first-rmarkdown"
 output: pdf_document
 ---
+
+
+Please run this code so that you install the
+necessary packages to generate a PDF output
+correctly. I will go more in detail about packages
+and libraries later in the semester, so please do
+not worry about this part too much.
+
+To run this code, please click on the green arrow
+that points right
+
+```{r}
+install.packages('tinytex')
+tinytex::install_tinytex()
+```
+

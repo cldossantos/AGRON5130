@@ -106,7 +106,7 @@ you ever needed to install it yourself, you would
 run the following command (without the `#`).
 
 ```{r}
-# install.packages("fastGraph")
+#install.packages("fastGraph")
 ```
 
 Load the package:
@@ -242,20 +242,12 @@ From the lecture, we learned that about 68% of
 values are expected to fall within one standard
 deviation of the mean.
 
-First, calculate the bounds:
 
 ```{r}
-mu_minus_sigma <- mu - sigma
-mu_plus_sigma  <- mu + sigma
-```
-
-Now calculate the probability between these values.
-
-```{r}
-shadeDist(xshade = c(mu_minus_sigma, mu_plus_sigma),
+shadeDist(xshade = c(-1, 1),
           ddist = "dnorm",
-          parm1 = mu,
-          parm2 = sigma,
+          parm1 = 0,
+          parm2 = 1,
           lower.tail = FALSE)
 ```
 
@@ -263,14 +255,11 @@ We also learned that about 95% of values lie
 within 1.96 standard deviations of the mean.
 
 ```{r}
-mu_minus_1.96_sigma <- mu - 1.96 * sigma
-mu_plus_1.96_sigma  <- mu + 1.96 * sigma
-
-shadeDist(xshade = c(mu_minus_1.96_sigma, mu_plus_1.96_sigma),
+shadeDist(xshade = c(-1.96, 1.96),
           ddist = "dnorm",
-          parm1 = mu,
-          parm2 = sigma,
-          lower.tail = FALSE)
+          parm1 = 0,
+          parm2 = 1,
+          lower.tail = TRUE)
 ```
 
 

@@ -8,50 +8,102 @@ output:
 
 # Introduction
 
-So far, we have learned two ways to visualize population data. First, if it is spatial data, we can draw a **map** that shows where each individual was measured. Second, with any continuous data (e.g. data that can be measured with a ruler, a balance, a moisture sensor, or a graduated cylinder), we can use a **histogram** to visualize the relative frequency with which different ranges of values occur in a population.
+In this exercise, we are going to learn how to
+apply summary statistics to the datasets we worked
+with earlier to, quantify aspects of their
+distributions.
 
-In this exercise, we are going to learn how to apply summary statistics to the datasets we worked with earlier to, quantify aspects of their distributions.
+In this exercise, we’re going to learn how to
+understand population through simple numbers. Our
+main activity will be to calculate and interpret
+the important summary statistics in R. These
+include the mean, median, percentiles, variance,
+standard deviation, and sum of squares. We’ll use
+a small agricultural dataset as an example, just
+so you can see what these calculations look like
+in practice.
 
 # Case Study
 
-To start with, let's do a little clean-up. It is a good habit to clean out R and your environment of R objects (data.frames, lists, vectors, etc.) when you switch notebooks. Otherwise, you might accidentally use one of those objects in your new notebook, especially if you are prone to giving objects similar names (e.g,. "data") across R notebooks.
+The first example we will use is a cotton
+uniformity trial conducted in Greece in 1938. Yes,
+it is a bit dated, but the data are open-source
+and the concept is one we deal with every day in
+agricultural research: how consistent are our
+plots? In other words, what is the variance among
+plots?
 
-Click on the *Session* in the main menu bar (the one with File, Edit, etc) above. Then click on *Restart R and Clear Output*.
-
-![](restart_r..png)
-
-For this example, let's return to the cotton dataset from the *histograms* exercise. Again, we will read in these data using the `read.csv()` function`.`
+In a uniformity trial, several plots are managed
+identically so that the distribution of their
+yields can be measured. These data can be used to
+determine whether that field is a good site for a
+research trial, or how data might vary in a
+similar field.
 
 ```{r}
-cotton = read.csv("data/cotton_uniformity.csv")
+cotton <-  read.csv("data/cotton_uniformity.csv")
 ```
 
-The cotton was grown in 1024 plots and sampled for biomass. We can create a map of sorts for this data with ggplot. We will not dwell on the particulars of code for this plot -- the important thing is the plot map itself.
+The cotton was grown in 1024 plots and sampled for
+biomass. Below we can build a map of how yield was
+distributed along this field.
+
+For this visualization, we will use ggplot2, on
+which I gave an overview in the last video. The
+one difference here is that instead of points, we
+are using tiles. This subdivides the plotting are
+into tiles and colors each tile with the
+associated yield value. This is a way of creating
+a spatial representation of this trial without
+having an spatially explicit data set (something
+you would bring into ArcGIS or QGIS).
 
 ```{r}
 library(ggplot2)
 
-ggplot(cotton, aes(x=col, y=row, fill=yield)) +
-  geom_tile() +
-  scale_fill_gradientn(colors=terrain.colors(5))
-
+ggplot(cotton, aes(x = col, y = row, fill = yield)) +
+  geom_tile() 
 ```
 
-# Percentile, Mean, Median, Maximum, and Minimum
 
-In addition to histograms, we can use percentiles and other statistics to describe our data more numerically. To identify percentiles, data are numerically ordered (ranked) from lowest to highest. Each percentile is associated with a single value from our data; the percentile is the percentage of all data equal to or less than that value.
+#  Summary statistics 
 
-We can quickly generate the 0th, 25th, 50th, and 75th, and 100th percentile for our yield data column using the `summary()` function.
+The fastest way to get a set of summary statistics
+in R is to use the `summary()` function.  Since we
+will compute these statistics on the
+*yield* variable, let's extract the vector from
+this data frame like I we learn in last week's
+module.
 
-```{r, percentile_summary}
+```{r}
 yield = cotton$yield
 summary(yield)
-
 ```
 
-This returns six numbers. The 0th percentile (the **minimum** or "min") is 0.36 -- this is the lowest yield measured in the field. The 25th percentile (the **1st Quartile**) is 0.8375. This means that 25% of all observations were 0.8375 or less. The 50th percentile (the **median**) was 1.03, meaning half of all observed values were 1.03 or less. 75% of observations were less than 1.17, the 75th percentile (the **3rd quartile**). Finally, the 100th percentile (the **maximum**) recorded for this field was 1.66.
+We can use percentiles
+and other statistics to describe our data more
+numerically. To identify percentiles, data are
+numerically ordered (ranked) from lowest to
+highest. Each percentile is associated with a
+single value from our data; the percentile is the
+percentage of all data equal to or less than that
+value.
 
-We can also directly calculate statistics using the `mean()`, `median()`, `max()`, and `min()` functions.
+This returns six numbers. The 0th percentile (the
+**minimum** or "min") is 0.36 -- this is the
+lowest yield measured in the field. The 25th
+percentile (the **1st Quartile**) is 0.8375. This
+means that 25% of all observations were 0.8375 or
+less. The 50th percentile (the **median**) was
+1.03, meaning half of all observed values were
+1.03 or less. 75% of observations were less than
+1.17, the 75th percentile (the **3rd quartile**).
+Finally, the 100th percentile (the **maximum**).
+recorded for this field was 1.66.
+
+We can also directly calculate statistics using
+the `mean()`, `median()`, `max()`, and `min()`
+functions.
 
 ```{r}
 mean(yield) # mean yield
@@ -62,7 +114,9 @@ min(yield) # minimum yield
 
 # Variance and Standard Deviation
 
-It is also simple to calculate variance and standard deviation in R, using the `var()` and `sd()` functions.
+It is also simple to calculate variance and
+standard deviation in R, using the `var()` and
+`sd()` functions.
 
 ```{r}
 var(yield) # variance
@@ -71,28 +125,127 @@ sd(yield)
 
 # Sum of Squares
 
-While it is rare that we summarize a population with the sum of squares, on occasion we may want to calculate it. R does not have a direct function to calculate the sum of squares, but we can calculate it using the variance and number of observations.
+While it is rare that we summarize a population
+with the sum of squares, on occasion we may want
+to calculate it. R does not have a direct function
+to calculate the sum of squares, but we can
+calculate it using the variance and number of
+observations.
 
-In the lecture portion of this unit, we learned the relation ship between variance and sum of squares was as follows:
+In the lecture portion of this unit, we learned
+the relation ship between variance and sum of
+squares was as follows:
 
 $$\sigma^2 = \frac{S_{xx}}{n}$$
 
-Where $\sigma^2$ is the variance, $Sxx$ is the sum of squares, and $n$ is the number of individuals in the population. If we rearrange this equation, we can see that the sum of squares is the product of the variance and n.
+Where $\sigma^2$ is the variance, $Sxx$ is the sum
+of squares, and $n$ is the number of individuals
+in the population. If we rearrange this equation,
+we can see that the sum of squares is the product
+of the variance and n.
 
 $$S_{xx} = \sigma^2 \cdot n$$
 
-We calculated our variance above using `var()`. We can count the number of individuals in the population using the `length()` function. By multiplying these two statistics together, we can calculate the sum of squares.
+We calculated our variance above using `var()`. We
+can count the number of individuals in the
+population using the `length()` function. By
+multiplying these two statistics together, we can
+calculate the sum of squares.
 
 ```{r}
-variance = var(yield) # calculate the variance
-N = length(yield) # cound the number of observations in the yield column
+variance <-  var(yield) # calculate the variance
+N <-  length(yield) # cound the number of observations in the yield column
 
-sum_squares = variance*N # multiply variance by N to get sum of squares
+sum_squares <-  variance * N # multiply variance by N to get sum of squares
 sum_squares
 ```
 
-In the above code, we assigned the population variance to a the variable *variance*. We assigned the population size to the variable *N*. Finally, we multiplied these two new variables to calculate *sum_squares*, the sum of squares.
+In the above code, we assigned the population
+variance to a the variable *variance*. We assigned
+the population size to the variable *N*. Finally,
+we multiplied these two new variables to calculate
+*sum_squares*, the sum of squares.
+
+
+# Graphical visualization of the population
+
+We then can create the histogram using the
+`hist()` function. We will assign the output to
+another R object, *histogram*. As we will see,
+that object contains much more information than
+just our histogram plot.
+
+In the following line, we tell R to plot the
+histogram, using the `plot()` function.
+
+```{r}
+histogram <- hist(yield)
+plot(histogram)
+```
+
+
+
+If we view the histogram object itself, however,
+we will see it is composed of many different
+statistics. histogram is a kind of R object called
+a **list**. It is a collection of many data
+frames.
+
+```{r}
+histogram
+```
+
+Each of these objects can be viewed separately,
+using the dollar sign method we used above.
+For example, we can see the upper and lower yield
+limits of each bins by running `histogram$breaks`.
+
+```{r}
+histogram$breaks
+```
+
+Alternatively, we could see the midpoints, or
+yield values that define the middle of each bin by
+running `histogram$mids` as a command.
+
+```{r}
+histogram$mids
+```
+
+As we saw in the lesson, varying the number of
+columns can affect how we see patterns in the
+data. In the plot above, we have 14 bars. Each bar
+represents a bin width of 0.1. What if we tell R
+to use 28 bins to draw the histogram? We can do
+that by adding the argument `breaks=28` to our
+`hist()` function.
+
+```{r}
+histogram = hist(yield, breaks = 28)
+plot(histogram)
+```
+
+
+## Building histograms with ggplot2
+
+I also wanted to add a chunk of code here of how
+to build histograms using ggplot2. I will keep
+adding ggplot2 code to exemplify how to build
+these simpler graphs in an effort to familiarize
+you with its syntax. When we get to more complex
+graphs, ggplot2 will be pretty handy!
+
+Note that I will not need to load ggplot2 here, as
+I have already loaded it when we built the tile
+yield map.
+
+```{r}
+ggplot(data=cotton, aes(x=yield)) +
+  geom_histogram()
+```
 
 # Practice
 
-Practice calculating the summary statistics for the barley_uniformity.csv, peanut_uniformity, and tomato uniformity datasets.
+Practice calculating the summary statistics and
+building histograms for the barley_uniformity.csv,
+peanut_uniformity, and tomato uniformity datasets.

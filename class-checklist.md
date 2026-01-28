@@ -27,6 +27,10 @@
     - Indexing 
     - Basic data types
     - Importing a CSV file
+
+- [x] R packages
+    - Definition
+    - Examples
     
 - [ ]  Summary statistics
     - What is a population vs. a sample

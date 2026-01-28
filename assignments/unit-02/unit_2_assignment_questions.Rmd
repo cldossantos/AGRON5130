@@ -1,0 +1,181 @@
+---
+title: "Probability and Distributions"
+subtitle: "AGRON 5130"
+author: "YOUR NAME HERE"
+output: pdf_document
+---
+
+# Introduction
+
+The goal of this assignment is to give you hands-on
+practice working with probability, probability
+distributions, and the normal distribution in R.
+You will work with both simulated data and spatial
+yield data to estimate probabilities, visualize
+distributions, and connect summary statistics to
+probabilistic statements. Submit a knitted
+PDF/HTML generated from your R Markdown file to
+Canvas.
+
+
+# Question 1
+
+**1 point**
+
+Load the `peanut_uniformity` dataset and assign it
+to an object called `peanut`.
+
+*note: * this might be a good place to include
+a code chunk loading the `fastGraph` library
+
+
+```{r}
+```
+
+# Question 2
+
+**1 point**
+
+Inspect the dataset using the `head()` function.
+
+```{r}
+```
+
+# Question 3
+
+**1 point**
+
+Create a histogram of yield using the `hist()`
+function.
+
+```{r}
+```
+
+# Question 4
+
+**2 points**
+
+Calculate the mean yield and assign it to the
+variable `peanut_mu`. Calculate the standard
+deviation of yield and assign it to the variable
+`peanut_sigma`.
+
+```{r}
+```
+
+# Question 5
+
+**2 points**
+
+Plot the normal distribution for the peanut yield
+data and calculate the probability of observing a
+yield less than 1.5.
+
+```{r}
+```
+
+# Question 6
+
+**1 point**
+
+Calculate the probability of observing a yield
+greater than 3.5.
+
+```{r}
+```
+
+# Question 7
+
+**1 point**
+
+Calculate the probability of observing a yield
+greater than or equal to 1.6 and less than 2.9.
+
+```{r}
+```
+
+# Question 8
+
+**1 point**
+
+Load the shapefile
+`"data/merriweather_yield_map/merriweather_yield_map.shp"`
+using `st_read()` and assign it to an object called
+`soybean`.
+
+*note:* Hear that? It sounds like there's someone saying "Load the sf package!"
+
+```{r}
+```
+
+# Question 9
+
+**1 point**
+
+Inspect the `soybean` data using the `head()`
+function.
+
+```{r}
+```
+
+# Question 10
+
+**2 points**
+
+Plot a yield map using the `"yield_bu"` column of
+the `soybean` dataset and create a histogram of
+yield.
+
+```{r}
+```
+
+# Question 11
+
+**2 points**
+
+Calculate the mean yield and assign it to the
+variable `soybean_mu`. Calculate the standard
+deviation of yield and assign it to the variable
+`soybean_sigma`.
+
+```{r}
+```
+
+# Question 12
+
+**1 point**
+
+Using the normal distribution, calculate the
+probability of observing a yield greater than or
+equal to 90 bu/ac.
+
+```{r}
+```
+
+# Question 13
+
+**1 point**
+
+Using the normal distribution, calculate the
+probability of observing a yield between 75 and
+85 bu/ac.
+
+```{r}
+```
+
+# Question 14
+
+**1 point**
+
+If the probability of observing a yield less than
+65.8 bu/ac is 5%, about how many observations out
+of 100 would you expect to be less than or equal
+to 65.8 bu/ac?
+
+```{r}
+```
+
+Write your brief interpretation here:
+
+    (Your answer)
+

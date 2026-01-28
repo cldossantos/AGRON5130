@@ -1,0 +1,186 @@
+---
+title: "R Packages"
+author: "Caio dos Santos"
+output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 50
+---
+
+## Introduction
+
+In the previous videos, we focused on getting
+comfortable with R and RStudio itself and some
+core R concepts. In this short video, we'll
+introduce **R packages**. If you have had any
+previous experience with R, you most likely have
+seen or hear of **R packages**. I like to think of
+the as toolboxes that extend R with new functions,
+datasets, and documentation.
+
+--------------------------------------------------
+
+## What is an R package?
+
+An R package is a **collection of functions,
+documentation, and sometimes data**, bundled in a
+standard structure so R can install and load it.
+
+Think of packages as **apps on your phone**:
+- You *install* them once
+- You *load* them whenever you want to use them
+
+--------------------------------------------------
+
+## Installing vs. Loading
+
+**Install** (only once per machine; or after an
+update):
+
+```{r}
+install.packages("ggplot2")
+```
+
+**Load** (every new R session in which you use it):
+
+```{r}
+library(ggplot2)
+```
+
+
+## The ggplot2 package 
+
+**ggplot2** is an R package that implements a visualization
+system called Grammar of Graphics, a declarative
+system that lets you build plots by layering data,
+aesthetics, and geometric elements. It's very
+flexible and powerful, making our lives a little
+easier when visualizing data.  I will show an
+example below.
+
+
+--------------------------------------------------
+
+## Let's visualize some data without ggplot2
+
+
+I will import a package called **nlme** here
+because it contains a soybean dataset that I
+believe would be interesting to all of us in this
+class. You do not need to install it, as it's part
+of the native R installation.
+
+```{r}
+library(nlme)
+soy <- Soybean
+```
+
+Let's take a look at the dataset first. As we can
+see, this dataset includes some variables that we
+might be interested in visualizing together. For
+example, we might be interested in the
+relationship between Time and Weight. We might
+also ask the question: Does this relationship
+change between varieties? (We are not building
+models. Just visualizing for now.)
+
+```{r}
+head(soy)
+```
+
+If I wanted to build this graph using the native
+plotting functions, here's how I'd do it.
+
+```{r}
+plot(soy$Time, soy$weight) ## same result
+
+with(soy, plot(Time, weight))
+```
+
+
+Now, let's see if it looks like different
+varieties have different relationships between
+time and weight gain. You can see that the code
+starts getting complex really fast as we try to do
+more with the graphs. That's not to say that we
+cannot do these graphs without **ggplot2** but it
+definetely makes our lives easier.
+
+```{r}
+cols <- c('steelblue', 'orange')
+with(soy,{ 
+     plot(Time, weight,
+              col = cols[as.numeric(Variety)])
+  legend('topleft', 
+         pch = 1,
+         col = cols,
+         legend = c('Var1', 'Var2'))
+  })
+```
+
+
+## Sample graph but with ggplot2
+
+Let's build the same initial graph using ggplot2 now.
+
+```{r}
+ggplot(data = soy)+
+  geom_point(aes(x = Time, y = weight))
+```
+
+
+It seems like the amount of code needed to produce
+this initial graph was not really that different,
+right? You would be correct. For simple graphs
+like this one, they do not differ much. But let's
+increase the number of variables we want to
+visualize.
+
+Let's color the points by variety again. We can
+see that all I did was to include the Variety
+variable in the argument *col*. The package also
+takes care of the legend automatically, which is
+pretty nice.
+```{r}
+ggplot(data = soy)+
+  geom_point(aes(x = Time, y = weight, col = Variety))
+```
+
+Now, let's add the Year variable to the plot. In my opinion, this is where **ggplot2** shines, being able to build multi-faceted graphs easily.
+
+```{r}
+ggplot(data = soy)+
+  geom_point(aes(x = Time, y = weight, col = Variety))+
+  facet_wrap(~Year)
+```
+
+
+Another nice feature of this package is that it provides a some nice 
+templates too. We can change the plot theme and, as a consequence, change the appearance.
+
+```{r}
+ggplot(data = soy)+
+  geom_point(aes(x = Time, y = weight, col = Variety))+
+  facet_wrap(~Year)+
+  theme_bw()
+```
+
+
+## Finding Help and Examples
+
+Every good package ships with documentation.
+
+Open the general package help index:
+
+```{r}
+help(package = "ggplot2")
+```
+
+Open the help for a specific function:
+
+```{r}
+?geom_point
+```
+
+
+
