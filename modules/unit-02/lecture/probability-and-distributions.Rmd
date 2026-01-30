@@ -1,5 +1,6 @@
 ---
 title: "Probability and Distributions"
+subtitle: "AGRON 5130 - Module 2"
 author: "Caio dos Santos"
 date: "2026-01-26"
 output:
