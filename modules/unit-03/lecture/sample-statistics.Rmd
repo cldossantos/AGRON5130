@@ -2,7 +2,7 @@
 title: "Sample Statistics"
 subtitle: "AGRON 5130 - Module 3"
 author: "Caio dos Santos"
-date: "2026-01-28"
+date: "2026-02-02"
 output:
   html_document:
     toc: true
@@ -32,7 +32,7 @@ observations.
 In agricultural science this is almost never
 possible, because the volume of fieldwork required
 to measure every single individual would simply be
-prohibitive to the work.  If have done field work
+prohibitive to the work.  If you have done field work
 before, can you imagine having to measure every
 single plant within an experimental unit? Instead,
 we rely on **samples**, right? This means that we
@@ -353,7 +353,7 @@ xbar <- mean(sample)
 res <- c(res, xbar)
 }
 hist(res, 
-     main = 'Histrogram of the sample mean',
+     main = 'Histogram of the sample mean',
      xlab = 'Sample mean')
 ```
 
@@ -395,10 +395,27 @@ collected. This is where we introduce the concept
 of **degrees of freedom**, which can is calculated
 as $n-1$. 
 
-Let's take a look at the $t$ distribution in
-comparison to the standard normal distribution for
-different sample sizes, and then we can think
-about the effect of sample size.
+### Quick look into degrees of freedom
+
+There's a more formal definition of **degrees of
+freedom** that involves linear algebra but, for
+this class, we can think of **degrees of freedom**
+as how much independent information we actually
+have left once we estimate something from the
+data.
+
+When we collect a sample and calculate a sample
+mean, that mean is fixed. Once the mean is fixed,
+not all observations are free to vary
+independently anymore. The last observation is
+constrained by the ones that came before it.
+
+### Relationship between sample size and the $t$ distribution 
+
+Let's take a look at the $t$
+distribution in comparison to the standard normal
+distribution for different sample sizes, and then
+we can think about the effect of sample size.
 
 
 ```{r}
@@ -460,7 +477,7 @@ that bonus!
 
 $$T = \frac{\bar{X} - \mu}{\frac{S}{\sqrt{n}}} =
 \frac{13.8 - 12.0}{\frac{2.1}{\sqrt{16}}} = 3.42$$
-Great! We got a value of t-value that we can use
+Great! We got a t-value that we can use
 to compare to the probability. Let's use the
 `fastGraph` library again and check what is the
 probability that we get a value t-value outside of
@@ -489,7 +506,7 @@ t/ha.
 library(fastGraph)
 shadeDist(xshade = c(-3.42, 3.42),
           ddist = 'dt',
-          parm1 = 2) ## degress of freedom: n - 1
+          parm1 = 2) ## degrees of freedom: n - 1
 ```
 
 
@@ -500,7 +517,7 @@ probability to talk about confidence intervals.
 Let's say that instead of testing whether a
 t-value provides evidence that your mean is
 different from a given value, you want to state an
-interval for which the population mean is likely
+interval for which the **population** mean is likely
 to fall within.
 
 Doing some math, we can say that the confidence
