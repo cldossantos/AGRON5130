@@ -37,7 +37,8 @@ within a field in Kundewadi, Niphad, in the district
 of Nasik, India.
 
 ```{r}
-
+millet <- read.csv('./data/millet_uniformity.csv')
+head(millet)
 ```
 
 
@@ -49,6 +50,12 @@ Calculate the **mean**, **standard deviation**, and
 **number of observations** for millet yield.
 
 ```{r}
+xbar <- mean(millet$yield)
+s <- sd(millet$yield)
+n <- length(millet$yield)
+xbar
+s
+n
 ```
 
 
@@ -60,6 +67,8 @@ Calculate the **standard error of the mean** for
 millet yield.
 
 ```{r}
+se <- s / sqrt(n)
+se
 ```
 
 
@@ -77,6 +86,10 @@ that the degrees of freedom are one less than the
 number of observations.
 
 ```{r}
+t.val <- qt(p = c(0.025, 0.975),
+            df = n - 1 )
+
+t.val
 ```
 
 
@@ -88,6 +101,8 @@ Calculate the **95% confidence interval** for millet
 yield using the statistics computed above.
 
 ```{r}
+ci <- xbar + (t.val * se)
+ci
 ```
 
 
@@ -104,6 +119,8 @@ Safflower yield was sampled 340 times within a
 safflower field in Eloy, Arizona.
 
 ```{r}
+saff <- read.csv('./data/safflower_uniformity.csv')
+head(saff)
 ```
 
 
@@ -115,6 +132,12 @@ Calculate the **mean**, **standard deviation**, and
 **number of observations** for safflower yield.
 
 ```{r}
+xbar <- mean(saff$yield)
+s <- sd(saff$yield)
+n <- length(saff$yield)
+xbar
+s
+n
 ```
 
 
@@ -126,6 +149,8 @@ Calculate the **standard error of the mean** for
 safflower yield.
 
 ```{r}
+se <- s / sqrt(n)
+se
 ```
 
 
@@ -141,6 +166,9 @@ A 90% confidence interval leaves 5% of the
 probability in each tail, so use `0.95`.
 
 ```{r}
+t.val <- qt(p = c(0.05, 0.95),
+            df = n - 1 )
+t.val
 ```
 
 
@@ -152,6 +180,6 @@ Calculate the **90% confidence interval** for
 safflower yield using the statistics computed above.
 
 ```{r}
+ci <- xbar + (t.val * se)
+ci
 ```
-
-`

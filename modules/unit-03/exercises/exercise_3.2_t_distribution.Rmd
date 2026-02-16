@@ -193,6 +193,9 @@ qt(0.2, 9)
 ```
 
 What is the upper limit?
+```{r}
+```
+
 
 
 **Q:** What is the range of t-values associated

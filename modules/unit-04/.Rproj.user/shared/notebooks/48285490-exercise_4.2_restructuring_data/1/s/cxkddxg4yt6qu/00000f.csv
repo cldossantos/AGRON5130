@@ -1,3 +1,0 @@
-"0","darwin = read.csv(""data/darwin.csv"")"
-"0",""
-"0","head(darwin)"

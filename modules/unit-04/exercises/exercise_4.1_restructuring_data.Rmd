@@ -1,0 +1,292 @@
+---
+title: "Re-Structuring Data"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+# Restructuring Columns and Rows
+
+As we begin comparing **two treatments**, it
+becomes very important to think about **how our
+data are organized**.
+
+The way a dataset is structured often determines:
+- how easy it is to compute statistics,
+- how easy it is to plot results,
+- and whether certain tests (like paired t‑tests) are straightforward or frustrating.
+
+In this exercise, we will practice moving data
+between **wide** and **long** formats.
+
+
+# Wide vs Long Data
+
+There are two very common ways to organize data.
+
+### Wide format
+Each treatment gets its **own column**.
+
+
+```{r}
+wide <- data.frame(Rep = c(1, 2),
+                   Trt_A = c(1, 2),
+                   Trt_B = c(5, 6))
+wide
+```
+
+
+### Long format
+
+Each **row is one observation** and we include a
+column telling us which treatment it came from.
+
+```{r}
+long <- data.frame(Rep = c(1, 2, 1, 2),
+                   Treatment = c('A', 'A', 'B', 'B'),
+                   Yield = c(1, 2, 5, 6))
+long
+```
+
+
+In statistics and plotting, we often prefer **long
+format**. But for **paired differences**, wide
+format can be more convenient.
+
+So we need to know how to move between both.
+
+
+# Example 1: Create a Wide Dataset
+
+First, let's manually create a simple wide dataset.
+
+```{r}
+Rep   <- 1:4
+Trt_A <- 1:4
+Trt_B <- 5:8
+
+wide_df <- data.frame(Rep, Trt_A, Trt_B)
+
+wide_df
+```
+
+Each treatment is currently in its own column.  
+
+
+# Convert Wide to Long
+
+To convert formats in base R, we use the
+**reshape()** function.
+
+Let's take a look at the help page for reshape. 
+```{r}
+?reshape
+```
+
+
+
+Ok, now let's convert a wide dataset to a long
+dataset
+
+```{r}
+long_df <- reshape(wide_df,
+                   varying = c("Trt_A", "Trt_B"),
+                   v.names = "Yield",
+                   timevar = "Treatment",
+                   times = c("A", "B"),
+                   idvar = "Rep",
+                   direction = "long")
+
+long_df
+```
+
+Now:
+- Treatment names are in one column
+- Observations are stacked vertically
+
+This format is often preferred for plotting and
+modeling.
+
+
+# Convert Long to Wide
+
+Sometimes we need to go back to wide format. This
+is especially useful when computing **paired
+differences**.
+
+```{r}
+wide_again_df <- reshape(long_df,
+                         idvar = "Rep",
+                         timevar = "Treatment",
+                         direction = "wide")
+
+wide_again_df
+```
+
+---
+
+# Creating New Columns
+
+When the data are wide, we can compute differences
+very easily.
+
+```{r}
+wide_again_df$Trt_Diff <- wide_again_df$Yield.A - wide_again_df$Yield.B
+
+wide_again_df
+```
+
+
+# Case Study: Soybean Fungicide
+
+Now let's try with a real dataset.
+
+```{r}
+soybean <- read.csv("data/soybean_fungicide.csv")
+head(soybean)
+```
+
+This dataset is currently **long**.
+
+To compute differences between treatments, we
+first reshape to wide.
+
+```{r}
+soybean_wide <- reshape(soybean,
+                        idvar = "Block",
+                        timevar = "Treatment",
+                        direction = "wide")
+
+soybean_wide
+```
+
+Now compute differences.
+
+```{r}
+soybean_wide$diff <- soybean_wide$Yield.A - soybean_wide$Yield.B
+soybean_wide
+```
+
+Notice how easy subtraction becomes once treatments are columns.
+
+
+
+# Practice 1
+
+The dataset "darwin.csv" is from a trial by
+Charles Darwin in which he compared the heights of
+progeny of corn plants that were self-fertilized
+and cross-fertilized. Three pairs of plants were
+grown per pot.  Measurements are in inches.
+
+```{r}
+darwin <- read.csv("data/darwin.csv")
+head(darwin)
+```
+
+The data are currently in the long format.  We
+want to convert it to the wide format, where each
+treatment has its heights in a separate column.
+Re-structure the type and height columns by adding
+the spread function to the code chunk below
+
+```{r}
+```
+
+The first few rows of the resulting dataset should
+look like:
+
+I	a	23.500	17.375	
+I	b	12.000	20.375	
+I	c	21.000	20.000	
+II	d	22.000	20.000	
+
+
+# Practice 2
+
+These data are from a trial that compared apple
+genotypes.
+
+```{r}
+apple <- read.csv('./data/apple_genotype.csv')
+head(apple)
+```
+
+Calculate the difference between the two apple genotypes (Golden and Redspur).
+You will have to generate a wide dataset, and then compute the differences.
+
+```{r}
+```
+The first two rows should look like:
+
+R1	121.7750	127.5900	-5.81500	
+R2	146.7222	126.7625	19.95972	
+
+
+# Practice 3
+
+Manganese was applied to soybean at the V5 stage near New Baltimore, Ohio.  
+
+```{r}
+manganese <- read.csv("data/soybean_manganese.csv")
+head(manganese)
+```
+
+Convert the data to wide format so the two
+treatments are in separate columns
+```{r}
+```
+The first two rows of the resulting dataset should
+look like:
+
+1	78.9	81.7		
+2	80.9	84.3	
+
+Then calculate the difference between treatments A
+and B by subtracting treatment B from treatment A.
+
+```{r}
+
+```
+
+The first couple of rows of the final dataset
+should look like:
+
+1	78.9	81.7	-2.8	
+2	80.9	84.3	-3.4	
+
+
+# Practice 4
+
+Data are from a wheat trial where fungicide was
+applied during flag leaf stage.
+
+```{r}
+wheat <- read.csv("data/wheat_fungicide.csv")
+head(wheat)
+```
+
+Convert the data to wide format.  The first few rows should look like:
+
+1	95.9	93.8	
+2	97.5	92.3	
+3	98.8	98.7	
+
+```{r}
+```
+
+
+Calculate the difference between treatments by subtracting Treatment A from Treatment B.  The first few rows should look like:
+
+1	93.8	95.9	-2.1	
+2	92.3	97.5	-5.2	
+3	98.7	98.8	-0.1	
+
+
+
+```{r}
+
+
+```
+

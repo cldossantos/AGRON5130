@@ -62,6 +62,8 @@ standard deviation.
 ```{r}
 yield_mean <- mean(yield)
 yield_sd <- sd(yield)
+yield_mean
+yield_sd
 ```
 
 Next, we calculate the **standard error of the
@@ -76,12 +78,14 @@ using the `length()` function.
 
 ```{r}
 no_samples <- length(yield)
+no_samples
 ```
 
 Now we can calculate the standard error.
 
 ```{r}
 yield_se <- yield_sd / sqrt(no_samples)
+yield_se
 ```
 
 To construct the confidence interval, we now need
@@ -95,6 +99,7 @@ function.
 
 ```{r}
 t_value <- qt(0.95, 1)
+t_value
 ```
 
 Where does the `1` come from? This is the
@@ -157,6 +162,7 @@ yield_mean_2 <- mean(yield_2)
 yield_sd_2 <- sd(yield_2)
 no_samples_2 <- length(yield_2)
 yield_se_2 <- yield_sd_2 / sqrt(no_samples_2)
+yield_se_2
 ```
 
 This time, we want a **95% confidence interval**,
@@ -168,6 +174,7 @@ freedom are (5 - 1 = 4).
 
 ```{r}
 t_value_2 <- qt(0.975, 4)
+t_value_2
 ```
 
 Now we compute the confidence interval.

@@ -1,0 +1,168 @@
+---
+title: "Confidence Interval of Difference"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+# Introduction
+
+In this unit, we learned that, in the case of
+two-treatment experiments, we can test whether the
+populations that receive each treatment are
+different from each other by testing whether their
+difference is different from zero. While we will
+often use the **t-test** to calculate the
+probability the two populations are equal, given
+their measured values, there are times when we may
+want to report the confidence interval around
+their difference.
+
+These confidence intervals also be can be gained
+from the `t.test()` function, but calculating them
+manually in these exercises is a good opportunity
+to sharpen your R skills and hopefully will give
+you are greater conceptual sense of how the
+confidence interval works.
+
+To create the confidence interval for the
+difference between two populations, there are the
+following steps:
+
+1.  Calculate the differences between the
+populations in each pair or block.
+
+2.  Calculate the overall mean difference between
+the two populations.
+
+3.  Calculate the standard deviation and standard
+error of the difference.
+
+4.  Look up the appropriate t-value based on the
+desired level of confidence and degrees of freedom
+
+5.  Add and subtract the product of standard error
+and t-value from the mean difference.
+
+# Example 1
+
+We will work with the soybean_fungicide data from
+the previous exercise:
+
+```{r}
+soybean <- read.csv("data/soybean_fungicide.csv")
+head(soybean)
+```
+
+## Compute Differences
+
+We will use the `reshape()` function from the
+previous exercises to calculate a the population
+difference within each block.
+
+```{r}
+soybean_wide <- reshape(soybean,
+                        idvar = "Block",
+                        timevar = "Treatment",
+                        direction = "wide")
+
+soybean_wide$diff <- soybean_wide$Yield.A - soybean_wide$Yield.B
+soybean_wide
+```
+
+## Calculate the Mean Difference
+
+This is the mean for the new column, *diff*. As a
+reminder, `soybean_wide$diff` tells R to use the
+diff column of the soybean_wide data frame.
+
+```{r}
+xbar <- mean(soybean_wide$diff)
+xbar
+```
+
+## Calculate the Standard Error
+
+
+```{r}
+n <- length(soybean_wide$diff)
+s <- sd(soybean_wide$diff)/sqrt(n)
+s
+```
+
+
+## Compute the t-value
+
+We calculate the t-value to use in our confidence
+interval by using the `qt()` function of R.
+Remember, the qt function uses two arguments. The
+first is the desired level of confidence. We want
+a 95% confidence interval, so we will use 0.975.
+That will leave 0.025, or 2.5%, beyond the upper
+and lower limits of our confidence interval.
+
+The second argument is the degrees of freedom.
+Since we have observed ten differences, we have
+nine degrees of freedom.
+
+```{r}
+t_value <- qt(c(0.025, 0.975), 9)
+t_value
+```
+
+Our t_value is approximately 2.26.
+
+# Calculate the Confidence Interval
+
+The confidence interval is bound by **upper** and
+**lower confidence limits**. The lower limit is
+equal to the mean difference minus the product of
+the standard error of the difference and t-value.
+The upper limit is the mean difference plus the
+product of the standard error of the difference.
+
+```{r}
+ci <- xbar + (s * t_value)
+ci
+```
+
+The 95% confidence interval, with 9 df, for the
+difference is (-5.21, -1.85). Note the confidence
+interval does not include zero, therefore the two
+populations (and, thus, the treatments they
+received) are significantly different at the
+*P\<0.05* level.
+
+Which treatment was greater? Since we subtracted B
+from A, the negative confidence interval indicates
+B was greater.
+
+
+
+Like we saw in the lecture, this entire process
+can be summarized using the `t.test()` function.
+
+```{r}
+t.test(soybean_wide$Yield.A,
+       soybean_wide$Yield.B,
+       paired = TRUE)
+```
+
+
+The t.test function allows a certain level of
+flexibility too. Let's say, for example, that the
+company claims a 5-bushel difference when using
+this fungicide.
+
+We could test the following hypothesis:
+$$H_0: \mu_1 - \mu_2 = 5 \newline
+H_a: \mu_1 - \mu_2 \ne 5$$
+
+
+```{r}
+t.test(soybean_wide$Yield.A,
+       soybean_wide$Yield.B,
+       mu = -5,
+       paired = TRUE)
+```

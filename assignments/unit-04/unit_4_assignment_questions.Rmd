@@ -8,16 +8,14 @@ output: pdf_document
 
 # Introduction
 
-The goal of this assignment is to give you
-hands-on practice working with **sample
-statistics** and
+The goal of this assignment is to give you hands-on
+practice working with **sample statistics** and
 **confidence intervals**, building directly on the
-concepts introduced in this week’s videos. You
-will work with real agronomic datasets, compute
-sample-based summary statistics, quantify
-uncertainty using the standard error, and
-construct confidence intervals using the *t*
-distribution.
+concepts introduced in this week’s videos. You will
+work with real agronomic datasets, compute sample-based
+summary statistics, quantify uncertainty using the
+standard error, and construct confidence intervals
+using the *t* distribution.
 
 Submit a knitted PDF or HTML generated from your
 R Markdown file to Canvas.
@@ -37,13 +35,12 @@ within a field in Kundewadi, Niphad, in the district
 of Nasik, India.
 
 ```{r}
-
 ```
 
 
 # Question 2
 
-**1 point**
+**1 points**
 
 Calculate the **mean**, **standard deviation**, and
 **number of observations** for millet yield.
@@ -54,7 +51,7 @@ Calculate the **mean**, **standard deviation**, and
 
 # Question 3
 
-**1 point**
+**1 points**
 
 Calculate the **standard error of the mean** for
 millet yield.
@@ -109,7 +106,7 @@ safflower field in Eloy, Arizona.
 
 # Question 7
 
-**1 point**
+**1 points**
 
 Calculate the **mean**, **standard deviation**, and
 **number of observations** for safflower yield.

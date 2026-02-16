@@ -1,3 +1,0 @@
-"0","darwin_wide = darwin %>%"
-"0","  spread(type, height)"
-"0","head(darwin_wide)"

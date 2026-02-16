@@ -1,14 +1,14 @@
 ---
 title: "Two treatment comparisons"
 subtitle: "AGRON 5130"
-author: "Caio dos Santos"
+author: "YOUR NAME HERE"
 output: pdf_document
 ---
 
 # Introduction
 
 The goal of this assignment is to give you
-hands-on practice conducting paired t-tests,
+hands-on practice conducting paired $t$-tests,
 interpreting confidence intervals, and thinking
 carefully about how data structure affects
 analysis.
@@ -18,8 +18,8 @@ strip-trial evaluating whether a cereal rye cover
 crop reduces corn yield. Corn was planted
 following either:
 
-1. No cover crop (Control)
-2. Cereal rye terminated prior to planting.
+- No cover crop (Control)
+- Cereal rye terminated prior to planting.
 
 Strips were paired within blocks across the field
 to control for spatial variability. Your task is
@@ -43,23 +43,26 @@ and assign it to an object called rye.
 Inspect the first six rows using head().
 
 ```{r}
+rye <- read.csv('./data/cover-crop.csv')
+head(rye)
 ```
 
 # Question 2
 
 **2 points**
 
-Before analyzing the data, let's visualize it.
-Build a plot in which you show the yield
-observations of both treatments. This next part is
-optional but, how about adding the mean for each
-treatment and the standard deviation?
+Before analyzing the data, let's visualize it. Build a plot in which you show the yield observations of both treatments. This next part is optional but, how about adding the mean for each treatment and the standard deviation?
 
-hint: there's a graph like this in the lecture
-HTML. Also, pay attention to the column names.
-Capitalization matters in R.
+hint: there's a graph like this in the lecture HTML. Also, pay attention to the column names. Capitalization matters in R. 
 
 ```{r}
+ggplot(rye)+
+  geom_point(aes(x = Yield, y = Treatment), pch = 1)+
+  labs(x = 'Yield (bu/ac)', y = 'Treatment')+
+  stat_summary(aes(x = Yield, y = Treatment),
+               pch = 17,
+               fun.data = 'mean_se')+
+  theme_bw()
 ```
 
 # Question 3
@@ -73,9 +76,17 @@ the difference within each block.
 each treatment has its own column.
 
 2. Compute a new column called diff
-representing: Control yield - Rye yield
+representing: Control yield−Rye yield
 
 ```{r}
+rye_wide <- reshape(rye,
+                    idvar = 'Block',
+                    timevar = 'Treatment',
+                    direction = 'wide')
+rye_wide
+
+rye_wide$diff <- rye_wide$Yield.Control - rye_wide$`Yield.Cereal Rye`
+rye_wide
 ```
 
 
@@ -90,6 +101,13 @@ Using the vector of differences:
 a 95% confidence interval
 
 ```{r}
+xbar <- mean(rye_wide$diff)
+s <- sd(rye_wide$diff) / sqrt(length(rye_wide$diff))
+t.val <- qt(c(0.025, 0.975), nrow(rye_wide) - 1)
+
+xbar
+s
+t.val
 ```
 
 
@@ -100,6 +118,8 @@ a 95% confidence interval
 Construct a 95% confidence interval
 
 ```{r}
+ci <- xbar + (s * t.val)
+ci
 ```
 
 # Question 6
@@ -118,15 +138,18 @@ about whether cereal rye reduces corn yield?
 **2 points**
 
 Use the built-in t.test() function in R to
-conduct a paired t-test comparing rye and
+conduct a paired $t$-test comparing rye and
 control treatments. 
 
 Report:
-1. The t-statistic
+1. The $t$-statistic
 2. The p-value
 3. The 95% confidence interval
 
 ```{r}
+t.test(rye_wide$Yield.Control,
+       rye_wide$`Yield.Cereal Rye`,
+       paired = TRUE)
 ```
 
 
@@ -134,7 +157,7 @@ Report:
 
 **1 point**
 
-Write a brief interpretation of the t-test
+Write a brief interpretation of the $t$-test
 output. Things worth mentioning are the hypothesis
 you tested, the p-value, and whether you reject
 the null hypothesis.

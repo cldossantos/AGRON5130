@@ -87,6 +87,7 @@ Load the planting map
 and assign it to an object called moline.
 
 ```{r}
+moline <- st_read('./data/moline_il_planting_map/moline_il_planting_map.shp')
 
 ```
 
@@ -109,6 +110,7 @@ and produce a histogram of the planting rate.
 
 ```{r}
 
+plot(moline['AppldRt'], pch = 16, cex = 0.1)
 ```
 
 

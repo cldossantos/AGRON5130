@@ -1,2 +1,0 @@
-"0","wheat = read.csv(""data/wheat_fungicide.csv"")"
-"0","head(wheat)"

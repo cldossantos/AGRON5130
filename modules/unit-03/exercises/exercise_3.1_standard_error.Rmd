@@ -150,6 +150,7 @@ standard deviation of the population.
 
 ```{r}
 barley_sd <- sd(barley_yield)
+barley_sd
 ```
 
 What would the standard error of the sample mean
@@ -168,6 +169,9 @@ sample sizes. You should obtain values close to
 the following:
 
 * 4 samples: SE ≈ 15.6
+```{r}
+barley_sd / sqrt(4)
+```
 * 5 samples: SE ≈ 13.9
 * 7 samples: SE ≈ 11.8
 

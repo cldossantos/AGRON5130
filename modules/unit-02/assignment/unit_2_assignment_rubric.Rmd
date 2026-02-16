@@ -30,6 +30,7 @@ a code chunk loading the `fastGraph` library
 
 
 ```{r}
+peanut <- read.csv('./data/peanut_uniformity.csv')
 ```
 
 # Question 2
@@ -39,6 +40,7 @@ a code chunk loading the `fastGraph` library
 Inspect the dataset using the `head()` function.
 
 ```{r}
+head(peanut)
 ```
 
 # Question 3
@@ -49,6 +51,7 @@ Create a histogram of yield using the `hist()`
 function.
 
 ```{r}
+hist(peanut$yield)
 ```
 
 # Question 4
@@ -61,6 +64,8 @@ deviation of yield and assign it to the variable
 `peanut_sigma`.
 
 ```{r}
+peanut_mu <- mean(peanut$y)
+peanut_sd <- sd(peanut$y)
 ```
 
 # Question 5
@@ -72,6 +77,11 @@ data and calculate the probability of observing a
 yield less than 1.5.
 
 ```{r}
+library(fastGraph)
+shadeDist(xshade = 1.5,
+          ddist = 'dnorm',
+          parm1 = peanut_mu,
+          parm2 = peanut_sd)
 ```
 
 # Question 6
@@ -82,6 +92,11 @@ Calculate the probability of observing a yield
 greater than 3.5.
 
 ```{r}
+shadeDist(xshade = 3.5,
+          ddist = 'dnorm',
+          parm1 = peanut_mu,
+          parm2 = peanut_sd,
+          lower.tail = FALSE)
 ```
 
 # Question 7
@@ -92,6 +107,11 @@ Calculate the probability of observing a yield
 greater than or equal to 1.6 and less than 2.9.
 
 ```{r}
+shadeDist(xshade = c(1.6, 2.9),
+          ddist = 'dnorm',
+          parm1 = peanut_mu,
+          parm2 = peanut_sd,
+          lower.tail = FALSE)
 ```
 
 # Question 8
@@ -106,6 +126,8 @@ using `st_read()` and assign it to an object called
 *note:* Hear that? It sounds like there's someone saying "Load the sf package!"
 
 ```{r}
+library(sf)
+soybean <- st_read('./data/merriweather_yield_map/merriweather_yield_map.shp')
 ```
 
 # Question 9
@@ -116,6 +138,7 @@ Inspect the `soybean` data using the `head()`
 function.
 
 ```{r}
+head(soybean)
 ```
 
 # Question 10
@@ -127,6 +150,7 @@ the `soybean` dataset and create a histogram of
 yield.
 
 ```{r}
+plot(soybean['yield_bu'])
 ```
 
 # Question 11
@@ -139,6 +163,8 @@ deviation of yield and assign it to the variable
 `soybean_sigma`.
 
 ```{r}
+soybean_mu <- mean(soybean$yield_bu)
+soybean_sigma <- sd(soybean$yield_bu)
 ```
 
 # Question 12
@@ -150,6 +176,11 @@ probability of observing a yield greater than or
 equal to 90 bu/ac.
 
 ```{r}
+shadeDist(xshade = 90,
+          ddist = 'dnorm',
+          parm1 = soybean_mu,
+          parm2 = soybean_sigma,
+          lower.tail = FALSE)
 ```
 
 # Question 13
@@ -161,6 +192,11 @@ probability of observing a yield between 75 and
 85 bu/ac.
 
 ```{r}
+shadeDist(xshade = c(75, 85),
+          ddist = 'dnorm',
+          parm1 = soybean_mu,
+          parm2 = soybean_sigma,
+          lower.tail = FALSE)
 ```
 
 
@@ -174,10 +210,16 @@ of 100 would you expect to be less than or equal
 to 65.8 bu/ac?
 
 ```{r}
+shadeDist(xshade = 65.8,
+          ddist = 'dnorm',
+          parm1 = soybean_mu,
+          parm2 = soybean_sigma,
+          lower.tail = TRUE)
 ```
 
 
 
 Write your brief interpretation here:
 
+    I would expect 5 observations out of 100 to be under 65.8 bu/ac.
 

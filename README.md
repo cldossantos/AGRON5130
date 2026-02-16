@@ -19,8 +19,8 @@ Agronomy degree program.
 | Week 1: Jan 20 - 23 |Introduction to R programming| done|
 | Week 2: Jan 26 - 30 |Population Statistics |done|  
 | Week 3: Feb 2 - 6 | Distributions and Probability |done|
-| Week 4: Feb 9 - 13 | Sample Statistics ||
-| Week 5: Feb 16 - 20 | Two-Treatment Comparisons ||
+| Week 4: Feb 9 - 13 | Sample Statistics |done|
+| Week 5: Feb 16 - 20 | Two-Treatment Comparisons |done|
 | Week 6: Feb 23 - 27 | Hypotheses Testing ||
 | Week 7: Mar 2 - 6 | Multiple Treatment Trials ||
 | Week 8: Mar 9 - 13 | Multiple Treatment Designs ||
