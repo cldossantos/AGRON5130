@@ -43,6 +43,7 @@ and assign it to an object called rye.
 Inspect the first six rows using head().
 
 ```{r}
+library(ggplot2)
 rye <- read.csv('./data/cover-crop.csv')
 head(rye)
 ```
@@ -76,7 +77,7 @@ the difference within each block.
 each treatment has its own column.
 
 2. Compute a new column called diff
-representing: Control yield−Rye yield
+representing: Control yield-Rye yield
 
 ```{r}
 rye_wide <- reshape(rye,

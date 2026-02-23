@@ -67,7 +67,7 @@ the difference within each block.
 each treatment has its own column.
 
 2. Compute a new column called diff
-representing: Control yield−Rye yield
+representing: Control yield - Rye yield
 
 ```{r}
 ```
