@@ -1,0 +1,441 @@
+---
+title: "simulating-datasets"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+```
+
+
+
+
+## Completely randomized design
+## 3 cover crops species
+## 2 Termination dates
+```{r}
+set.seed(20260306)
+
+species <- factor(rep(c("Rye", "Clover", "Peas"),
+                      times = 2 * 5),
+                  levels = c("Rye","Clover","Peas"))
+
+termination <- factor(rep(c("Early","Late"),
+                          each = 3,
+                          times = 5),
+                      levels = c("Early","Late"))
+
+crd_layout <- data.frame(
+  species = species,
+  termination = termination
+)
+
+species_effects <- c(
+  Rye = -10,
+  Clover = -2,
+  Peas = 2
+)
+
+termination_effects <- c(
+  Early = 4,
+  Late = -4
+)
+
+interaction_effects <- matrix(
+  c(0, -20,
+    0,  0,
+    0,  0),
+  nrow = 3,
+  byrow = TRUE,
+  dimnames = list(
+    c("Rye", "Clover", "Peas"),
+    c("Early", "Late")
+  )
+)
+
+
+crd_layout$yield <- with(crd_layout,
+                         205 +
+                           species_effects[species] +
+                           termination_effects[termination] +
+                           mapply(function(s, t) interaction_effects[s, t],
+                                  species,
+                                  termination) +
+                           rnorm(30, mean = 0, sd = 8)
+)
+
+crd_layout$trt <- paste(crd_layout$species,
+                        crd_layout$termination,
+                        sep = " & ")
+
+head(crd_layout)
+
+crd_layout$rep <- ave(crd_layout$yield, crd_layout$trt, FUN = seq_along)
+
+
+model_crd <- lm(yield ~ species * termination,
+                data = crd_layout)
+
+anova(model_crd)
+crd_layout <- crd_layout[c(1,2,4,5,3)]
+crd_layout <- crd_layout[sample(1:30, 30), ]
+
+write.csv(crd_layout, './data/cover-crop-and-termination-crs.csv',
+          row.names = FALSE)
+
+
+ggplot(crd_layout, aes(x = paste(species, termination, sep = ' & '), y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  stat_summary(fun = mean, geom = "point", shape = 17, size = 3) +
+  coord_flip() +
+  theme_linedraw() +
+  labs(x = "Species & Termination",
+       y = "Corn Yield (bu/ac)")
+
+
+png('./figures/01-crd.png',
+    width = 8 * 100, height = 5 * 100, res = 100)
+ggplot(crd_layout,
+       aes(x = rep(1:6, times = 5),
+           y = block,
+           fill = trt)) +
+  geom_tile(color = "black") +
+  geom_text(aes(label = trt), size = 3) +
+  scale_fill_manual(values = hcl.colors(6, "Dynamic")) +
+  labs(x = "",
+       y = "",
+       fill = "Treatment") +
+  theme_minimal()
+dev.off()
+
+
+```
+
+
+### Randomized Complete Block Design
+```{r}
+set.seed(20260307)
+
+# Define blocks
+block <- factor(rep(1:5, each = 6))
+
+# Define treatment structure
+species <- factor(rep(c("Rye", "Clover", "Peas"),
+                      times = 2 * 5),
+                  levels = c("Rye","Clover","Peas"))
+
+termination <- factor(rep(c("Early","Late"),
+                          each = 3,
+                          times = 5),
+                      levels = c("Early","Late"))
+
+# Combine into data frame
+rcbd_layout <- data.frame(
+  block = block,
+  species = species,
+  termination = termination
+)
+
+# Randomize treatments within block
+for(b in levels(rcbd_layout$block)) {
+  
+  rows <- rcbd_layout$block == b
+  
+  rcbd_layout[rows, c("species","termination")] <-
+    rcbd_layout[rows, c("species","termination")][sample(1:6), ]
+  
+}
+
+head(rcbd_layout)
+
+species_effects <- c(
+  Rye = -10,
+  Clover = -2,
+  Peas = 2
+)
+
+termination_effects <- c(
+  Early = 4,
+  Late = -4
+)
+
+interaction_effects <- matrix(
+  c(-5, -20,
+    0,  0,
+    0,  0),
+  nrow = 3,
+  byrow = TRUE,
+  dimnames = list(
+    c("Rye", "Clover", "Peas"),
+    c("Early", "Late")
+  )
+)
+
+block_effects <- c(
+  `1` = -20,
+  `2` = -15,
+  `3` = 0,
+  `4` = 10,
+  `5` = 20
+)
+
+rcbd_layout$yield <- with(rcbd_layout,
+                          205 +
+                            species_effects[species] +
+                            termination_effects[termination] +
+                            mapply(function(s,t)
+                              interaction_effects[s,t],
+                              species,
+                              termination) +
+                            block_effects[block] +
+                            rnorm(30, mean = 0, sd = 8)
+)
+
+rcbd_layout$yield <- with(rcbd_layout,
+                          205 +
+                            species_effects[species] +
+                            termination_effects[termination] +
+                            mapply(function(s,t)
+                              interaction_effects[s,t],
+                              species,
+                              termination) +
+                            block_effects[block] +
+                            rnorm(30, mean = 0, sd = 8)
+)
+
+rcbd_layout$trt <- paste(rcbd_layout$species,
+                         rcbd_layout$termination,
+                         sep = " & ")
+
+rcbd_layout$rep <- ave(rcbd_layout$yield,
+                       rcbd_layout$trt,
+                       FUN = seq_along)
+
+rcbd_layout <- rcbd_layout[c(1,2,3,5,6,4)]
+
+head(rcbd_layout)
+
+ggplot(rcbd_layout, aes(x = paste(species, termination, sep = ' & '), y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  stat_summary(fun = mean, geom = "point", shape = 17, size = 3) +
+  coord_flip() +
+  theme_linedraw() +
+  labs(x = "Species & Termination",
+       y = "Corn Yield (bu/ac)")
+
+model_rcbd <- lm(yield ~ block + species * termination,
+                 data = rcbd_layout)
+
+anova(model_rcbd)
+
+library(nlme)
+
+model_rcbd_mixed <- lme(yield ~ species * termination,
+                        random = ~1 | block,
+                        data = rcbd_layout)
+
+anova(model_rcbd_mixed)
+
+png('./figures/02-rcbg.png',
+    width = 8 * 100, height = 5 * 100, res = 100)
+ggplot(rcbd_layout,
+       aes(x = rep(1:6, times = 5),
+           y = block,
+           fill = trt)) +
+  geom_tile(color = "black") +
+  geom_text(aes(label = trt), size = 3) +
+  scale_fill_manual(values = hcl.colors(6, "Dynamic")) +
+  labs(x = "Plot within block",
+       y = "Block",
+       fill = "Treatment") +
+  theme_minimal()
+dev.off()
+
+write.csv(rcbd_layout, './data/cover-crop-and-termination-rcbd.csv',
+          row.names = FALSE)
+
+```
+
+
+
+## Split-plot
+
+```{r}
+### Split-Plot Design
+set.seed(20260308)
+
+# Blocks
+block <- factor(rep(1:5, each = 6))
+
+# Main plot factor
+termination <- factor(rep(rep(c("Early","Late"),
+                              each = 3),
+                          times = 5),
+                      levels = c("Early","Late"))
+
+# Subplot factor
+species <- factor(rep(c("Rye","Clover","Peas"),
+                      times = 10),
+                  levels = c("Rye","Clover","Peas"))
+
+split_layout <- data.frame(
+  block = block,
+  termination = termination,
+  species = species
+)
+
+# Randomize termination within each block (main plots)
+
+for(b in levels(split_layout$block)){
+  
+  rows <- split_layout$block == b
+  
+  split_layout[rows, "termination"] <-
+    rep(sample(c("Early","Late")), each = 3)
+  
+}
+
+# Randomize species within each main plot
+
+for(b in levels(split_layout$block)){
+  
+  for(t in levels(split_layout$termination)){
+    
+    rows <- split_layout$block == b &
+            split_layout$termination == t
+    
+    split_layout[rows, "species"] <-
+      sample(split_layout$species[rows])
+    
+  }
+}
+
+head(split_layout)
+
+species_effects <- c(
+  Rye = -10,
+  Clover = -2,
+  Peas = 2
+)
+
+termination_effects <- c(
+  Early = 4,
+  Late = -4
+)
+
+interaction_effects <- matrix(
+  c(-5, -20,
+    0,  0,
+    0,  0),
+  nrow = 3,
+  byrow = TRUE,
+  dimnames = list(
+    c("Rye", "Clover", "Peas"),
+    c("Early", "Late")
+  )
+)
+
+block_effects <- c(
+  `1` = -20,
+  `2` = -15,
+  `3` = 0,
+  `4` = 10,
+  `5` = 20
+)
+
+# Whole-plot error (termination within block)
+
+split_layout$main_plot <- with(split_layout,
+                               interaction(block, termination))
+
+whole_plot_error <- rnorm(length(unique(split_layout$main_plot)),
+                          mean = 0,
+                          sd = 6)
+
+names(whole_plot_error) <- unique(split_layout$main_plot)
+
+split_layout$yield <- with(split_layout,
+                           205 +
+                           species_effects[species] +
+                           termination_effects[termination] +
+                           mapply(function(s,t)
+                             interaction_effects[s,t],
+                             species,
+                             termination) +
+                           block_effects[block] +
+                           whole_plot_error[main_plot] +
+                           rnorm(30, mean = 0, sd = 6)
+)
+
+split_layout$trt <- paste(split_layout$species,
+                          split_layout$termination,
+                          sep = " & ")
+
+split_layout$rep <- ave(split_layout$yield,
+                        split_layout$trt,
+                        FUN = seq_along)
+
+split_layout <- split_layout[c(1,3,2,6,7,4,5)]
+
+head(split_layout)
+
+library(nlme)
+
+model_split <- lme(yield ~ species * termination,
+                   random = ~1 | block/main_plot,
+                   data = split_layout)
+
+anova(model_split)
+
+
+# Position index inside each block
+split_layout$plot <- ave(as.vector(split_layout$species),
+                         split_layout$block,
+                         FUN = seq_along)
+
+# Data frame defining the main plot rectangles
+main_plot_df <- aggregate(plot ~ block + termination + main_plot,
+                          data = split_layout,
+                          FUN = function(x) c(min = min(x), max = max(x)))
+main_plot_df <- do.call(data.frame, main_plot_df)
+main_plot_df$plot.min <- as.integer(main_plot_df$plot.min)
+main_plot_df$plot.max <- as.integer(main_plot_df$plot.max)
+
+write.csv(split_layout, './data/cover-crop-and-termination-split.csv',
+          row.names = FALSE)
+
+library(ggplot2)
+
+png('./figures/03-split-plot.png',
+    width = 8 * 100, height = 5 * 100, res = 100)
+ggplot(split_layout,
+       aes(x = plot, y = block, fill = trt)) +
+
+  # subplots
+  geom_tile(color = "black") +
+
+  # main plot outlines
+  geom_rect(data = main_plot_df,
+            aes(xmin = plot.min - 0.5,
+                xmax = plot.max + 0.5,
+                ymin = as.numeric(block) - 0.5,
+                ymax = as.numeric(block) + 0.5),
+            fill = NA,
+            color = "black",
+            linewidth = 1.4,
+            inherit.aes = FALSE) +
+
+  geom_text(aes(label = trt), size = 3) +
+
+  scale_fill_manual(values = hcl.colors(6, "Dynamic")) +
+
+  labs(x = "Plot within block",
+       y = "Block",
+       fill = "Treatment") +
+
+  theme_minimal()
+dev.off()
+```
+

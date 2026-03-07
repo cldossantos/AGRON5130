@@ -1,0 +1,170 @@
+---
+title: "Multiple Treatment Designs"
+subtitle: "AGRON 5130"
+author: "YOUR NAME HERE"
+output: pdf_document
+---
+
+# Introduction
+
+The goal of this assignment is to give you hands-on practice working
+with **multiple treatment experimental designs** and their analyses. The
+exercises build directly on the concepts introduced in this week's
+lecture and lab.
+
+You will analyze three agronomic experiments and practice:
+
+-   identifying experimental designs\
+-   fitting the correct statistical models\
+-   interpreting main effects and interactions\
+-   visualizing treatment responses
+
+Submit a **knitted PDF generated from your R Markdown file** to Canvas.
+
+# Question 1
+
+**1 point**
+
+Fifteen canola entries were compared in a field trial in Manitoba. The
+experiment was conducted using a **randomized complete block design with
+three blocks**. In this dataset block is coded as rep.
+
+Load the dataset `"data/canola_data.csv"` and print the first six rows.
+
+```{r}
+canola <- read.csv('./data/canola_data.csv')
+head(canola)
+```
+
+# Question 2
+
+**2 points**
+
+Fit an appropriate model to evaluate the effect of **canola entry on
+yield** while accounting for block effects.
+
+Print the ANOVA table for your model.
+
+```{r}
+model1 <- lm(yield ~ entry + rep,
+             data = canola)
+anova(model1)
+```
+
+# Question 3
+
+**2 points**
+
+Based on the ANOVA results from Question 2:
+
+-   Is there evidence that **canola entry affects yield**?\
+-   Why is it important to include **block** in the model?
+
+Write 2–3 sentences.
+
+# Question 4
+
+**1 point**
+
+Five barley genotypes were evaluated for their response to **three
+levels of drought stress** in an arid environment. The experiment was
+conducted as a **factorial treatment structure within a randomized
+complete block design**.
+
+Load the dataset `"data/barley_drought.csv"` and print the first six
+rows.
+
+```{r}
+barley <- read.csv('./data/barley_drought.csv')
+head(barley)
+```
+
+# Question 5
+
+**2 points**
+
+Fit a factorial model that includes:
+
+-   block (you may treat it as fixed or random)
+-   genotype\
+-   drought\
+-   genotype × drought interaction
+
+Print the ANOVA table.
+
+```{r}
+model2 <- lm(yield ~ genotype * drought + block, 
+             data = barley)
+anova(model2)
+```
+
+# Question 6
+
+**2 points**
+
+Based on the ANOVA table from Question 5, interpret the results.
+
+Address the following questions:
+
+-   Is drought stress a significant factor affecting yield?\
+-   Do genotypes differ in yield?\
+-   Is the **genotype:drought interaction** significant?
+
+# Question 7
+
+**1 point**
+
+In your own words, explain what a significant **genotype:drought**
+interaction means in the context of this experiment.
+
+# Question 8
+
+**1 point**
+
+The effects of **irrigation and tillage on soil nitrite (NO2 emission**
+were studied using a **split-plot design**, where irrigation was applied
+to main plots and tillage was applied to subplots.
+
+Load the dataset `"data/irrigation_tillage_no2.csv"` and assign it to an
+object named `nitrite`. Print the first six rows.
+
+```{r}
+nitrate <- read.csv('./data/irrigation_tillage_no2.csv')
+head(nitrate)
+```
+
+# Question 9
+
+**2 points**
+
+Fit an appropriate **split-plot model** for this experiment using a
+mixed-effects model and print the ANOVA table.
+
+*hint: there is a package that starts with `n` and ends with `lme` that
+fits mixed-effects models.*
+
+```{r}
+library(nlme)
+model3 <- lme(NO2 ~ tillage * irrigation,
+              random = ~ 1 | block, 
+              data = nitrate)
+anova(model3):w
+
+```
+
+# Question 10
+
+**1 point**
+
+Based on the ANOVA table and the interaction plot, briefly explain
+whether irrigation, tillage, or their interaction affects NO2 emissions.
+
+# Question 11 (Bonus)
+
+**2 points** 
+
+*This one is optional*
+
+In your own words, explain **why split-plot experiments require a
+different statistical model than completely randomized or randomized
+complete block designs.**

@@ -1,0 +1,379 @@
+---
+title: ANOVA Exercise
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 100
+---
+
+# Introduction
+
+In this unit we were introduced to the Analysis of
+Variance (ANOVA) and the most basic experimental
+design, the Completely Randomized Design. Running
+an analysis of variance for this trial is very
+easy, as we will now see.
+
+# Case Study: Barley
+
+```{r}
+barley <- read.csv("data/barley_crd.csv")
+head(barley)
+summary(barley)
+```
+
+
+This dataset contains:
+
+- 5 genotypes
+- 10 replications per genotype
+- 50 total experimental units
+
+
+# ANOVA
+
+Before running any statistical test, we should
+always look at the data.
+
+This gives us intuition about:
+
+- The magnitude of treatment differences
+- The variability within treatments
+- Whether an ANOVA result will make sense
+
+```{r}
+library(ggplot2)
+ggplot(barley, aes(x = gen, y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  stat_summary(fun = mean, geom = "point", shape = 17, size = 3) +
+  stat_summary(fun.data = 'mean_se', geom = "errorbar", width = 0.2) +
+  theme_linedraw() +
+  coord_flip()+
+  labs(x = "Genotype",
+       y = "Yield (bu/ac)")
+```
+
+# Running the ANOVA in R
+
+Conceptually, we are modeling:
+
+> Yield as a function of genotype.
+
+In R, that is written as:
+
+yield ~ gen
+
+Let’s fit the model.
+
+```{r}
+barley_aov <-  aov(yield ~ gen, data = barley)
+barley_aov
+```
+
+Now, to obtain the ANOVA table:
+
+```{r}
+summary(barley_aov)
+```
+
+And that’s it. But, again, the goal here is not
+just to press buttons.
+
+We want to understand what this table represents.
+
+So let’s build it ourselves.
+
+
+
+## Linear additive model
+
+Remember our model:
+
+
+$$Y_{ij} = \mu + \tau_i + \epsilon_{ij}$$
+
+$Y_{ij}$ = observed yield 
+
+$\mu$ = overall mean yield
+
+$\tau_i$ = treatment effect 
+
+$\varepsilon_{ij}$ = random error
+
+
+## Step 1: Overall Mean ($\mu$)
+
+```{r, echo=TRUE}
+mu <- mean(barley$yield)
+mu
+```
+
+This represents the grand mean across all 50
+observations.
+
+
+## Step 2: Treatment Effects ($\tau_i$)
+
+Now we compute genotype means and subtract the
+overall mean.
+
+```{r, echo=TRUE}
+taus <- aggregate(barley$yield,
+                  barley['gen'],
+                  mean)
+names(taus) <- c('gen', 'gen_means')
+taus$mu <- mu
+taus$tau <- taus$gen_means - taus$mu
+taus
+```
+
+Each $\tau_i$ represents how far a genotype mean
+deviates from the overall mean.
+
+Some are positive.
+Some are negative.
+
+Importantly:
+
+The sum of all τᵢ values (weighted properly)
+equals zero
+
+## Step 3: Error Terms ($\epsilon_{ij}$)
+
+Now we compute the residuals, the deviation of
+each observation from its predicted value.
+
+```{r, echo=TRUE}
+barley_eff <- merge(barley, taus)
+barley_eff$epsilon <- with(barley_eff, yield - mu - tau)
+head(barley_eff)
+```
+
+These $\epsilon$ terms represent the background noise in the experiment.
+
+
+
+To make it easier for us to visualize these effects, 
+let's plot them:
+
+```{r}
+ggplot(data = barley_eff)+
+  geom_vline(aes(xintercept = mu, col = 'mu'), linetype = 1)+
+  geom_segment(aes(x = mu, xend = gen_means, y = rep, yend = rep, col = 'tau'), linetype = 1)+
+  geom_segment(aes(x = gen_means, xend = yield, y = rep, yend = rep, col = 'epsilon'), linetype = 1)+
+  geom_point(aes(x = yield, y = rep))+
+  labs(x = 'Yield (bu/ac)', y = 'Replication', col = 'Additive Effect')+
+  facet_wrap(~gen, ncol = 1)+
+  theme_gray()+
+  scale_y_continuous(breaks = 1:8)+
+  theme(panel.border = element_rect(colour = 'black', fill = 'transparent'),
+        strip.background = element_rect(colour = 'black', fill = 'grey'),
+        panel.spacing = unit(0, 'cm'))
+```
+
+## Setting up the ANOVA Table
+
+Great! Now we have all the effects we need to
+compute the $F$-statistic!
+
+I will set up a table for us to keep track of
+these numbers and we will populate this table as
+we go:
+
+| Source of Variation | SS  | DF  | MSE | F   |
+|:--------------------|:----|:----|:----|:----|
+| Treatment           |     |     |     |     |
+| Residuals (Error)   |     |     |     |     |
+| Total               |     |     |     |     |
+
+## Sums of Squares
+
+Let's compute the Sums of Squares for all three rows
+
+```{r, echo=TRUE}
+SS_treatment <- sum(barley_eff$tau ^ 2) ## Treatment
+SS_error <- sum(barley_eff$epsilon ^ 2) ## Error
+SS_total <- sum((barley_eff$yield - barley_eff$mu)^2) ## Total
+
+SS_treatment
+SS_error
+SS_total
+```
+
+Now, let's add these values to our table:
+
+| Source of Variation | SS   | DF  | MSE | F   |
+|:--------------------|:-----|:----|:----|:----|
+| Treatment           | 3632 |     |     |     |
+| Residuals (Error)   | 2313 |     |     |     |
+| Total               | 5945 |     |     |     |
+
+Great! Let's continue populating our table. Next,
+let's compute the degrees of freedom!
+
+## Degrees of Freedom
+
+We can compute the total number of degrees of freedom as:
+
+$DF_{total}$ = 50 - 1 = 49
+
+The degrees of freedom for the treatment can be
+computed as $K - 1$, where K is the number of
+means we are estimating.
+
+$DF_{treatment}$ = 5 - 1 = 4
+
+The degrees of freedom for the error, is simply
+the difference between the total degrees of
+freedom, and the degrees of freedom taken by the
+treatment:
+
+$DF_{error}$ = 49 - 4 = 45
+
+Our table now becomes:
+
+| Source of Variation | SS   | DF  | MSE | F   |
+|:--------------------|:-----|:----|:----|:----|
+| Treatment           | 3632 | 4   |     |     |
+| Residuals (Error)   | 2313 | 45  |     |     |
+| Total               | 5945 | 49  |     |     |
+
+## Mean Square Error
+
+Next, we need to take the ratio between the SS and
+DF columns. Remember, this will give us an
+estimate for the variance of each effect. This
+estimate is called Mean Square Error (MSE).
+
+```{r, echo=TRUE}
+MS_treatment <- SS_treatment/4 # MSE Treatment
+MS_error <- SS_error/45 # MSE Residuals
+
+MS_treatment
+MS_error
+```
+
+| Source of Variation | SS   | DF  | MSE | F   |
+|:--------------------|:-----|:----|:----|:----|
+| Treatment           | 3632 | 4   | 908 |     |
+| Residuals (Error)   | 2313 | 45  | 51  |     |
+| Total               | 5945 | 49  |     |     |
+
+## Computing the $F$-statistic
+
+Now, since the $F$-statistic is computed as the
+ratio between the treatment and error variances,
+and we are estimating them using the MSE, $F$ can
+be computed as follows:
+
+$$F = \frac{\sigma^2_{treatment}}{\sigma^2_{error}} = \frac{MSE_{treatment}}{MSE_{error}}$$
+
+
+If genotypes truly do not differ, both MS terms
+estimate the same variance.
+
+F should be close to 1.
+
+If F is large, treatment variability is much
+larger than background noise.
+
+That is evidence against the null hypothesis
+
+```{r, echo=TRUE}
+MS_treatment / MS_error
+```
+
+
+Alright! This concludes our ANOVA table!!
+
+| Source of Variation | SS   | DF  | MSE  | F     |
+|:--------------------|:-----|:----|:-----|:------|
+| Treatment           | 3632 | 4   | 1210 | 17.66 |
+| Residuals (Error)   | 2313 | 45  | 82   |       |
+| Total               | 5945 | 49  |      |       |
+
+## P-value
+
+Now, like we have done before, we have to compare
+the $F$-statistic value we found with the
+$F$-distribution and compute the probability of
+observing a more extreme value given that $H_0$ is
+true.
+
+We will use the `fastGraph` library for that once
+again:
+
+```{r, echo=TRUE}
+library(fastGraph)
+shadeDist(xshade = 17.66,
+          ddist = 'df',
+          parm1 = 4,
+          parm2 = 45,
+          lower.tail = FALSE)
+
+```
+
+
+If this probability is small, we reject the null
+hypothesis:
+
+$$H0: \mu_0 = \mu_1 = \ldots = \mu_5$$
+
+And conclude that at least one genotype differs.
+
+# Practice: Beet Data
+
+```{r}
+beet_data <- read.csv("data/beets_crd.csv")
+head(beet_data)
+```
+
+Compute the treatment means for the beet dataset
+
+```{r}
+beet_trt_means <- aggregate(beet_data['yield'],
+                            beet_data['fert'],
+                            mean)
+beet_trt_means
+```
+
+
+Model yield as a function of fertilizer.
+
+You should obtain:
+
+Pr(>F) = 1.299e-10
+
+```{r}
+beet_model <-  aov(, data = )
+summary(beet_model)
+```
+
+
+# Practice: Potato Data
+
+Model infection as a function of treatment.
+
+```{r}
+potato_data <-  read.csv("data/potato_crd.csv")
+head(potato_data)
+```
+
+Compute the treatment means for the beet dataset
+
+```{r}
+potato_trt_means <- aggregate(potato_data['inf'],
+                            potato_data['trt'],
+                            mean)
+potato_trt_means
+```
+
+
+You should obtain:
+
+Pr(>F) = 0.0103
+
+```{r}
+
+```
+

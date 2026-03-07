@@ -21,11 +21,11 @@ Agronomy degree program.
 | Week 3: Feb 2 - 6 | Distributions and Probability |done|
 | Week 4: Feb 9 - 13 | Sample Statistics |done|
 | Week 5: Feb 16 - 20 | Two-Treatment Comparisons |done|
-| Week 6: Feb 23 - 27 | Hypotheses Testing ||
-| Week 7: Mar 2 - 6 | Multiple Treatment Trials ||
-| Week 8: Mar 9 - 13 | Multiple Treatment Designs ||
-| Week 9: Mar 16 - 20 | Means Separation and Data Presentation ||
-| Week 10: Mar 23 - 27 | **Spring Break** ||
+| Week 6: Feb 23 - 27 | Hypotheses Testing |done|
+| Week 7: Mar 2 - 6 | Multiple Treatment Trials |done|
+| Week 8: Mar 9 - 13 | Multiple Treatment Designs |done|
+| Week 9: Mar 16 - 20 |  **Spring Break**||
+| Week 10: Mar 23 - 27 | Means Separation and Data Presentation ||
 | Week 11: Mar 30 - Apr 03 | Messy and Missing Data ||
 | Week 12: Apr 6 - 10 | Correlation and Simple Regression ||
 | Week 13: Apr 13 - 17 | Nonlinear Relationships and Multiple Linear Regression ||

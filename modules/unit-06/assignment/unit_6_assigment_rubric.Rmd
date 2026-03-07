@@ -1,7 +1,7 @@
 ---
 title: "Multiple Treatment Trials and ANOVA"
 subtitle: "AGRON 5130"
-author: "YOUR NAME HERE"
+author: "Caio dos Santos"
 output: pdf_document
 ---
 
@@ -70,6 +70,8 @@ Read in the dataset located at
 Use the `head()` function to review the data.
 
 ```{r}
+deb <- read.csv('./data/soil_om_tillage_debska.csv')
+head(deb)
 ```
 
 
@@ -87,6 +89,7 @@ Be sure to identify:
 - The treatment effect
 - The random error term
 
+Y_ij = mu + tau_i + epsilon_ij
 
 ## Question 3
 
@@ -100,12 +103,14 @@ the observed variance among plots than the error
 Remember, first you use the aov() function
 
 ```{r}
+fit1 <- aov(om ~ tillage, data = deb)
 ```
 
 then, you extrac the anova table using the
 summary() function
 
 ```{r}
+summary(fit1)
 ```
 
 
@@ -130,6 +135,10 @@ treatment means using the aggregate() function
 Display the resulting table.
 
 ```{r}
+trt_means <- aggregate(deb['om'],
+                       deb['tillage'],
+                       mean)
+trt_means
 ```
 
 
@@ -160,6 +169,8 @@ Load the dataset located at
 Display the top six rows.
 
 ```{r}
+kale <- read.csv('./data/led_kale_zhang.csv')
+head(kale)
 ```
 
 
@@ -174,12 +185,14 @@ variance in biomass than random error.
 Remember, first you use the aov() function
 
 ```{r}
+fit2 <- aov(biomass ~ light, data = kale)
 ```
 
 then, you extrac the anova table using the
 summary() function
 
 ```{r}
+summary(fit2)
 ```
 
 
@@ -201,6 +214,10 @@ treatment means using the aggregate() function:
 Display the resulting table.
 
 ```{r}
+trt_means <- aggregate(kale['biomass'],
+                       kale['light'],
+                       mean)
+trt_means
 ```
 
 

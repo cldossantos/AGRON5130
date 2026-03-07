@@ -1,49 +1,236 @@
 ---
 title: "Linear Additive Model"
-output:
-  pdf_document: default
-  html_document: default
+output: html_document
 ---
 
 # Introduction
-The linear additive model may seem a very esoteric concept in data science, but it is critical to understand how we make predictions from statistical models, and how we test whether those models significantly explain the variance in our observations. It also underscores an important concept in statistical modelling: the assumption that the different effects that combine to explain an observed value are *additive*.
 
-# Case Study: Barley Yield
-```{r}
-library(tidyverse)
-barley = read.csv("data/barley.csv")
-head(barley)
-```
+The linear additive model may seem a very esoteric
+concept in data science, but it is critical to
+understand how we make predictions from
+statistical models, and how we test whether those
+models significantly explain the variance in our
+observations. It also underscores an important
+concept in statistical modelling: the assumption
+that the different effects that combine to explain
+an observed value are *additive*.
 
-How would we go about constructing the linear model for this dataset?  First, we need to calculate the population mean for yield.  Remember, we use "barley$yield" to tell R to calculate the mean for the yield column of the barley dataset.  
+# Case Study: Barley Effects
 
-```{r}
-barley_mu = mean(barley$yield)
-barley_mu
-```
-
-Now we need to calculate the means for the new and old genotypes.  We need to calculate these separately, so we will need to create subsets for the old and new genotypes.  We can do this most intuitively by using the *tidyverse* package and the *filter()* function.  Remember the pipe ("%>%") command feeds the results of one line of code to the next line.  The first line of the code below creates a new dataset, "barley_old", that is initially equal to the barley dataset.
-
-In the second line of code, however, we use the *filter()* function to subset the data.  We tell R to filter the data to those rows where the value in the "gen" column is equal to "old".  Whenever we use the filter function, we need to use two equal signs -- believe me, it is easy to forget and just use one!  
+We will look at the barley dataset, as we have
+before. Except that, for simplicity, we will only
+look at the 10 first plots.
 
 ```{r}
-library(tidyverse)
-
-barley_old = barley %>%
-  filter(gen=="old")
-
+barley <- read.csv('./data/barley.csv')
+barley <- head(barley, n = 10)
 ```
 
-Now we can calculate the mean across all observations of the old barley genotype.
+
+Before diving into the data analysis, I always
+find it useful to look at the data. It helps me
+better understand what kind of differences I want
+to see.
+
+Like I mentioned before, ggplot2 is really useful
+for this. Let's see the dataset:
 
 ```{r}
-barley_old_mean = mean(barley_old$yield)
-barley_old_mean
+library(ggplot2)
+ggplot(barley)+
+  geom_point(aes(x = yield, y = gen), pch = 1)+
+  labs(x = 'Yield (bu/ac)', y = 'Genotype')+
+  stat_summary(aes(x = yield, y = gen),
+               pch = 17,
+               fun.data = 'mean_se')+
+  theme_bw()
 ```
 
-Finally, we can subtract the population mean from the mean yield of the old barley genotype to calculate the old genotype's effect.
+
+
+
+## The linear aditive model
+
+Recall that the linear additive model looks like this:
+
+$$Y_{ij} = \mu + \tau_i + \epsilon_{ij}$$ 
+$Y_{ij}$ = observed yield 
+$\mu$ = overall mean yield
+$\tau_i$ = treatment effect (old or new)
+$\epsilon_{ij}$ = random error
+
+
+
+Below, we will load the same data set, except that
+I have already computed the linear additive model
+parameters/effects so that we can better visualize
+these effects.
+
 ```{r}
-barley_old_effect = barley_old_mean - barley_mu
-barley_old_effect
+barley_effects <-  read.csv("data/barley_effects_table.csv")
+barley_effects
 ```
+
+
+## Plotting the Effects
+
+Below is the code to create a bar plot.  This kind
+of bar plot is *stacked*: it shows multiple
+measures for each observation (plot), stacked on
+top each other. Normally, a stacked bar plot can
+be created in a couple of lines of code. The
+intricate code below was so I could customize the
+order of stacking for each plot.  Run the code and
+observe the plot.
+
+```{r, fig.width=12, fig.height=10}
+ggplot(barley_effects) +
+  geom_segment(aes(x=plot, y=0, xend=plot, yend=mu, col = 'mu'), linewidth=14) +
+  geom_segment(aes(x=plot, xend=plot, y=trt_bar_min, yend=trt_bar_max, col = 'tau'), linewidth=14) +
+  geom_segment(aes(x=plot, xend=plot, y=err_bar_min, yend=err_bar_max, col = 'error'), linewidth=14) +
+  geom_text(aes(x=plot, y=mu/2, label= mu)) +
+  geom_text(aes(x=plot, y=trt_bar_min+(trt_bar_max-trt_bar_min)/2, label=trt_effect)) +
+  geom_text(aes(x=plot, y=err_bar_min+(err_bar_max-err_bar_min)/2, label=error_effect)) +
+  geom_segment(aes(x=plot+0.4, xend=plot+0.2, y=y, yend=y), arrow = arrow(length = unit(0.01, "npc")), linewidth=1) +
+  labs(y = 'Yield', col = 'Effects')+
+  geom_text(aes(x=plot+0.4, y=y, label=y), hjust=0) +
+  scale_x_continuous(breaks=c(1:10))+
+  scale_color_manual(values = c('mu' = 'lightblue',
+                                'tau' = 'lightgreen',
+                                'error' = 'tomato'))+
+  theme_bw()+
+  theme(legend.position = 'top')
+```
+
+If this plot is too big to fit comfortably on this
+screen, remember you can knit this code using the
+menu immediately above this window, and either
+view it in HTML or print it out to use.
+
+What I have tried to do with this plot is to
+visualize the additive effects of the population
+mean (light blue bar), treatment effect (green
+bar), and error effect (red bar).  The sum of
+their effects (the observed value) is shown by a
+black arrow to the right of each bar.
+
+The blue bars are the same, 312.3, reflecting that
+the population mean for the whole trial does not
+change: every plot starts out with this same
+value, with the effects then adding or subtracting
+from its observed value.
+
+Looking at this plot, you can see half of the
+green bars have a treatment effect of 26.8, while
+the other half have a treatment effect of -26.8.
+In a two treatment trial, the treatment effects
+will be exactly opposite for the two levels of
+treatment.  If we look at the plot above, we can
+see the positive treatment effect is associated
+with the new genotype, and the negative effect
+with the old genotype.
+
+The red bars represent the error.  This is the
+unexplained variance in observed value.  Part of
+it reflects how, try as hard as we might, not
+every plot has exactly the same environment.  Soil
+characteristics and microclimates differ.  Plot
+lengths may differ slightly among plots.  One plot
+may be planted more evenly than others.  A
+fertilizer applicator might skip.  An ear might
+bounce out of the combine.
+
+Note that the errors are negative in
+some cases and positive in others.  In addition,
+they are not consistent -- their values are
+random.
+
+
+## Examining Individual Plots
+
+So let's plug a few plots into this equation and
+see how it works.
+
+In plot 2: 
+- Yij = 223.9
+- mu = 312.3, 
+- Ti, associated with the old hybrid = -26.8
+- e(i)j, associated with plot 2, = -61.6
+
+Our model for plot 2, then is:  223.9 = 312.3 - 26.8 - 61.6
+
+
+What about for plot 5?
+
+Yij = 399.3
+mu = 312.3
+- Ti, associated with the new hybrid = +26.8
+- e(i)j, associated with plot 5 =  +60.2
+
+Our model for plot 5, then is:  399.3 = 312.3 + 26.8 + 60.2
+
+
+What about for plot 8?
+
+Yij = 349.8
+mu = 312.3
+- Ti, associated with the old hybrid = -26.8
+- e(i)j, associated with plot 8 =  +64.3
+
+Our model for plot 8, then is:  349.8 = 312.3 - 26.8 + 64.3
+
+What is interesting in this last example is that
+the positive error "masks" the negative effect of
+the treatment -- the yield with the old hybrid, in
+this case, is greater than plots 3 and 9, which
+received the old hybrid!  This underscores why it
+is important to break down the effects behind an
+observation to better understand the true
+contribution of each treatment level.
+
+
+## Practice: Groudnut
+
+Let's load and plot the groundnut data from the
+other exercises this unit.  Like the barley data
+above, we have added several columns in order to
+calculate treatment and error effects and to draw
+the plot below.
+
+```{r}
+groundnut_effects <-  read.csv("data/groundnut_effects_table.csv")
+groundnut_effects
+```
+## Plotting the Effects
+
+Below is the code to create a bar plot.  This kind
+of bar plot is *stacked* -- it shows multiple
+measures for each observation (plot), stacked on
+top each other.  Normally, a stacked bar plot can
+be created in a couple of lines of code -- the
+intricate code below was so I could customize the
+order of stacking for each plot.  Run the code and
+observe the plot.
+
+```{r, fig.width=12, fig.height=10}
+ggplot(groundnut_effects) +
+  geom_segment(aes(x=plot, y=0, xend=plot, yend=mu, col = 'mu'), linewidth=14) +
+  geom_segment(aes(x=plot, xend=plot, y=trt_bar_min, yend=trt_bar_max, col = 'tau'), linewidth=14) +
+  geom_segment(aes(x=plot, xend=plot, y=err_bar_min, yend=err_bar_max, col = 'error'), linewidth=14) +
+  geom_text(aes(x=plot, y=mu/2, label= mu)) +
+  geom_text(aes(x=plot, y=trt_bar_min+(trt_bar_max-trt_bar_min)/2, label=trt_effect)) +
+  geom_text(aes(x=plot, y=err_bar_min+(err_bar_max-err_bar_min)/2, label=error_effect)) +
+  geom_segment(aes(x=plot+0.4, xend=plot+0.2, y=y, yend=y), arrow = arrow(length = unit(0.01, "npc")), linewidth=1) +
+  labs(y = 'Yield', col = 'Effects')+
+  geom_text(aes(x=plot+0.4, y=y, label=y), hjust=0) +
+  scale_x_continuous(breaks=c(1:10))+
+  scale_color_manual(values = c('mu' = 'lightblue',
+                                'tau' = 'lightgreen',
+                                'error' = 'tomato'))+
+  theme_bw()+
+  theme(legend.position = 'top')
+```
+
+Model plots 1, 5, and 6, using the linear model as
+we did above.
 

@@ -1,7 +1,7 @@
 ---
 title: "Linear Models, Errors, and One-Sided Tests"
 subtitle: "AGRON 5130"
-author: "Caio dos Santos"
+author: "YOUR NAME HERE"
 output: pdf_document
 ---
 

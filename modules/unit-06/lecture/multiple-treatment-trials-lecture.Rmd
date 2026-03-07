@@ -2,7 +2,7 @@
 title: "Multiple Treatment Trials"
 subtitle: "AGRON 5130 - Module 6"
 author: "Caio dos Santos"
-date: "2026-02-23"
+date: "2026-02-26"
 output:
   html_document:
     toc: true
@@ -355,7 +355,7 @@ To do so, we will partition the variance:
 $$\sigma^2_{total} = \sigma^2_{treatment} + \sigma^2_{error}$$
 In the case of samples, we estimate the variance using the Mean Square Error:
 
-$$MSE = \frac{(Y_i - \bar{Y})^2}{n - 1} = \frac{SS}{df}$$
+$$MSE = \frac{\sum_{i=1}^n(Y_i - \bar{Y})^2}{n - 1} = \frac{SS}{df}$$
 Where, 
 
 $Y_i$ is an observed value
@@ -500,7 +500,7 @@ DF columns. Remember, this will give us an
 estimate for the variance of each effect. This
 estimate is called Mean Square Error (MSE). 
 
-```{r}
+```{r, echo=TRUE}
 MS_treatment <- SS_treatment/3 # MSE Treatment
 MS_error <- SS_error/28 # MSE Residuals
 
@@ -524,7 +524,7 @@ and we are estimating them using the MSE, $F$ can be computed as follows:
 $$F = \frac{\sigma^2_{treatment}}{\sigma^2_{error}} = \frac{MSE_{treatment}}{MSE_{error}}$$
 
 
-```{r}
+```{r, echo=TRUE}
 MS_treatment / MS_error
 ```
 
@@ -572,7 +572,7 @@ others.
 
 Like before, R has built-in function to run
 ANOVAs. However, I think it is important for us to
-build an ANVOA table step-by-step at least once,
+build an ANOVA table step-by-step at least once,
 so we understand what each piece of information
 represents.
 
