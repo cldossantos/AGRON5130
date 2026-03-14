@@ -1,0 +1,403 @@
+---
+title: "Exercise: RCBD"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+In this exercise we will go through a complete
+analysis of a **randomized complete block design
+(RCBD)** with one treatment factor.
+
+The goal is to walk through the entire workflow:
+
+* loading the data
+* visualizing the experiment
+* fitting the ANOVA model
+* separating treatment means
+* testing agronomic contrasts
+* presenting the results in tables and figures
+
+By the end, you should have a clear picture of
+what a full RCBD analysis looks like in practice.
+
+# Before You Start: Install Required Packages
+
+If you do not already have these packages
+installed, run the command below once on your
+machine. If a package is already installed, R
+will simply skip it.
+
+```{r eval=FALSE}
+install.packages(c("emmeans", "multcomp"))
+```
+
+Now let's load the packages we will use in this
+exercise.
+
+```{r}
+library(ggplot2)
+library(emmeans)
+library(multcomp)
+library(nlme)
+```
+
+# The Experiment
+
+In this example, a field experiment evaluated four
+fungicide programs for wheat under **powdery
+mildew pressure**. The response variable is grain
+yield (t/ha).
+
+The treatments are:
+
+* `T0`: untreated control
+* `T1`: one fungicide application (early)
+* `T2`: one fungicide application (late)
+* `R`: recommended two-application program
+
+The field had a **soil fertility gradient**, so
+the
+experiment was conducted using a **randomized
+complete block design**. There are nine blocks,
+and each block contains all four treatments.
+
+This gives us **nine replicates per treatment**.
+
+## Load the Data
+
+Let's start by loading the dataset.
+
+```{r}
+mildew <- read.csv("data/mildew.csv")
+
+mildew$block <- as.factor(mildew$block)
+mildew$trt <- as.factor(mildew$trt)
+
+head(mildew)
+```
+
+Notice that we convert `block` and `trt` to
+factors. This tells R that these variables should
+be treated as **categorical variables** in the
+analysis.
+
+## Visualize the Data
+
+Before fitting any statistical model, it is always
+a good idea to **look at the data**.
+
+Here we build a simple figure showing the yield
+distribution for each treatment.
+
+```{r}
+ggplot(mildew, aes(x = trt, y = yield)) +
+  geom_jitter(width = 0.1, 
+              size = 2, 
+              alpha = 0.8, 
+              color = "steelblue", 
+              shape = 1) +
+  labs(x = "Fungicide Treatment",
+       y = "Wheat Yield (t/ha)") +
+  stat_summary(fun.data = 'mean_se')+
+  theme_bw()
+```
+
+## Fit the RCBD Model
+
+For a one-factor RCBD, the statistical model is
+
+$$Y_{ij} = \mu + b_i + T_j + \varepsilon_{ij}\newline
+b_i \sim N(0, \sigma^2_{block})$$
+
+where
+
+* $b_i$ represents the block effect
+* $T_j$ represents the treatment effect
+
+Now let's fit this model in R.
+
+```{r}
+model1 <- lme(yield ~  trt,
+                  random = ~ 1 | block,
+                  data = mildew)
+```
+
+## Interpret the ANOVA
+
+Next, we examine the ANOVA table.
+
+```{r}
+anova(model1)
+```
+
+If the treatment *p-value* is small, this
+provides evidence that **at least one treatment
+mean differs from the others**.
+
+When that happens, we proceed to **means
+separation** to identify which treatments differ.
+
+## Means Separation
+
+We will use the **emmeans** package to compute
+estimated marginal means and compare treatments.
+
+```{r}
+emm <- emmeans(model1, ~ trt)
+
+pairs(emm, adjust = "tukey")
+
+pwpm(emm, adjust = 'tukey')
+```
+
+This output shows the estimated difference
+between each pair of treatments along with the
+associated statistical test.
+
+### LSD versus HSD
+
+Here, we have 4 treatments. This means we are
+running 6 comparisons.
+
+$$4\times(4-1)/2 = 6$$
+
+With 6 comparisons, our experiment-wise error rate
+can be computed as:
+
+```{r}
+alpha <- 0.05
+experiment_error_rate <- 1 - (1 - alpha)^6
+experiment_error_rate
+```
+
+This means that we have a 26% chance of making at
+least one error of type I (identifying a
+difference when in reality there is none).
+
+
+In `emmeans`, different multiple-comparison
+procedures are controlled using the `adjust`
+argument.
+
+* `adjust = "none"` corresponds to an
+  **LSD-style comparison**
+* `adjust = "tukey"` corresponds to **Tukey's
+  Honest Significant Difference**
+
+Let's compute both.
+
+LSD
+```{r}
+pairs(emm, adjust = "none")
+```
+
+Tukey
+```{r}
+pairs(emm, adjust = "tukey")
+```
+
+Another way to summarize these comparisons is
+with **compact letter displays**.
+
+Treatments sharing the same letter are **not
+significantly different**.
+
+Below we compare the groupings produced by LSD
+and Tukey.
+
+```{r}
+cld(emm, adjust = "none", Letters = letters)
+```
+```{r}
+cld(emm, adjust = "tukey", Letters = letters)
+```
+
+
+## Contrasts Between Groups of Treatments
+
+Pairwise comparisons are useful, but many
+agronomic questions involve **groups of
+treatments** rather than individual ones.
+
+Here we evaluate two planned contrasts:
+
+* untreated control (`T0`) versus the **average
+  of all fungicide programs**
+* single-application programs (`T1`, `T2`)
+  versus the **recommended two-application
+  program (`R`)**
+
+```{r}
+contrast(emm,
+                                 method = list(
+                                         "T0_vs_all_treated" = c(-1, 1/3, 1/3, 1/3),
+                                         "single_vs_recommended" = c(0, 1/2, -1, 1/2)
+                                 ),
+                                 adjust = "none")
+```
+
+
+
+## Build a Means Table
+
+Now let's build a simple reporting table with
+
+* treatment means
+* standard errors
+* confidence intervals
+* Tukey grouping letters
+
+First, let's store the groups of means in an object
+```{r}
+cld(emm, adjust = "tukey", Letters = letters)
+cld(emm, adjust = "tukey", Letters = letters, decreasing = TRUE)
+```
+
+```{r}
+groups <- cld(emm, adjust = "tukey", Letters = letters, decreasing = TRUE)
+groups
+```
+
+Now that we have the `groups` data frame, we can
+build a table. We will use a library called
+`flextable`. Let's download the library and load
+it.
+
+```{r, eval=FALSE}
+install.packages('flextable')
+```
+
+Let's build a first table and improve it
+step-by-step. This first version looks good
+already, as the `cld()` function output is
+generally well formated. Let's see if we can
+Improve it.
+
+```{r}
+library(flextable)
+groups <- data.frame(groups)
+tab <- flextable(groups)
+tab
+```
+
+
+Let's start by formatting the number of decimal
+places in the numeric columns
+
+```{r}
+tab <- colformat_double(tab,
+                        j = c("emmean","SE","lower.CL","upper.CL"),
+                        digits = 2)
+
+tab
+```
+
+Now, I think we can improve this by changing the
+header labels
+
+```{r}
+tab <- set_header_labels(tab,
+                         values = c('Treatment', 'Mean', 'SE', 'DF', 'Lower CL', 'Upper CL', 'Group'))
+tab
+```
+
+
+
+We can also add a caption for the table:
+```{r}
+tab <- set_caption(tab, 
+                   caption = as_paragraph(as_b('Table 1:'),'Mean wheat yield for four fungicide treatments randomized complete block design.'))
+tab
+```
+
+Adding a footnote about the procedure used to separate means is a good idea too:
+
+```{r}
+tab <- footnote(tab, 
+                j = 7, 
+                part = 'header',
+         value = as_paragraph('Letters indicate mean separation groups using a Tukey procedure at α = 0.05; treatments sharing a common letter are not significantly different.'))
+tab
+```
+
+
+
+Finally, we can use the `autofit()` function to adjust columns widths
+
+```{r}
+tab <- autofit(tab)
+tab
+```
+
+Then, we can export this as an image or as a Word
+document.
+
+```{r}
+save_as_image(tab, path = 'wheat_tab.png')
+save_as_docx(tab, path = 'wheat_tab.docx')
+```
+
+
+## Build a Figure
+
+Finally, let's create a figure showing
+
+* treatment means
+* confidence intervals
+* Tukey grouping letters
+
+```{r}
+
+ggplot(groups) +
+  geom_col(aes(x = trt, y = emmean), fill = "grey50", col = 'black') +
+  geom_errorbar(aes(x = trt, ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+  geom_text(aes(x = trt, y = upper.CL + 0.5, label = .group), size = 5) +
+  labs(
+    x = "Fungicide Treatment",
+    y = "Wheat Yield (t/ha)")+
+  theme_bw()
+```
+
+This type of visualization combines the
+statistical results with a clear graphical
+representation of the treatment effects.
+
+
+
+Like I mentioned in the lecture, I personally like
+the type of graph below. It clearly shows the data
+behind the results and effectively communicates
+the treatment differences.
+
+```{r}
+ggplot(groups) +
+  geom_jitter(data = mildew, aes(x = trt, y = yield),  width = 0.1, col = 'grey40')+
+  geom_errorbar(aes(x = trt, ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+  geom_point(aes(x = trt, y = emmean),  col = 'red', size = 2) +
+  geom_text(aes(x = trt, y = upper.CL + 0.5, label = .group), size = 5) +
+  labs(
+    x = "Fungicide Treatment",
+    y = "Wheat Yield (t/ha)")+
+  theme_bw()
+```
+
+
+For some reason, I also like to flip the x and y
+axes sometimes. This is more visually appealing to
+me. I am show you this to give you options.
+
+```{r}
+ggplot(groups) +
+  geom_jitter(data = mildew, aes(x = trt, y = yield),  width = 0.1, col = 'grey40')+
+  geom_errorbar(aes(x = trt, ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+  geom_point(aes(x = trt, y = emmean),  col = 'red', size = 2) +
+  geom_text(aes(x = trt, y = upper.CL + 0.5, label = .group), size = 5) +
+  labs(
+    x = "Fungicide Treatment",
+    y = "Wheat Yield (t/ha)")+
+  theme_bw()+
+  coord_flip()
+```

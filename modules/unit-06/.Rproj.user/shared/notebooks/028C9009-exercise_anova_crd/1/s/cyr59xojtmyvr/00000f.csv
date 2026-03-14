@@ -1,2 +1,0 @@
-"0","barley_data = read.csv(""data/barley_crd.csv"")"
-"0","head(barley_data)"

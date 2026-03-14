@@ -1,96 +1,132 @@
 ---
-title: Unit 11 Homework
-outlook: html_document
+title: "Module 10 Assignment"
+subtitle: "AGRON 5130"
+author: "Caio dos Santos"
+output: pdf_document
 ---
 
+# Introduction
 
+This assignment extends regression analysis to
+multiple and nonlinear settings. You will build,
+inspect, and evaluate models using diagnostics,
+collinearity checks, and cross-validation.
 
-# Question 1a (1pt)
-For this question, we will use soybean yields measured across multiple locations in six states in the 1930s and 1940s.  This is part of the same dataset you used in the practices for multiple linear regression
 ```{r}
 library(tidyverse)
-thompson_soy = read.csv("data/thompson_soy.csv")
+library(broom)
+library(caret)
+```
+
+# Question 1: Multiple Linear Regression (7 points)
+
+```{r}
+thompson_soy <- read.csv("data/thompson_soy.csv")
 head(thompson_soy)
 ```
 
-Model yield as a function of all four weather measurements.
+## Question 1a (1 point)
+Model `yield` as a function of all four weather
+measurements.
+
 ```{r}
 
 ```
 
-# Question 1b (1pt)
-Report the coefficient values using the tidy() function.
-```{r}
-library(broom)
+## Question 1b (1 point)
+Report coefficient values using `tidy()`.
 
-```
-
-# Question 1c (1 pt)
-Report the model fit statistics
 ```{r}
 
 ```
 
-# Question 1d (1 pt)
-Examine the covariance matrix.  Do any of the predictor variables appear to be related?  Name one pair.
+## Question 1c (1 point)
+Report model fit statistics using `glance()`.
+
 ```{r}
 
 ```
 
-# Question 1e (1 pt)
-Observe the correlation among the predictor variables using the partial correlation matrix.  Do any of the predictor variables seem correlated?  Name one pair.
+## Question 1d (1 point)
+Examine the covariance structure among predictor
+variables. Name one pair that appears related.
+
+```{r}
+
+```
+
+## Question 1e (1 point)
+Examine partial correlations among predictor
+variables and name one correlated pair.
 
 ```{r}
 library(ppcor)
 
 ```
 
-# Question 1f (2.5 pt).
-Cross validate the model and print the model results.  
-```{r}
-library(caret)
+## Question 1f (2 points)
+Cross-validate the model with repeated 10-fold CV
+and report performance.
 
+```{r}
 set.seed(123)
-train.control <- trainControl(method = "repeatedcv", 
+train.control <- trainControl(method = "repeatedcv",
                               number = 10, repeats = 3)
 
-# Fill in the remaining code
+# Complete model training code below
+
 ```
 
+# Question 2: Nonlinear Regression (13 points)
 
-
-# Question 2a (1.5 pt)
 ```{r}
-tomato = read.csv("data/tomato_days_volume.csv")
+tomato <- read.csv("data/tomato_days_volume.csv")
 head(tomato)
 ```
 
+## Question 2a (2 points)
+Plot the original data (`days` vs `fruit_volume`).
 
-Plot the original data.
 ```{r}
 
 ```
 
-# Question 2c (2 pt)  
-Run and summarize a logistic model of fruit_volume as a function of days.
+## Question 2b (3 points)
+Fit and summarize a logistic nonlinear model of
+`fruit_volume` as a function of `days`.
+
 ```{r}
 
 ```
 
-# Question 2d (2 pt)
-Create a new dataset, tomato predicted, with days ranging from 7 to 49, in increments of 1.
+## Question 2c (2 points)
+Create a new dataset, `tomato_predicted`, with
+`days` from 7 to 49 in increments of 1.
+
 ```{r}
 
 ```
 
-# Question 2e (1 pt)
-Predict the fruit volume for each day increment in the "tomato_predicted" dataset
+## Question 2d (2 points)
+Predict fruit volume for each day in
+`tomato_predicted`.
+
 ```{r}
 
 ```
 
-# Question 2f (1 pt)
-Add the modelled curve to the initial plot.
+## Question 2e (2 points)
+Add the modeled logistic curve to the initial
+scatterplot.
+
 ```{r}
 
-```  
+```
+
+## Question 2f (2 points)
+Interpret the fitted curve.
+
+- Where does growth accelerate most rapidly?
+- Where does growth begin to plateau?
+- Why is a logistic model more appropriate than a
+  straight line for this process?

@@ -11,6 +11,7 @@ The goal of this assignment is to give you hands-on
 practice with **means separation**, **linear contrasts**,
 and **presenting treatment means**.
 
+
 You will work with an apple yield dataset to practice:
 
 - fitting an ANOVA model
@@ -27,6 +28,7 @@ We can start by loading the necessary libraries
 library(ggplot2)
 library(emmeans)
 library(multcomp)
+library(nlme)
 ```
 
 
@@ -39,10 +41,11 @@ the first few rows of the dataset. This dataset
 contains apple yield data from an experiment that
 evaluated foliar treatments. The experiment was
 conducted as a randomized complete block design
-with four replications.
-
+with 4 replications.
 
 ```{r}
+apple <- read.csv('./data/apple.csv')
+head(apple)
 ```
 
 
@@ -55,7 +58,16 @@ Build a plot to visualize the relationship between
 `yield` and `foliar_trt`
 
 ```{r}
-
+ggplot(apple, aes(x = foliar_trt, y = yield)) +
+  geom_jitter(width = 0.1, 
+              size = 2, 
+              alpha = 0.8, 
+              color = "steelblue", 
+              shape = 1) +
+  labs(x = "Foliar Treatment",
+       y = "Apple Yield (t/ha)") +
+  stat_summary(fun.data = 'mean_se')+
+  theme_bw()
 ```
 
 # Question 3
@@ -69,7 +81,10 @@ Show the ANOVA table.
 
 
 ```{r}
-
+model <- lme(yield ~ foliar_trt,
+             random = ~ 1 | block,
+             data = apple)
+anova(model)
 ```
 
 
@@ -87,7 +102,8 @@ Show the output.
 
 
 ```{r}
-
+emm <- emmeans(model, ~ foliar_trt)
+pairs(emm, adjust = 'none')
 ```
 
 
@@ -103,7 +119,7 @@ from the LSD-style comparisons.
 
 
 ```{r}
-
+pairs(emm, adjust = 'tukey')
 ```
 
 
@@ -131,7 +147,10 @@ Briefly interpret the results.
 
 
 ```{r}
-
+contrast(emm, 
+         method = list(
+           calcium_vs_alone = c(-1, -1/2, -1/2, 0)
+         ))
 ```
 
 
@@ -146,7 +165,7 @@ Show the output.
 
 
 ```{r}
-
+cld(emm, adjust = 'tukey', Letters = letters)
 ```
 
 

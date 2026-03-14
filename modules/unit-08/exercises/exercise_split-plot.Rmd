@@ -1,0 +1,393 @@
+---
+title: "Exercise: Split-Plot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+In this exercise we will walk through a **complete
+split-plot analysis**, from loading the data to
+producing final tables and figures.
+
+The goal is to walk through the entire workflow:
+
+* loading the data
+* visualizing the experiment
+* fitting the mixed model
+* separating treatment means
+* comparing LSD and HSD results
+* testing agronomic contrasts
+* presenting the results in tables and figures
+
+By the end, you should have a clear picture of
+what a full split-plot analysis looks like in
+practice.
+
+
+```{r}
+library(ggplot2)
+library(emmeans)
+library(multcomp)
+library(nlme)
+```
+
+# The Experiment
+
+A research team evaluated corn yield responses to
+two management factors:
+
+* Cover crop species (`species`): Peas, Clover, Rye
+* Termination timing (`termination`): Early, Late
+
+Unlike the fungicide experiment from the previous
+exercise, here we have **two treatment factors
+applied at different experimental scales**.
+
+Because **termination timing is difficult to apply
+at small scales**, it was applied to larger strips
+within each block.
+
+Within those strips, the **cover crop species were
+randomized to smaller plots**.
+
+This structure creates a **split-plot design**.
+
+Structure of the experiment:
+
+* **Blocks**: `block`
+* **Main-plot factor**: `termination`
+* **Subplot factor**: `species`
+* **Main plots within blocks**: `main_plot`
+
+This structure is important because it determines
+**how we specify the statistical model**.
+
+## Load the Data
+
+Let's start by loading the dataset.
+
+```{r}
+splitplot <- read.csv("data/cover-crop-and-termination-split.csv")
+head(splitplot)
+```
+
+Notice that we convert these variables to
+**factors** so that R treats them as categorical
+variables in the statistical model.
+
+## Visualize the Data
+
+Before fitting any statistical model, it is
+always a good idea to **look at the data**.
+
+Here we plot yield distributions for each
+treatment combination.
+
+```{r}
+ggplot(splitplot,
+       aes(x = termination, 
+           y = yield)) +
+  geom_point(shape = 1)+
+  stat_summary(fun.data = 'mean_se')+
+  labs(
+    x = "Termination x Species",
+    y = "Corn Yield (bu/ac)",
+    fill = "Termination"
+  ) +
+  facet_wrap(~ species)+
+  theme_linedraw()
+```
+
+Another useful visualization is an **interaction
+plot**, which shows how treatment means change
+across factor levels.
+
+```{r}
+ggplot(splitplot,
+       aes(x = termination,
+           y = yield,
+           color = species,
+           group = species)) +
+  stat_summary(fun = mean,
+               geom = "line",
+               linewidth = 1) +
+  stat_summary(fun = mean,
+               geom = "point",
+               size = 3) +
+  labs(
+    x = "Termination Timing",
+    y = "Mean Yield (bu/ac)",
+    color = "Species"
+  ) +
+  theme_linedraw()
+```
+
+This type of plot is particularly helpful for
+**spotting potential interactions**.
+
+# Fit the Split-Plot Model
+
+For a split-plot design we must account for
+**two levels of random variation**:
+
+* variation among **blocks**
+* variation among **main plots within blocks**
+
+A suitable statistical model is
+
+$$
+Y_{ijk} = \mu + S_i + T_j + ST_{ij} + b_k + m_{jk} + \varepsilon_{ijk}
+$$
+
+where
+
+* $S_i$ = species effect
+* $T_j$ = termination timing effect
+* $ST_{ij}$ = interaction
+* $b_k$ = block random effect
+* $m_{jk}$ = main plot random effect (termination within block)
+
+Now let's fit this model in R.
+
+```{r}
+model_split <- lme(
+  yield ~ species * termination,
+  random = ~1 | block/main_plot,
+  data = splitplot
+)
+```
+
+# Interpret the ANOVA
+
+Now we examine the ANOVA table.
+
+```{r}
+anova(model_split)
+```
+
+
+# Means Separation
+
+We will use the **emmeans** package to compute
+estimated marginal means.
+
+```{r}
+emm <- emmeans(model_split, ~ species * termination)
+```
+
+Now we can compare treatment levels.
+
+```{r}
+pairs(emm, adjust = "tukey")
+```
+
+## LSD versus HSD
+
+For teaching purposes, it is useful to compare
+**LSD-style inference** and **Tukey's HSD**.
+
+In `emmeans`:
+
+* `adjust = "none"` corresponds to **LSD-style comparisons**
+* `adjust = "tukey"` corresponds to **Tukey's HSD**
+
+```{r}
+pairs(emm, adjust = "none")
+pairs(emm, adjust = "tukey")
+```
+
+We can also compare the grouping letters produced
+by each approach.
+
+```{r}
+cld(emm, adjust = "none", Letters = letters)
+cld(emm, adjust = "tukey", Letters = letters)
+```
+
+
+# Contrasts Between Groups of Treatments
+
+Pairwise comparisons are useful, but many
+agronomic questions involve **groups of
+treatments**.
+
+For example:
+
+* Are **legumes different from rye**?
+* Is **peas different from clover**?
+
+```{r}
+emm_species <-  emmeans(model_split, ~ species)
+
+contrast(emm_species,
+         method = list(
+           legumes_vs_rye = c(1/2, 1/2, -1),
+           peas_vs_clover = c(1, -1, 0)
+         ),
+         adjust = "none")
+```
+
+
+# Build a Means Table
+
+Now let's build a reporting table with
+
+* treatment means
+* standard errors
+* confidence intervals
+* Tukey grouping letters
+
+First, let's store the groups of means in an object.
+
+```{r}
+cld(emm, adjust = "tukey", Letters = letters)
+cld(emm, adjust = "tukey", Letters = letters, decreasing = TRUE)
+```
+
+```{r}
+groups <- cld(emm, 
+              adjust = "tukey",
+              Letters = letters,
+              decreasing = TRUE)
+groups
+```
+
+Now that we have the `groups` data frame, we can
+build a table.
+
+```{r}
+library(flextable)
+
+groups <- data.frame(groups)
+
+tab <- flextable(groups)
+tab
+```
+
+Let's format the numeric columns.
+
+```{r}
+tab <- colformat_double(tab,
+                        j = c("emmean","SE","lower.CL","upper.CL"),
+                        digits = 2)
+
+tab
+```
+
+Now we improve the column labels.
+
+```{r}
+tab <- set_header_labels(tab,
+                         values = c("Species",
+                                    'Termination',
+                                    "Mean",
+                                    "SE",
+                                    "DF",
+                                    "Lower CL",
+                                    "Upper CL",
+                                    "Group"))
+
+tab
+```
+
+We can also add a caption for the table:
+```{r}
+tab <- set_caption(tab, 
+                   caption = as_paragraph(as_b('Table 1:'),'Mean corn yield for species and termination timing combinations in a split-plot experiment.'))
+tab
+```
+
+Adding a footnote about the procedure used to separate means is a good idea too:
+
+```{r}
+tab <- footnote(tab, 
+                j = 8, 
+                part = 'header',
+         value = as_paragraph('Letters indicate mean separation groups using a Tukey procedure at α = 0.05; treatments sharing a common letter are not significantly different.'))
+tab
+```
+
+
+
+Finally, we can use the `autofit()` function to adjust columns widths
+
+```{r}
+tab <- autofit(tab)
+tab
+```
+
+Then we can export the table if needed.
+
+```{r}
+save_as_image(tab, path = "species_table.png")
+save_as_docx(tab, path = "species_table.docx")
+```
+
+# Build a Figure
+
+Finally, let's create a figure showing
+
+* treatment means
+* confidence intervals
+* Tukey grouping letters
+
+```{r}
+
+ggplot(groups) +
+  geom_col(aes(x = termination, y = emmean), fill = "grey50", col = 'black') +
+  geom_errorbar(aes(x = termination, ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+  geom_text(aes(x = termination, y = upper.CL + 15, label = .group), size = 5) +
+  labs(
+    x = "Termination x Species",
+    y = "Corn Yield (bu/ac)",
+    fill = "Termination")+
+  theme_linedraw()+
+  facet_wrap(~species)
+```
+
+This type of visualization combines the
+statistical results with a clear graphical
+representation of the treatment effects.
+
+
+
+Like I mentioned in the lecture, I personally like
+the type of graph below. It clearly shows the data
+behind the results and effectively communicates
+the treatment differences.
+
+```{r}
+ggplot(groups) +
+  geom_jitter(data = splitplot, aes(x = termination, y = yield),  width = 0.1, col = 'grey40')+
+  geom_errorbar(aes(x = termination, ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+  geom_point(aes(x = termination, y = emmean),  col = 'red', size = 2) +
+  geom_text(aes(x = termination, y = upper.CL + 15, label = .group), size = 5) +
+  labs(
+    x = "Termination x Species",
+    y = "Corn Yield (bu/ac)",
+    fill = "Termination")+
+  theme_linedraw()+
+  facet_wrap(~species)
+```
+
+
+For some reason, I also like to flip the x and y
+axes sometimes. This is more visually appealing to
+me. I am show you this to give you options.
+
+```{r}
+ggplot(groups) +
+  geom_jitter(data = splitplot, aes(x = termination, y = yield),  width = 0.1, col = 'grey40')+
+  geom_errorbar(aes(x = termination, ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+  geom_point(aes(x = termination, y = emmean),  col = 'red', size = 2) +
+  geom_text(aes(x = termination, y = upper.CL + 15, label = .group), size = 5) +
+  labs(
+    x = "Termination x Species",
+    y = "Corn Yield (bu/ac)",
+    fill = "Termination")+
+  theme_linedraw()+
+  facet_wrap(~species)+
+  coord_flip()
+```

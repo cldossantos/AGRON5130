@@ -1,3 +1,0 @@
-"0","beet_means = beet_data %>%"
-"0","  group_by() %>%"
-"0","  summarise"

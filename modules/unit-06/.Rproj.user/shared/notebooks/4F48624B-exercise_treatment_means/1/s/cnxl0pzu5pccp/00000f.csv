@@ -1,2 +1,0 @@
-"0","potato_data = read.csv(""data/potato_crd.csv"")"
-"0","head(potato_data)"

@@ -11,6 +11,9 @@ The goal of this assignment is to give you hands-on
 practice with **means separation**, **linear contrasts**,
 and **presenting treatment means**.
 
+The exercises build directly on this week's lecture
+and lab.
+
 You will work with an apple yield dataset to practice:
 
 - fitting an ANOVA model
@@ -34,13 +37,8 @@ library(multcomp)
 
 **1 point**
 
-Load the dataset `"data/apple.csv"` and display
-the first few rows of the dataset. This dataset
-contains apple yield data from an experiment that
-evaluated foliar treatments. The experiment was
-conducted as a randomized complete block design
-with four replications.
-
+Load the dataset `"data/apple.csv"` and display the
+first few rows of the dataset.
 
 ```{r}
 ```
@@ -73,7 +71,7 @@ Show the ANOVA table.
 ```
 
 
-# Question 4
+# Question 3
 
 **2 points**
 
@@ -91,7 +89,7 @@ Show the output.
 ```
 
 
-# Question 5
+# Question 4
 
 **3 points**
 
@@ -107,7 +105,7 @@ from the LSD-style comparisons.
 ```
 
 
-# Question 6
+# Question 5
 
 **3 points**
 
@@ -135,7 +133,7 @@ Briefly interpret the results.
 ```
 
 
-# Question 7
+# Question 6
 
 **1 point**
 
@@ -150,7 +148,7 @@ Show the output.
 ```
 
 
-# Question 8
+# Question 7
 
 **1 point**
 
