@@ -146,9 +146,9 @@ fits mixed-effects models.*
 ```{r}
 library(nlme)
 model3 <- lme(NO2 ~ tillage * irrigation,
-              random = ~ 1 | block, 
+              random = ~ 1 | block/irrigation, 
               data = nitrate)
-anova(model3):w
+anova(model3)
 
 ```
 

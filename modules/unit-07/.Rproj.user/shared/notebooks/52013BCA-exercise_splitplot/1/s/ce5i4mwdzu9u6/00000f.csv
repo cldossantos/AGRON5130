@@ -1,2 +1,0 @@
-"0","soybean %>%"
-"0","  ggplot(aes(x=tillage, y=yield, group=fungicide))"

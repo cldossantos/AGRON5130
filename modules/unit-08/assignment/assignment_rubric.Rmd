@@ -149,7 +149,7 @@ Briefly interpret the results.
 ```{r}
 contrast(emm, 
          method = list(
-           calcium_vs_alone = c(-1, -1/2, -1/2, 0)
+           calcium_vs_alone = c(1, -1/2, -1/2, 0)
          ))
 ```
 

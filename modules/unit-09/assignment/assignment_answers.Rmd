@@ -1,7 +1,7 @@
 ---
 title: "Analyzing Non-Normal Data"
 subtitle: "AGRON 5130"
-author: "Caio dos Santos"
+author: "YOUR NAME HERE"
 output: pdf_document
 ---
 
@@ -204,7 +204,7 @@ of data** using a **Gamma distribution with a log
 link**. We will use the model `mod_glm` for the
 next questions.
 
-```{r, eval=FALSE}
+```{r}
 mod_glm <- glm(clusters ~ treatment,
                family = Gamma(link = "log"),
                data = grape)

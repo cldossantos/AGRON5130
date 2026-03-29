@@ -1,0 +1,293 @@
+---
+title: "Exercise: RCBD from Start to Finish"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+In this exercise we will go through a complete
+analysis of a **randomized complete block design
+(RCBD)** with one treatment factor.
+
+The goal is to walk through the entire workflow:
+
+* loading the data
+* visualizing the experiment
+* fitting the ANOVA model
+* separating treatment means
+* testing agronomic contrasts
+* presenting the results in tables and figures
+
+By the end, you should have a clear picture of
+what a full RCBD analysis looks like in practice.
+
+# Before You Start: Install Required Packages
+
+If you do not already have these packages
+installed, run the command below once on your
+machine. If a package is already installed, R
+will simply skip it.
+
+```{r eval=FALSE}
+install.packages(c("emmeans", "multcomp"))
+```
+
+Now let's load the packages we will use in this
+exercise.
+
+```{r}
+library(ggplot2)
+library(emmeans)
+library(multcomp)
+```
+
+# The Experiment
+
+In this example, a field experiment evaluated four
+fungicide programs for wheat under **powdery
+mildew pressure**. The response variable is grain
+yield (t/ha).
+
+The treatments are:
+
+* `T0`: untreated control
+* `T1`: one fungicide application (early)
+* `T2`: one fungicide application (late)
+* `R`: recommended two-application program
+
+The field had a **soil fertility gradient**, so
+the
+experiment was conducted using a **randomized
+complete block design**. There are nine blocks,
+and each block contains all four treatments.
+
+This gives us **nine replicates per treatment**.
+
+## Load the Data
+
+Let's start by loading the dataset.
+
+```{r}
+mildew <- read.csv("data/mildew.csv")
+
+mildew$block <- factor(mildew$block)
+mildew$trt <- factor(mildew$trt, levels = c("T0", "T1", "R", "T2"))
+
+head(mildew)
+```
+
+Notice that we convert `block` and `trt` to
+factors. This tells R that these variables should
+be treated as **categorical variables** in the
+analysis.
+
+## Visualize the Data
+
+Before fitting any statistical model, it is always
+a good idea to **look at the data**.
+
+Here we build a simple figure showing the yield
+distribution for each treatment.
+
+```{r}
+ggplot(mildew, aes(x = trt, y = yield)) +
+        geom_boxplot(fill = "gray85", outlier.shape = NA) +
+        geom_jitter(width = 0.12, size = 2, alpha = 0.8, color = "steelblue") +
+        labs(
+                x = "Fungicide Treatment",
+                y = "Wheat Yield (t/ha)",
+                title = "RCBD Data: Treatment Distributions"
+        ) +
+        theme_linedraw()
+```
+
+The boxplots summarize the treatment
+distributions, while the points show the
+individual observations. This gives us a quick
+visual sense of how the treatments compare.
+
+## Fit the RCBD Model
+
+For a one-factor RCBD, the statistical model is
+
+$$Y_{ij} = \mu + B_i + T_j + \varepsilon_{ij}$$
+
+where
+
+* (B_i) represents the block effect
+* (T_j) represents the treatment effect
+
+Now let's fit this model in R.
+
+```{r}
+model_rcbd <- aov(yield ~ block + trt, data = mildew)
+```
+
+## Interpret the ANOVA
+
+Next, we examine the ANOVA table.
+
+```{r}
+anova(model_rcbd)
+```
+
+If the treatment *p-value* is small, this
+provides evidence that **at least one treatment
+mean differs from the others**.
+
+When that happens, we proceed to **means
+separation** to identify which treatments differ.
+
+## Means Separation
+
+We will use the **emmeans** package to compute
+estimated marginal means and compare treatments.
+
+```{r}
+emm_trt <- emmeans(model_rcbd, ~ trt)
+
+# Pairwise treatment comparisons with Tukey adjustment
+pairs(emm_trt, adjust = "tukey")
+```
+
+This output shows the estimated difference
+between each pair of treatments along with the
+associated statistical test.
+
+### LSD versus HSD
+
+In `emmeans`, different multiple-comparison
+procedures are controlled using the `adjust`
+argument.
+
+* `adjust = "none"` corresponds to an
+  **LSD-style comparison**
+* `adjust = "tukey"` corresponds to **Tukey's
+  Honest Significant Difference**
+
+Let's compute both.
+
+```{r}
+# LSD-style pairwise comparisons
+pairs(emm_trt, adjust = "none")
+
+# HSD (Tukey) pairwise comparisons
+pairs(emm_trt, adjust = "tukey")
+```
+
+Another way to summarize these comparisons is
+with **compact letter displays**.
+
+Treatments sharing the same letter are **not
+significantly different**.
+
+Below we compare the groupings produced by LSD
+and Tukey.
+
+```{r}
+letters_lsd <- as.data.frame(cld(emm_trt, adjust = "none", Letters = letters))
+letters_hsd <- as.data.frame(cld(emm_trt, adjust = "tukey", Letters = letters))
+
+lsd_hsd_compare <- data.frame(
+        trt = as.character(letters_lsd$trt),
+        LSD_group = trimws(letters_lsd$.group),
+        HSD_group = trimws(letters_hsd$.group),
+        stringsAsFactors = FALSE
+)
+
+lsd_hsd_compare
+```
+
+Here are the Tukey groupings alone:
+
+```{r}
+letters_trt <- as.data.frame(cld(emm_trt, adjust = "tukey", Letters = letters))
+letters_trt
+```
+
+## Contrasts Between Groups of Treatments
+
+Pairwise comparisons are useful, but many
+agronomic questions involve **groups of
+treatments** rather than individual ones.
+
+Here we evaluate two planned contrasts:
+
+* untreated control (`T0`) versus the **average
+  of all fungicide programs**
+* single-application programs (`T1`, `T2`)
+  versus the **recommended two-application
+  program (`R`)**
+
+```{r}
+contrast(emm_trt,
+                                 method = list(
+                                         "T0_vs_all_treated" = c(-1, 1/3, 1/3, 1/3),
+                                         "single_vs_recommended" = c(0, 1/2, -1, 1/2)
+                                 ),
+                                 adjust = "none")
+```
+
+These are **planned contrasts based on
+biological questions**, so we do not apply a
+multiplicity adjustment here.
+
+## Build a Means Table
+
+Now let's build a simple reporting table with
+
+* treatment means
+* standard errors
+* confidence intervals
+* Tukey grouping letters
+
+```{r}
+means_tbl <- data.frame(
+        as.data.frame(emm_trt)[, c("trt", "emmean", "SE", "lower.CL", "upper.CL")],
+        stringsAsFactors = FALSE
+)
+colnames(means_tbl) <- c("trt", "mean", "SE", "lower", "upper")
+
+means_tbl <- merge(means_tbl,
+                   letters_trt[, c("trt", ".group")],
+                   by = "trt")
+
+means_tbl <- means_tbl[order(means_tbl$mean, decreasing = TRUE), ]
+means_tbl$group <- trimws(means_tbl$.group)
+means_tbl$.group <- NULL
+
+means_tbl
+```
+
+This is the type of table you would commonly see
+in an agronomy paper reporting treatment results.
+
+## Build a Figure
+
+Finally, let's create a figure showing
+
+* treatment means
+* confidence intervals
+* Tukey grouping letters
+
+```{r}
+plot_tbl <- means_tbl[order(means_tbl$mean, decreasing = TRUE), ]
+
+ggplot(plot_tbl, aes(x = reorder(trt, mean), y = mean)) +
+        geom_col(fill = "steelblue", width = 0.65) +
+        geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
+        geom_text(aes(y = upper + 0.05, label = group), size = 5) +
+        labs(
+                x = "Fungicide Treatment",
+                y = "Estimated Mean Yield (t/ha)",
+                title = "RCBD Means with Tukey Grouping"
+        ) +
+        theme_linedraw()
+```
+
+This type of visualization combines the
+statistical results with a clear graphical
+representation of the treatment effects.
+

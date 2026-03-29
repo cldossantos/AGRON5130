@@ -3,9 +3,6 @@ title: "Exercise: RCBD"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-```
 
 In this exercise we will go through a complete
 analysis of a **randomized complete block design
@@ -31,7 +28,7 @@ machine. If a package is already installed, R
 will simply skip it.
 
 ```{r eval=FALSE}
-install.packages(c("emmeans", "multcomp"))
+install.packages(c("emmeans", "multcomp", 'multcompView'))
 ```
 
 Now let's load the packages we will use in this
@@ -149,8 +146,6 @@ estimated marginal means and compare treatments.
 emm <- emmeans(model1, ~ trt)
 
 pairs(emm, adjust = "tukey")
-
-pwpm(emm, adjust = 'tukey')
 ```
 
 This output shows the estimated difference

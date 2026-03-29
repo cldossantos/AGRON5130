@@ -1,7 +1,7 @@
 ---
 title: "Analyzing Non-Normal Data"
 subtitle: "AGRON 5130"
-author: "Caio dos Santos"
+author: "YOUR NAME HERE"
 output: pdf_document
 ---
 
@@ -87,11 +87,9 @@ library(emmeans)
 Load the dataset `"data/grape.csv"` and display
 the first few rows.
 
-**note:**  make sure to call the dataset `grape`.
-This is important for the models I have pre built
-for you after question 10.
-
 ```{r}
+grape <- read.csv('./data/grape.csv')
+head(grape)
 ```
 
 
@@ -103,6 +101,17 @@ Create a plot showing the relationship between
 `treatment` and `clusters`.
 
 ```{r}
+ggplot()+
+  geom_point(data = grape,
+             aes(x = treatment, y = clusters),
+             pch = 1)+
+  stat_summary(data = grape,
+               fun.data = 'mean_se',
+               aes(x = treatment, y = clusters),
+               col = 'blue',
+               pch = 17)+
+  labs(y = 'Clusters per vine', x = 'Treatment')+
+  theme_bw()
 ```
 
 
@@ -115,6 +124,8 @@ Create a histogram of `clusters`.
 Briefly describe the distribution (normal vs skewed).
 
 ```{r}
+hist(grape$clusters,
+     breaks = 20)
 ```
 
 
@@ -128,6 +139,10 @@ Do any of the confidence intervals include negative values?
 Why might this be a problem for this type of data?
 
 ```{r}
+model1 <- lm(clusters ~ treatment, 
+             data = grape)
+anova(model1)
+emmeans(model1, ~ treatment)
 ```
 
 
@@ -141,6 +156,8 @@ Create diagnostic plots and comment on:
 * constant variance
 
 ```{r  fig.show="hold", out.width="50%"}
+plot(model1, which = 1)
+plot(model1, which = 2)
 ```
 
 
@@ -151,6 +168,9 @@ Create diagnostic plots and comment on:
 Fit a model using a **log transformation** of the response.
 
 ```{r}
+ml <- lm(log(clusters) ~ treatment, 
+         data = grape)
+anova(ml)
 ```
 
 
@@ -163,6 +183,8 @@ Create diagnostic plots for the log-transformed model.
 Did things improve?
 
 ```{r  fig.show="hold", out.width="50%"}
+plot(ml, which = 1)
+plot(ml, which = 2)
 ```
 
 
@@ -173,6 +195,9 @@ Did things improve?
 Compute estimated marginal means for the log model.
 
 ```{r}
+log_means <- emmeans(ml, ~ treatment)
+log_means <- data.frame(log_means)
+log_means
 ```
 
 
@@ -183,6 +208,7 @@ Compute estimated marginal means for the log model.
 Back-transform the means using `exp()`.
 
 ```{r}
+exp(log_means$emmean)
 ```
 
 
@@ -195,6 +221,8 @@ Compute the difference between the treatments
 then interpret this difference in the data scale
 
 ```{r}
+exp(3.354933 - 1.096407)
+28.643684 / 2.993392
 ```
 
 
@@ -204,7 +232,7 @@ of data** using a **Gamma distribution with a log
 link**. We will use the model `mod_glm` for the
 next questions.
 
-```{r, eval=FALSE}
+```{r}
 mod_glm <- glm(clusters ~ treatment,
                family = Gamma(link = "log"),
                data = grape)
@@ -222,6 +250,8 @@ model a good fit? Are we concerned about violating
 assumptions?
 
 ```{r  fig.show="hold", out.width="50%"}
+plot(mod_glm, which = 1)
+plot(mod_glm, which = 2)
 ```
 
 
@@ -234,6 +264,7 @@ Use `emmeans()` to extract treatment means on the
 Do any of the confidence intervals include negative values?
 
 ```{r}
+emmeans(mod_glm, ~ treatment, type = 'response')
 ```
 
 

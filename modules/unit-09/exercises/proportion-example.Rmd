@@ -1,0 +1,258 @@
+---
+title: "Non-normal proportion data"
+output: html_document
+---
+
+We will begin by importing the libraries we'll use in this exercise
+
+```{r}
+library(ggplot2)
+library(emmeans)
+```
+
+## Skewed proportion data
+
+We'll look at an example coming from a field trial
+that evaluated the effect of multiple foliar treatments
+on the percent of a plot affected by a disease.
+
+The experiment included 30 replications and five treatments:
+Control, T1, T2, T3, and T4.
+
+Like in real-world trials, the data may come from
+different sources or teams. In this case, since
+you had too many replications, you evaluated the
+first 15 replications, and a co-worker evaluated
+the last 15 replications. We now need to merge
+these datasets.
+
+Let's bring the data into R. First, the first part:
+
+```{r}
+df1 <- read.csv('./data/disease-proportion-1.csv')
+head(df1)
+```
+
+Now the second part of the trial. Note that you
+and your co-worker named the columns differently.
+This is common in a research setting.
+
+```{r}
+df2 <- read.csv('./data/disease-proportion-2.csv')
+head(df2)
+```
+
+We can merge these data frames vertically using
+`rbind`. Note that R will not let us bind these
+because they have different names.
+
+```{r, eval=FALSE}
+rbind(df1, df2)
+```
+
+We will rename the columns in `df2`, to match the columns in `df1`
+```{r}
+names(df2) <- names(df1)
+head(df2)
+```
+
+Now, let's try again:
+```{r}
+df_long <- rbind(df1, df2)
+head(df_long)
+```
+
+
+Great! Now that the dataset is ready, let's visualize it.
+
+```{r}
+ggplot()+
+  geom_point(data = df_long,
+             aes(x = treatment, y = disease),
+             pch = 1)+
+  stat_summary(data = df_long,
+               fun.data = 'mean_se',
+               aes(x = treatment, y = disease),
+               col = 'blue',
+               pch = 17)+
+  labs(y = 'Percent disease', x = 'Treatment')+
+  theme_bw()
+```
+
+### Distribution of the raw data
+
+Proportion data often deviate from normality. They
+are bounded between 0 and 100%, which creates
+skewness, especially when values are near 0 or
+100.
+
+```{r}
+xbar <- mean(df_long$disease)
+s <- sd(df_long$disease)
+
+ggplot()+
+  geom_histogram(data = df_long,
+                 aes(x = disease, y = ..density..),
+                 bins = 20,
+                 col = 'black',
+                 fill = 'lightgrey')+
+  geom_line(aes(x = seq(-10, 100,1), 
+                y = dnorm(seq(-10,100,1), xbar, s)), col = 'red')+
+  labs(x = 'Percent disease', y = 'Density')+
+  theme_bw()
+```
+
+### Fitting a linear model
+
+```{r}
+mod_prop <- aov(disease ~ treatment, data = df_long)
+summary(mod_prop)
+```
+
+Let's check the model diagnostics:
+
+```{r}
+plot(mod_prop, which = 1) # residuals vs fitted
+plot(mod_prop, which = 2) # Q-Q plot
+```
+
+Notice how residuals are not normally distributed. Variance increases with the mean—a classic issue with proportion data.
+
+
+
+
+
+Before fixing things, I want to show some of the
+implications of mis-specified models like this one.
+Let's compute the treatment means and plot them
+along with their confidence intervals.
+
+First, we will extract the treatments means using
+`emmeans`, then we will convert it to a data frame
+so we can use it within `ggplot`
+
+```{r}
+means_prop <- emmeans(mod_prop, ~treatment)
+means_prop <- data.frame(means_prop)
+means_prop
+```
+
+
+Now, let's add this to a plot. A couple of things I want you to notice:
+
+1. Since our model assumes constant variance among
+the treatments, look at how the width of the
+confidence interval is the same for all
+treatments.
+
+2. Does it seem like treatment `T3` has the same
+variance as the others? 
+
+3. Think of the residual plot we saw before.
+
+```{r}
+ggplot()+
+  geom_point(data = df_long,
+             aes(x = treatment, y = disease),
+             pch = 1)+
+  geom_errorbar(data = means_prop,
+                aes(x = treatment, ymin = lower.CL, ymax = upper.CL),
+                width = 0.1,
+                col = 'red')+
+  geom_point(data = means_prop,
+             aes(x = treatment, y = emmean), col = 'red')+
+  labs(y = 'Soybean yield (bu/ac)', x = 'Treatment')+
+  theme_bw()
+```
+
+## Logit transformation
+
+To stabilize variance and make residuals closer to normal, we can use a **logit transformation**. We'll add a small constant to avoid 0% or 100% values.
+
+```{r}
+df_long$logit_disease <- log((df_long$disease)/(100 - df_long$disease))
+
+mod_logit <- lm(logit_disease ~ treatment, data = df_long)
+anova(mod_logit)
+```
+
+Check diagnostics:
+
+```{r}
+par(mfrow = c(1,2))
+plot(mod_logit, which = 1)
+plot(mod_logit, which = 2)
+par(mfrow = c(1,1))
+```
+
+---
+
+## Extracting and interpreting effects
+
+We can recover estimated treatment means on the **original scale** by back-transforming the logit:
+
+```{r}
+logit_means <- emmeans(mod_logit, ~ treatment)
+logit_means <- data.frame(logit_means)
+logit_means
+
+# back-transform to percent
+logit_means$percent <- 100 * exp(logit_means$emmean) / (1 + exp(logit_means$emmean))
+logit_means
+```
+
+---
+
+## Fitting a GLM
+
+Instead of transforming, we can fit a **GLM** suitable for proportion data (Binomial family):
+
+```{r}
+# convert percent to proportion
+df_long$prop_disease <- df_long$disease / 100
+
+mod_glm <- glm(prop_disease ~ treatment,
+               family = quasibinomial(link = "logit"),
+               data = df_long)
+
+summary(mod_glm)
+plot(mod_glm)
+```
+
+Estimated means at the original scale:
+
+```{r}
+means_glm <- emmeans(mod_glm, ~ treatment, type = 'response')
+means_glm <- data.frame(means_glm)
+means_glm
+```
+
+Visualizing the results:
+
+```{r}
+ggplot()+
+  geom_point(data = df_long,
+             aes(x = treatment, y = prop_disease*100),
+             pch = 1)+
+  geom_errorbar(data = means_glm,
+                aes(x = treatment, ymin = asymp.LCL*100, ymax = asymp.UCL*100),
+                width = 0.1,
+                col = 'red')+
+  geom_point(data = means_glm,
+             aes(x = treatment, y = prob*100), col = 'red')+
+  labs(y = 'Percent disease', x = 'Treatment')+
+  theme_bw()
+```
+
+---
+
+### Notes for interpretation
+
+* Logit-transformed LM: stabilizes variance, residuals closer to normal.
+* Binomial/Quasibinomial GLM: naturally models proportions, allows variance to vary with mean.
+* Back-transformed estimates can be interpreted as expected percent disease.
+
+> Key takeaway: Transformations can help, but using a model that matches the data distribution is often more reliable and easier to interpret.
+
+
+

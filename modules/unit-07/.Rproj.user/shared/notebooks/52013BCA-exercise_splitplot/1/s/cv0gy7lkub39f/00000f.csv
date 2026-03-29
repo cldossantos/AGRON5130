@@ -1,2 +1,0 @@
-"0","corn = read.csv(""data/rotation_fungicide_corn.csv"")"
-"0","head(corn)"

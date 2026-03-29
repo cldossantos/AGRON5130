@@ -1,0 +1,105 @@
+---
+title: "simulating-datasets"
+output: html_document
+---
+
+```{r}
+set.seed(20260328)
+
+
+reps <- 30
+
+# More realistic soybean yields (log-normal)
+Control <- rlnorm(reps, meanlog = 3.6, sdlog = 0.35)  
+T1      <- rlnorm(reps, meanlog = 3.6, sdlog = 0.25)  
+T2      <- rlnorm(reps, meanlog = 3.7, sdlog = 0.25)  
+T3      <- rlnorm(reps, meanlog = 4.2, sdlog = 0.3)   
+T4      <- rlnorm(reps, meanlog = 4.0, sdlog = 0.2)   
+
+# File 1
+dat_file1 <- data.frame(
+  rep = 1:reps,
+  Yield.Control = Control,
+  Yield.T1 = T1,
+  Yield.T2 = T2
+)
+
+# File 2
+dat_file2 <- data.frame(
+  rep = 1:reps,
+  Yield.T3 = T3,
+  Yield.T4 = T4
+)
+
+dat_file2 <- dat_file2[sample(1:nrow(dat_file2), nrow(dat_file2)), ]
+
+dat_file1
+dat_file2
+
+
+write.csv(dat_file1, './data/soybean-foliar-1.csv', row.names = FALSE)
+write.csv(dat_file2, './data/soybean-foliar-2.csv', row.names = FALSE)
+```
+
+
+
+```{r}
+set.seed(20260328)
+reps <- 30
+treatments <- c("Control", "T1", "T2", "T3", "T4")
+
+# define logit-scale means
+logit_means <- qlogis(c(0.95, 0.8, 0.6, 0.15, 0.1))
+
+
+# simulate logit-transformed proportions with some variability
+logit_values <- c(rnorm(reps, logit_means[1], 0.9),
+                  rnorm(reps, logit_means[2], 0.9),
+                  rnorm(reps, logit_means[3], 0.9),
+                  rnorm(reps, logit_means[4], 0.9),
+                  rnorm(reps, logit_means[5], 0.9))
+
+# back-transform to percent
+percent_values <- 100 * plogis(logit_values)
+
+df_long <- data.frame(
+  rep = rep(1:reps, 5),
+  treatment = rep(treatments, each = reps),
+  disease = percent_values)
+
+df1 <- subset(df_long, rep %in% 1:15)
+df2 <- subset(df_long, rep %in% 15:30)
+names(df2) <- c('Replication', 'TRT', 'Proportion')
+
+write.csv(df1, './data/disease-proportion-1.csv', row.names = FALSE)
+write.csv(df2, './data/disease-proportion-2.csv', row.names = FALSE)
+
+df_long
+```
+
+
+```{r}
+set.seed(20260325)
+
+
+reps <- 30
+
+treatment <- factor(rep(c("Control",
+                          "Shoot",
+                          "Leaf",
+                          "Both"), each = reps))
+
+clusters <- c(
+  rlnorm(reps, log(4), 1.1),   
+  rlnorm(reps, log(15), 0.8),
+  rlnorm(reps, log(20), 0.8),
+  rlnorm(reps, log(30), 0.8)
+)
+
+df <- data.frame(treatment, clusters)
+df$clusters <- round(df$clusters, 0)
+df$clusters[df$clusters < 1] <- 1
+write.csv(df, '../assignment/data/grape.csv', row.names = FALSE)
+
+```
+

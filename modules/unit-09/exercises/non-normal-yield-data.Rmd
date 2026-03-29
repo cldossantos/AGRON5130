@@ -1,0 +1,358 @@
+---
+title: "Non-normal yield data"
+output: html_document
+---
+
+We will begin by importing the libraries we'll use in this exercise
+
+```{r}
+library(ggplot2)
+library(emmeans)
+```
+
+
+## Skewed yield data
+
+We'll look at an example coming from a strip-trial
+that evaluated the effect of multiple foliar treatments on
+soybean yield.
+
+The experiment included 30 replications and five treatments:
+Control, T1, T2, T3, and T4.
+
+However, the data were stored in separate files, as can happen
+in real-world settings where different teams manage different parts
+of the experiment.
+
+Each dataset is also in a **wide format**, meaning that each treatment
+is stored in its own column.
+
+
+Let's bring the data into R
+
+First, we will bring the first part of the experiment and inspect it. 
+It seems like this first file has the first three treatments. 
+
+
+```{r}
+df1 <- read.csv('./data/soybean-foliar-1.csv')
+head(df1)
+```
+Great! Now, we can do the same for the second part of this trial's data.
+This dataset seems to have two treatments but also seems to be out of order. 
+
+```{r}
+df2 <- read.csv('./data/soybean-foliar-2.csv')
+head(df2)
+```
+
+Now, we will tell R to join these data frames into
+a single one. One nice thing about using the
+`merge()` function and telling it by which columns
+to merge the data, is that it does not matter if
+they are out of order. R will join them based on
+the `rep` values.
+
+```{r}
+df <- merge(df1, 
+            df2,
+            by = 'rep')
+head(df)
+```
+
+
+Ok! Now we have the dataset merged but we still
+have to restructure it. As we discussed before,
+the wide format works great on Excel but it's not
+great to build models or graphs in R.
+
+```{r}
+df_long <- reshape(df,
+                   direction = 'long',
+                   varying = c('Yield.Control', 'Yield.T1', 'Yield.T2', 'Yield.T3', 'Yield.T4'),
+                   v.names = 'yield',
+                   timevar = 'treatment',
+                   times = c('Control', 'T1', 'T2', 'T3', 'T4'),
+                   idvar = 'rep'
+                   )
+head(df_long)
+```
+
+
+Great! Now that our dataset is in the right format
+for our analysis, we can begin!
+
+Like before, let's take a look at the yield data.
+Empty circles represent the raw data, and filled
+triangles with error bars represent the mean and
+standard deviation.
+
+```{r}
+ggplot()+
+  geom_point(data = df_long,
+             aes(x = treatment, y = yield),
+             pch = 1)+
+  stat_summary(data = df_long,
+               fun.data = 'mean_se',
+               aes(x = treatment, y = yield),
+               col = 'blue',
+               pch = 17)+
+  labs(y = 'Soybean yield (bu/ac)', x = 'Treatment')+
+  theme_bw()
+```
+
+Let's take a look at the distribution of the raw
+data. Yield data often deviate from normality,
+especially showing right skew. Part of it is
+because yield data is strictly positive. Can you
+imagine harvesting -20 bu/ac?
+
+Even then, we can note that the normal
+distribution model below still attributes a small
+probability of negative values happening. The data
+below is skewed, with a few large values.
+
+```{r}
+
+xbar <- mean(df_long$yield)
+s <- sd(df_long$yield)
+
+ggplot()+
+  geom_histogram(data = df_long,
+                 aes(x = yield, y = ..density..), 
+                 bins = 20,
+                 col = 'black',
+                 fill = 'lightgrey')+
+  geom_line(aes(x = -10:120, y = dnorm(-10:120, xbar, s)), col = 'red')+
+  labs(x = 'Soybean yield (bu/ac)', y = 'Density')+
+  theme_bw()
+
+```
+
+### Fitting a linear model to this data
+
+Just like with the count data, we can go ahead and
+fit a linear model to diagnose whether any of our
+assumptions are violated.
+
+
+```{r, echo=TRUE}
+mod_yield <- aov(yield ~ treatment, data = df_long)
+summary(mod_yield)
+```
+
+
+Let's take a look at the same diagnostic plots
+that we look at before. It seems like there's a
+relationship between mean and variance, once
+again. Also, the Q-Q plot shows us that the model
+errors don't really fit a normal distribution,
+indicating skewness.
+
+```{r}
+plot(mod_yield, which = 1)
+plot(mod_yield, which = 2)
+```
+
+Once again, we are violating some model
+assumptions. 
+
+Before fixing things, I want to show some of the
+implications of mis-specified models like this one.
+Let's compute the treatment means and plot them
+along with their confidence intervals.
+
+First, we will extract the treatments means using
+`emmeans`, then we will convert it to a data frame
+so we can use it within `ggplot`
+
+```{r}
+means_yield <- emmeans(mod_yield, ~treatment)
+means_yield <- data.frame(means_yield)
+means_yield
+```
+
+
+Now, let's add this to a plot. A couple of things I want you to notice:
+
+1. Since our model assumes constant variance among
+the treatments, look at how the width of the
+confidence interval is the same for all
+treatments.
+
+2. Does it seem like treatment `T3` has the same
+variance as the others? 
+
+3. Think of the residual plot we saw before.
+
+```{r}
+ggplot()+
+  geom_point(data = df_long,
+             aes(x = treatment, y = yield),
+             pch = 1)+
+  geom_errorbar(data = means_yield,
+                aes(x = treatment, ymin = lower.CL, ymax = upper.CL),
+                width = 0.1,
+                col = 'red')+
+  geom_point(data = means_yield,
+             aes(x = treatment, y = emmean), col = 'red')+
+  labs(y = 'Soybean yield (bu/ac)', x = 'Treatment')+
+  theme_bw()
+```
+
+
+
+## Log transformation 
+
+Let's fit the model using `log(yield)` as our
+response variable and see if that helps with the
+assumption of normality.
+
+```{r}
+mod_log_yield <- lm(log(yield) ~ treatment, data = df_long)
+anova(mod_log_yield)
+```
+
+Looking at the diagnostic plots, it seems like
+this helped quite a bit. Not only is the variance
+more stable, the Q-Q plot also shows that the
+model residuals are more in line with theoretical
+quantiles.
+
+```{r}
+par(mfrow = c(1,2))
+plot(mod_log_yield, which = 1)
+plot(mod_log_yield, which = 2)
+par(mfrow = c(1,1))
+```
+
+
+## Extracting and interpreting effects
+
+Once we fit the log-transformed model, we can
+recover the treatment means on the **original
+scale** using `emmeans`.
+
+```{r}
+log_means <- emmeans(mod_log_yield, ~ treatment)
+log_means <- data.frame(log_means)
+log_means
+```
+
+
+Now that we've recovered the treatment means at the log scale, let's interpret them. 
+Let's look at the difference between the `Control` and `T3` for example. 
+
+```{r}
+4.23 - 3.47
+exp(0.76)
+```
+
+This difference of 0.76 exponentiated return a
+value of 2.13. This means that, when
+back-transformed to the data scale, the median of
+treatment 3 is 2.13 times greater than the median of
+the control.
+
+Please note that I am talking about the median
+once we back-transform the data. Back-transforming
+gives something closer to a median than a mean,
+due to the nonlinearity of the log transformation
+(Jensen’s inequality).
+
+We can verify that using the chunk below.
+
+```{r}
+ds_means_yield <- exp(log_means$emmean)
+ds_means_yield
+68.92 / 32.28
+```
+
+Now, we can see that log-transforming is great!
+But remember: we changed the data to make the
+model work. It solves several of our problems but
+it also makes interpretations slightly more
+complex.
+
+
+
+## Fitting a GLM
+
+Instead of transforming the data, we can fit a
+**GLM** appropriate for skewed, strictly positive
+data, like the **Gamma GLM** (common for yield
+data):
+
+```{r}
+mod_gamma <- glm(yield ~ treatment,
+                 family = Gamma(link = "log"),
+                 data = df_long)
+mod_gamma
+plot(mod_gamma)
+```
+
+
+Let's extract the treatment means at the data scale. 
+There are a couple of things I want to mention here:
+
+1. The model coefficients are still in the log
+scale. If we look at the coefficient above,
+there's a difference of `0.73` between treatment
+`T3` and the `Control`. When exponentiated, this
+results in 2.07. This means that the mean of
+treatment `T3` is about 2.07 times greater than
+the `Control` mean.
+
+2. We can easily convert between predictions and
+means at the `link` (log) or `response` (data)
+scales.
+
+3. Note that the SE is different for every mean.
+Now, we do not make the assumption that the errors
+are normally distributed and with constant
+variance anymore. The error variance is modeled as
+part of the distribution.
+
+```{r}
+means_glm <- emmeans(mod_gamma, ~treatment, type = 'response')
+means_glm <- data.frame(means_glm)
+means_glm
+```
+
+
+Let's put these in a graph. Can you see that the
+confidence intervals for treatment `T3` are wider
+than for the `Control`, for example? This is
+because when we modeled the data, we ackowledged
+the data's distribution and that treatment `T3`
+varied more than the `Control`.
+
+```{r}
+ggplot()+
+  geom_point(data = df_long,
+             aes(x = treatment, y = yield),
+             pch = 1)+
+  geom_errorbar(data = means_glm,
+                aes(x = treatment, ymin = lower.CL, ymax = upper.CL),
+                width = 0.1,
+                col = 'red')+
+  geom_point(data = means_glm,
+             aes(x = treatment, y = response), col = 'red')+
+  labs(y = 'Soybean yield (bu/ac)', x = 'Treatment')+
+  theme_bw()
+```
+
+
+
+Notes for interpretation:
+
+* Both approaches give similar treatment differences.
+* Log-transformed LM: assumes normal errors after transformation.
+* Gamma GLM: naturally handles skewed, positive data and models the mean-variance relationship.
+* Ratios of yields can be interpreted directly from the log/Gamma models.
+
+> Key takeaway: Transformations can help, but
+using a model that matches the data distribution
+often produces more reliable estimates and is
+easier to interpret.
+

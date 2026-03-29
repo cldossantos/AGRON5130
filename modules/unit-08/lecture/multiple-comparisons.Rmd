@@ -2,7 +2,7 @@
 title: "Means Separation and Data Presentation"
 subtitle: "AGRON 5130 - Module 8"
 author: "Caio dos Santos"
-date: "2026-03-14"
+date: "2026-03-11"
 output:
   html_document:
     toc: true
@@ -10,637 +10,1248 @@ output:
     theme: flatly
     highlight: tango
     smooth: false
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
+
 # Introduction
 
-The previous two units focused on the design and analysis of effects in
-multiple-treatment trials. Our focus there was to determine whether
-treatment effects explained more of the variation among individual
-observations than residual error.
+The previous two units focused on the design and
+analysis of effects in multiple-treatment trials.
+Our focus there was to determine whether treatment
+effects explained more of the variation among
+individual observations than residual error.
 
-In this unit, we move to the next practical question:
+In this unit, we move to the next practical
+question:
 
-> Once ANOVA indicates evidence that treatments
-differ, how do we decide which means are 
-different from each other?
+> Once ANOVA says treatments differ, how do we
+decide which means are different from each other?
+
+We will cover two classical means-separation
+methods:
+
+- Fisher's Least Significant Difference (LSD)
+- Tukey's Honest Significant Difference (HSD)
+
+Then, we will introduce linear contrasts, which
+allow us to test targeted questions between groups
+of treatments.
+
+Finally, we will discuss how to present means in
+tables and figures so results are both accurate
+and useful to the reader.
+
 
 # Case Study
 
-In the second example of Module 7, we looked at an example study in
-which we investigated the effect of 6 candidate fungicide treatments in
-corn yield. These were coded F1 through F6. This study was conducted as
-a randomized complete block design with one factor, the fungicide
-treatment.
+Our case study is a saffron nutrient-rate trial.
+Saffron was grown hydroponically under four
+nutrient concentrations:
 
-Let's recap:
+- 1X
+- 2X
+- 3X
+- 4X
 
-```{r, message=FALSE, warning=FALSE}
-library(sf)
-library(ggplot2)
-set.seed(20260307)
-eus <- st_read('./data/field.geojson', quiet = TRUE)
-eus <- st_as_sf(st_make_grid(eus, n = c(6, 5)))
-rcbd <- read.csv('./data/rcbd-data.csv')
-eus$trt <- rcbd$trt
-```
-
-Going across vertically, we had 5 blocks and, within each block, we
-randomized the 6 fungicide treatments.
+The trial was arranged as a randomized complete
+block design with 4 blocks. The response variable
+is corm number.
 
 ```{r}
-ggplot()+
-  geom_sf(data = eus, aes(fill = trt), col = 'black')+
-  geom_sf_text(data = eus, aes(label = trt))+
-  theme_void()+
-  scale_fill_manual(values = hcl.colors(6, 'Dynamic'))+
-  labs(fill = 'Treatment')
+library(dplyr)
+library(ggplot2)
+
+saffron <- read.csv("../exercises/data/saffron.csv")
+saffron$block <- as.factor(saffron$block)
+saffron$rate <- as.factor(saffron$rate)
+
+head(saffron)
 ```
+
 
 # ANOVA First
 
 Before separating means, we fit the ANOVA model:
 
-$$Y_{ij} = \mu + b_i + T_j + \varepsilon_{ij}$$
-$$b_i \sim N(0, \sigma^2_{block})$$
+$$Y_{ij}=\mu + B_i + T_j + BT_{ij}$$
 
 Where:
 
--   $Y_{ij}$ is observed corn yield
--   $\mu$ is the overall mean
--   $b_i$ is the block random effect
--   $T_j$ is the fungicide treatment effect
--   $\varepsilon_{ij}$ is the residual error term
-
-Below, we fit the model represented by our linear additive model above.
-In this case, I chose to fit block as a random effect, partly because we
-are not interested in the effect of block itself. Block was included
-here to account for the systematic source of variability that it
-represents.
-
-```{r, echo=TRUE}
-library(nlme)
-model1 <- lme(yield ~ trt,
-              random = ~ 1 | block,
-              data = rcbd)
-anova(model1)
-```
-
-Our analysis of variance tells us that there is strong evidence that at
-least one treatment effect ($T_j$) is different from zero. So, next, we
-will proceed with what's called a means-separation test.
-
-# Fisher's Least Significant Difference
-
-## Relationship with Confidence Intervals
-
-Before introducing **Fisher’s Least Significant Difference (LSD)**, it
-is helpful to connect the idea to something we already know:
-**confidence intervals**.
-
-Recall that a confidence interval for the difference between two
-treatment means is
-
-$$
-(\bar{Y}_i - \bar{Y}_j) \pm t_{\alpha/2,df} \times SE(\bar{Y}_i - \bar{Y}_j)
-$$
-
-where
-
--   $\bar{Y}_i - \bar{Y}_j$ is the difference between treatment means
--   $SE(\bar{Y}_i - \bar{Y}_j)$ is the standard error of that difference
--   $t_{\alpha/2,df}$ is the critical value from the t distribution
-
-This interval represents the range of **plausible values for the true
-difference between treatments**.
-
-The hypothesis test
-
-$$
-H_0 : \mu_i = \mu_j
-$$
-
-is equivalent to asking whether **0 lies inside the confidence
-interval**.
-
--   If **0 is inside the interval**, the treatments are not
-    significantly different.
--   If **0 is outside the interval**, the treatments are significantly
-    different.
-
-## Flipping the Confidence Interval Logic
-
-Instead of checking whether 0 lies inside the interval, we can rewrite
-the condition mathematically.
-
-A difference is significant when
-
-$$
-|\bar{Y}_i - \bar{Y}_j|
->
-t_{\alpha/2,df} \times SE(\bar{Y}_i - \bar{Y}_j)
-$$
-
-In other words, the **absolute difference between the means must exceed
-the half-width of the confidence interval**.
-
-That half-width is exactly what we call the **Least Significant
-Difference (LSD)**.
-
-$$
-LSD = t_{\alpha/2,df} \times SE(\bar{Y}_i - \bar{Y}_j)
-$$
-
-So LSD is simply the **minimum difference between two treatment means
-required to declare them significantly different**.
-
-Let's compute the LSD for our fungicide treatment with an
-$\alpha = 0.05$:
-
-$$LSD = t_{\alpha/2,df} \times SE(\bar{Y}_i - \bar{Y}_j)$$
-$$LSD = t_{0.025,20} \times 5.44$$ $$LSD = 2.09 * 5.44 = 11.35$$
-
-This means that differences between means that are greater than 11.35
-bu/ac provide evidence of difference between the treatment populations.
+- $Y_{ij}$ is observed corm number
+- $\mu$ is the overall mean
+- $B_i$ is block effect
+- $T_j$ is nutrient-rate effect
+- $BT_{ij}$ is residual error
 
 ```{r}
-MSE <- sigma(model1)^2
-df <- anova(model1)$denDF[1]
-n   <- 5
-SE_diff <- sqrt(2*MSE/n)
-
-LSD <- qt(.975, df) * SE_diff
+saffron_model <- aov(corm_number ~ block + rate, data = saffron)
+anova(saffron_model)
 ```
 
-## The LSD Procedure
+The treatment effect (`rate`) is significant. This
+is our green light to perform means separation.
 
-The LSD test is therefore very direct:
 
-1.  Calculate the **Least Significant Difference (LSD)**
-2.  Compare every pair of treatment means
-3.  If the **absolute difference between two means exceeds the LSD**,
-    the treatments are significantly different
+# Least Significant Difference
 
-Conceptually, LSD is simply **reversing the logic of the confidence
-interval test** and turning it into a **single comparison threshold**.
+The Least Significant Difference test is direct:
 
-## Visualizing the Confidence Intervals for Mean Differences
+1. Calculate a minimum difference threshold (LSD)
+1. Compare every pair of treatment means
+1. Any pair with a difference >= LSD is considered
+   significantly different
 
-Following this relationship between confidence intervals and the LSD
-value, we can visualize the confidence interval for treatment
-differences for the fungicide experiment we've been working with.
+The formula is:
+
+$$LSD_{df,\alpha} = t_{df,\alpha} \times SED$$
+
+This is conceptually very similar to the logic we
+used for confidence intervals and two-treatment
+comparisons.
 
 ```{r}
-library(emmeans)
-library(ggplot2)
+library(agricolae)
 
-# Estimated marginal means
-emm <- emmeans(model1, ~ trt)
-
-# Pairwise differences with confidence intervals
-pairs_df <- as.data.frame(pairs(emm, infer = TRUE, adjust = "none"))
+lsd_saffron <- LSD.test(saffron_model, "rate")
+lsd_saffron
 ```
 
-In the graph below, each point represents the estimated difference
-between two treatment means, and the error bars represent the confidence
-interval for the difference. In this case, when a treatment difference
-confidence interval crosses the dashed vertical line, we fail to reject
-$H_0$ for that treatment comparison.
 
-The **half-width of each interval** corresponds exactly to the **LSD
-threshold**.
+## Reading LSD Output
+
+The output is organized in sections. The most
+important are:
+
+- `$statistics`: includes residual mean square,
+  degrees of freedom, CV, t-value, and LSD value
+- `$means`: treatment means and within-treatment
+  descriptive statistics
+- `$groups`: letter grouping of means
 
 ```{r}
-ggplot(pairs_df, aes(x = estimate, y = contrast)) +
-  geom_point(size = 3) +
-  geom_errorbarh(aes(xmin = lower.CL, xmax = upper.CL), height = 0.2) +
-  geom_vline(xintercept = 0, linetype = "dashed") +
-  labs(
-    x = "Difference Between Means",
-    y = "Treatment Comparison"
-  ) +
-  theme_linedraw()
+lsd_saffron$statistics
 ```
 
-# Computing Pairwise Comparisons in R
-
-We can compute pairwise comparisons using **emmeans**.
-
-In R, a great framework to conduct multiple comparisons is based on the
-combination of the **emmeans** and **multcomp** libraries.
-
-Here, we load these two libraries
-
-```{r, echo=TRUE}
-library(emmeans)
-library(multcomp)
+```{r}
+lsd_saffron$means
 ```
 
-The **emmeans** library computes *estimated
-marginal means* for each treatment combination. In
-this case, we only have one factor (fungicide
-treatment), which is denoted by the variable
-`trt`.
-
-```{r, echo=TRUE}
-emm <- emmeans(model1, ~ trt)
-emm
+```{r}
+lsd_saffron$groups
 ```
 
-Great, now that we have computed the estimated
-means, we can compare each pair of means. The
-argument `adjust` determines *p-value*
-adjustments. The LSD procedure does not have any
-p-value adjustments, so we will specify `none`.
+In the grouping table, treatments sharing a letter
+are not significantly different at the chosen
+alpha level.
 
-Below, we have 15 comparisons for our six means.
-The *estimate* column shows the estimated
-difference between the means. Note that absolute
-estimates greater than 11.35 have a p-value lower
-than 0.05.
-
-```{r, echo=TRUE}
-pairs(emm, adjust = "none")
-```
-
-A different way of showing the same information is
-by dividing the means in groups that present a
-difference between them. Letter groupings
-summarize pairwise comparisons and should be
-interpreted cautiously when groups overlap.
-
-```{r, echo=TRUE}
-cld(emm, adjust = "none")
-```
-
-Very often, you will see these groups represented by letters, instead of
-numbers. Here, we can use some pre-built R objects, like the `letters`
-and `LETTERS` object, for example.
-
-```{r, echo=TRUE}
-letters
-LETTERS
-```
-
-We can pass the `letters` object so that R will use it when naming the
-groups.
-
-```{r, echo=TRUE}
-cld(emm, 
-    Letters = letters,
-    adjust = "none")
-```
-
-This shows that:
-
--   treatment *F6* does not differ from *F1*, but differs from all other
-    treatments.
--   treatment *F1* does not differ from *F6, F4, F5, F2*, but differs
-    from *F3*.
--   treatments *F4, F5, and F2* only differ from *F6*.
-
-Now, let's see how confident we are that we have not made type I errors.
 
 # Comparisonwise vs Experimentwise Error
 
 Why not always use LSD?
 
 With each pairwise comparison run at significance
-level $\alpha_C$ (the
-**comparisonwise error rate**), the probability of at least one false
-positive across the entire experiment grows. If we
-approximate the tests as independent, the
-**experimentwise error rate** can be approximated
-as
+level $\alpha_C$ (the **comparisonwise error rate**),
+the probability of at least one false positive
+across the entire experiment grows. For $M$
+independent tests, the **experimentwise error rate**
+is approximately:
 
 $$\alpha_E \approx 1 - (1 - \alpha_C)^M$$
 
-For $K$ treatment means there are $M = K(K-1)/2$ possible pairs. With
-$K = 6$ treatments ($M = 15$ pairs) running each at $\alpha_C = 0.05$:
+For $K$ treatment means there are
+$M = K(K-1)/2$ possible pairs. With $K = 10$
+treatments ($M = 45$ pairs) running each at
+$\alpha_C = 0.05$:
 
-$$\alpha_E \approx 1 - (0.95)^{15} \approx 0.53$$
+$$\alpha_E \approx 1 - (0.95)^{45} \approx 0.90$$
 
-That is a 53% chance of at least one false positive across the
-experiment. Conversely, if we fix $\alpha_E = 0.05$ for the same 15
-comparisons, the per-comparison error drops to roughly
-$\alpha_C \approx 0.003$, making it very difficult to detect modest but
-real differences.
+That is nearly a 90% chance of at least one false
+positive across the experiment. Conversely, if we
+fix $\alpha_E = 0.05$ for the same 45 comparisons,
+the per-comparison error drops to roughly
+$\alpha_C \approx 0.001$, making it very difficult
+to detect modest but real differences.
 
-No procedure can keep both error rates small simultaneously at a fixed
-sample size. The choice of procedure depends on which error matters more
+No procedure can keep both error rates small
+simultaneously at a fixed sample size. The choice
+of procedure depends on which error matters more
 in your specific research context.
+
+
+## Procedure Comparison
+
+Four widely used procedures and what they control:
+
+| Procedure | Error rate controlled |
+|---|---|
+| Protected LSD | $\alpha_C$ (partial control of $\alpha_E$) |
+| Bonferroni adjusted t | $\alpha_E$ |
+| Tukey HSD | $\alpha_E$ |
+| Scheffé | $\alpha_E$ |
+
+- If a **false positive** is costly (e.g., recommending
+  an inferior treatment to farmers), prioritize
+  $\alpha_E$ control with Tukey or Bonferroni.
+- If **missing a real difference** is costly (e.g., in
+  early screening trials), F-protected LSD preserves
+  more power.
 
 
 # Tukey's Honest Significant Difference
 
-Tukey HSD is similar in structure to LSD, but it uses the **studentized
-range distribution** (`Q`) and adjusts the threshold based on:
+Tukey HSD is similar in structure to LSD, but it
+uses the studentized range distribution (`Q`) and
+adjusts the threshold based on:
 
--   alpha
--   residual degrees of freedom
--   number of treatments
+- alpha
+- residual degrees of freedom
+- number of treatments
 
-$$
-\text{HSD} =q_{\alpha, K, df}\times SE
-$$
+So as the number of treatments increases, the
+minimum significant difference becomes more
+stringent.
 
-$q$ is the critical value of the studentized range distribution based on
-$\alpha$, the number of treatments $K$, and the residual degrees of
-freedom.
-
-So as the number of treatments increases, the minimum significant
-difference becomes more stringent.
-
-As the code shows below, the function `qtukey()` returns the $Q$-value
-corresponding to a quantile. The function also takes as arguments, the
-number of means being compared, and the degrees of freedom.
-
-Below, we can see that as the number of means increases, the $Q$-value
-also increases, which, in turn, increases the value of the by which two
-means must differ to provide evidence enough to reject the null
-hypothesis ($H_0$).
-
-```{r, echo=TRUE}
-qtukey(p = 0.95, nmeans = 3, df = 20)
-qtukey(p = 0.95, nmeans = 6, df = 20)
-qtukey(p = 0.95, nmeans = 12, df = 20)
+```{r}
+hsd_saffron <- HSD.test(saffron_model, "rate", group = TRUE)
+hsd_saffron
 ```
 
-Luckily, we do not need to compute this by hand. Just like before, we
-will rely on the **emmeans** and **multcomp** libraries. To conduct the
-means-comparison test, all we need to do is to specify in the `adjust`
-argument that we want to use Tukey's HSD.
-
-```{r, echo=TRUE}
-cld(emm, 
-    adjust = "tukey",
-    Letters = letters)
+```{r}
+hsd_saffron$groups
 ```
 
 Compared with LSD, Tukey tends to be more
 conservative, especially when many means are being
-compared. This is noticeable because we now have
-fewer distinctions between groups.
+compared.
+
+The formula for HSD differs slightly depending on
+whether sample sizes are equal or unequal. When
+all groups have the same $n$:
+
+$$\text{HSD} = q_{\alpha_E} \sqrt{\frac{MSError}{n}}$$
+
+When sample sizes differ (the **Tukey-Kramer**
+procedure), each pair gets its own threshold:
+
+$$\text{HSD}_{ij} = q_{\alpha_E}
+\sqrt{\frac{1}{2}\left(\frac{1}{n_i} +
+\frac{1}{n_j}\right) MSError}$$
+
+In both cases, $q_{\alpha_E}$ is the critical
+value of the studentized range distribution,
+based on $\alpha_E$, the residual degrees of
+freedom, and $K$ (the number of treatments).
+
 
 # Bonferroni Adjusted t
 
-The Bonferroni procedure also controls $\alpha_E$ but uses the standard
-t-distribution with an adjusted significance level $\alpha_E / M$. Where
-$M$ is the number of comparisons we're making.
+The Bonferroni procedure also controls $\alpha_E$
+but uses the standard t-distribution with an
+adjusted critical level. For $M = K(K-1)/2$
+comparisons, each test is conducted at
+$\alpha_E / M$, giving the critical difference:
 
-The resulting critical difference is:
+$$\text{BonAdj} = t_{\alpha_E^*}
+\sqrt{\left(\frac{1}{n_i} + \frac{1}{n_j}\right) MSError}$$
 
-$$
-LSD_\text{bonferroni} =
-t_{\alpha_E/(2M),df} \times
-SE
-$$
+where $t_{\alpha_E^*}$ is tighter than the LSD
+critical value and grows as $M$ increases.
 
-Let's compute the Bonferroni-adjusted critical difference for our
-experiment.
-
-$$LSD_{\text{bonferroni}} = t_{\frac{0.05}{2\times 15},20} \times 5.44 = t_{0.0016,20} \times 5.44$$
-$$LSD_{\text{bonferroni}} = 3.35 \times 5.44 = 18.21$$
-
-As when using Tukey's HSD, when we want to use Bonferroni's adjustment,
-we can simply ask the `cld()` function to adjust for it.
+In R, we can apply Bonferroni-adjusted pairwise
+comparisons using the `multcomp` package:
 
 ```{r}
-cld(emm, 
-    Letters = letters,
-    adjust = "bonferroni")
+library(multcomp)
+
+bon_saffron <- glht(
+  saffron_model,
+  linfct = mcp(rate = "Tukey")
+)
+
+summary(bon_saffron, test = adjusted("bonferroni"))
 ```
 
 Compared to LSD, the Bonferroni critical
-difference is larger, so fewer pairs will show
-evidence of a difference. In small experiments
-(few treatments) Bonferroni and Tukey often give
-the same groupings. As the number of treatments
-grows, Tukey HSD is generally preferred because
-the Bonferroni penalty grows proportionally with
-$M$ while the studentized range distribution
-adjusts more efficiently.
+difference is larger, so fewer pairs will be
+declared significantly different. In small
+experiments (few treatments) Bonferroni and Tukey
+often give the same groupings. As the number of
+treatments grows, Tukey HSD is generally
+preferred because the Bonferroni penalty grows
+proportionally with $M$ while the studentized
+range distribution adjusts more efficiently.
+
+
+# Scheffé's Procedure
+
+Scheffé's method is the most conservative of the
+four procedures. It controls $\alpha_E$ and, unlike
+the others, has a formal connection to the ANOVA
+F-test: after a significant F-test, it guarantees
+that at least one contrast will be declared
+significant.
+
+The critical difference for Scheffé is based on
+$\sqrt{(K-1)F_{\alpha_E}}$ rather than a t or
+studentized-range value, which makes it
+substantially larger than the Tukey or Bonferroni
+thresholds. When the goal is pairwise mean
+comparison, this conservatism is usually
+unnecessary.
+
+**When Scheffé is appropriate:**
+
+- Post-hoc exploration where hypotheses were not
+  specified before seeing the data
+- Situations involving many possible contrasts,
+  not just pairwise differences
+
+For routine pairwise comparisons in designed
+agricultural experiments, Tukey HSD is preferred.
+
 
 # Linear Contrasts
 
-Pairwise comparisons test differences between
-individual treatments. However, many agronomic
-questions involve groups of treatments, which
-motivates the use of linear contrasts.
+LSD and Tukey are pairwise methods. But many
+agronomic questions are not pairwise.
 
-Sometimes we want to compare **groups** of treatments, for example:
+Sometimes we want to compare **groups** of
+treatments, for example:
 
--   low vs high rates
--   older fungicides vs new fungicides
+- low rates vs high rates
+- middle rates vs extremes
 
 This is what linear contrasts are for.
 
+
 ## Contrast Example 1
 
-Let's say that fungicide treatments F1 through F3 are a newer line of
-fungicides that have entered the market more recently than fungicides F4
-through F6. You, as an agronomist, might be interested in the question:
-
-> Is there a difference between the effect of new and old fungicides on
-> corn yield?
+Question: Is the average response of low rates
+(1X and 2X) different from high rates (3X and 4X)?
 
 Coefficients:
 
--   `F1`: 1/3
--   `F2`: 1/3
--   `F3`: 1/3
--   `F4`: -1/3
--   `F5`: -1/3
--   `F6`: -1/3
+- `1X`: +1/2
+- `2X`: +1/2
+- `3X`: -1/2
+- `4X`: -1/2
 
 The coefficients sum to zero, as required.
 
-```{r, echo=TRUE}
-contrast(emm,
-         method = list(
-           new_vs_old = c(1/3, 1/3, 1/3, -1/3, -1/3, -1/3)
-         ))
+```{r}
+library(multcomp)
+
+levels(saffron$rate)
+
+K_low_vs_high <- matrix(c(1/2, 1/2, -1/2, -1/2), 1)
+
+saffron_model_contrast <- aov(corm_number ~ 0 + rate, data = saffron)
+low_vs_high <- glht(saffron_model_contrast, linfct = K_low_vs_high)
+summary(low_vs_high)
 ```
 
-The results do not provide enough evidence to
-reject $H_0$, suggesting that the average yield of
-the two fungicide groups is similar.
 
 ## Contrast Example 2
 
-Let's say that fungicide treatment F6 is the cheapest fungicide
-treatment among all of these six, and the other treatments have a
-comparable price. You, as an agronomist, might be interested in the
-question:
-
-> Is there a difference between the cheapest fungicide treatment and the
-> others?
+Question: Are middle rates (2X and 3X) different
+from the extremes (1X and 4X)?
 
 Coefficients:
 
--   `F1`: -1/6
--   `F2`: -1/6
--   `F3`: -1/6
--   `F4`: -1/6
--   `F5`: -1/6
--   `F6`: 5/6
+- `1X`: -1/2
+- `2X`: +1/2
+- `3X`: +1/2
+- `4X`: -1/2
 
-```{r, echo=TRUE}
-contrast(emm,
-         method = list(
-           F6_vs_rest = c(-1/6, -1/6, -1/6, -1/6, -1/6, 5/6)
-         ))
+```{r}
+K_middle_vs_extremes <- matrix(c(-1/2, 1/2, 1/2, -1/2), 1)
+
+middle_vs_extremes <- glht(
+  saffron_model_contrast,
+  linfct = K_middle_vs_extremes
+)
+
+summary(middle_vs_extremes)
 ```
+
+The estimate gives the size and direction of the
+difference between the two treatment groups.
+
 
 # Means Presentation
 
-Once means are separated, we need to communicate results clearly.
+Once means are separated, we need to communicate
+results clearly.
 
 There are two standard formats:
 
--   Means tables
--   Means plots
+- Means tables
+- Means plots
+
+
+## How Letters Are Assigned
+
+Before presenting results, it helps to understand
+how statistical software assigns letters to means.
+The algorithm works as follows:
+
+1. Order sample means from largest to smallest.
+2. Compare the largest mean to the smallest. If
+   significantly different, that pair gets
+   different letters.
+3. Work inward, comparing the largest to the
+   second-smallest, and so on, until a
+   non-significant pair is found.
+4. Place a common letter on that group, then
+   restart the process using the second-largest
+   mean.
+
+**Consistency rule**: if means A and B are not
+significantly different, all means *between* them
+in the ordered list are also declared not
+significantly different without further testing.
+This prevents the logical contradiction where X
+and Z are not different but X and Y (between them)
+are.
+
+In most applications the consistency rule applies
+cleanly. When sample sizes are unequal and
+multiple critical differences exist, rare apparent
+contradictions can arise — these should be
+reported in a table footnote.
+
+The practical message: **means sharing a letter
+are not significantly different** at the chosen
+$\alpha$.
 
 
 ## Means Table
 
-A practical means table in agronomy papers usually looks like this:
+A practical means table usually includes:
 
-````
-| Fungicide Treatment | n   | Standard Error | Treatment Mean |
-|---------------------|-----|----------------|----------------|
-| F1                  | 5   | 13.35          | 175.6 a        |
-| F2                  | 5   | 13.35          | 185.6 ab       |
-| F3                  | 5   | 13.35          | 194.52 b       |
-| F4                  | 5   | 13.35          | 183.25 ab      |
-| F5                  | 5   | 13.35          | 185.19 ab      |
-| F6                  | 5   | 13.35          | 171.57 a       |
-````
-Means followed by the same letter are not significantly different using
-a Tukey procedure at $\alpha = 0.05$.
+- treatment mean
+- replication count (`N`)
+- SED or SE
+- LSD or HSD value (with alpha)
+- ANOVA treatment p-value
 
+```{r}
+means_tbl <- saffron %>%
+  group_by(rate) %>%
+  summarise(
+    corm_number = mean(corm_number),
+    N = n(),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    tibble::rownames_to_column(lsd_saffron$groups, var = "rate"),
+    by = "rate"
+  ) %>%
+  arrange(desc(corm_number))
+
+means_tbl
+```
 
 
 ## Plotting Means
 
-For categorical treatments, use bar plots or point plots with error
-bars.
+For categorical treatments, use bar plots or point
+plots with error bars.
 
-If you are presenting means-comparison groupings,
-letters can be added above bars to indicate
-significance groups.
+If you are presenting LSD/HSD groupings, letters
+can be added above bars to indicate significance
+groups.
 
 ```{r}
-tt <- cld(emm, 
-    adjust = "tukey",
-    Letters = letters,
-    reversed = TRUE)
+plot_df <- means_tbl %>%
+  mutate(letter_y = corm_number + 8)
 
-tt <- as.data.frame(tt)
-tt <- tt[order(tt$trt), ]
-```
-
-
-
-
-```{r, fig.cap="Mean corn yield for the six fungicide treatments (F1–F6) in a randomized complete block experiment. Bars represent treatment means estimated from the mixed-effects model, and error bars show ±1 standard error of the mean. Letters above the bars indicate mean separation groups using a Tukey procedure at α = 0.05; treatments sharing a common letter are not significantly different."}
-ggplot()+
-  geom_col(data = tt, aes(x = trt, y = emmean),
-           fill = 'grey50',
-           col = 'black')+
-  geom_errorbar(data = tt, aes(x = trt, ymin = emmean - SE, ymax = emmean + SE),
-                width = 0.2)+
-  geom_text(data = tt, aes(x = trt, y = 215
-                           , label = .group)) +
+ggplot(plot_df, aes(x = rate, y = corm_number)) +
+  geom_col(fill = "steelblue", width = 0.7) +
+  geom_text(aes(y = letter_y, label = groups), size = 5) +
   labs(
-    x = "Fungicide Treatment",
-    y = "Corn Yield (bu/ac)"
+    x = "Nutrient Rate",
+    y = "Corm Number"
   ) +
-  theme_bw()
+  theme_linedraw()
 ```
-----
+
+This gives the reader both the treatment means and
+a direct visual guide to which means differ.
+
+
+# Conclusion
+
+In this unit, we moved from ANOVA significance to
+interpretable treatment comparisons.
+
+Key takeaways:
+
+- Use ANOVA to test whether treatment effects exist
+- Use LSD (preferably F-protected) for pairwise
+  means separation
+- Use Tukey HSD when you need stronger control of
+  experimentwise error
+- Use linear contrasts to answer focused,
+  biologically meaningful group comparisons
+- Present means with enough supporting statistics
+  that others can interpret and reuse your results
+
+These tools are not just statistical procedures;
+they are how we convert trial results into useful
+agronomic decisions.
 
 
 
-Personally, I like adding the raw data to the
-graph, in addition to the mean and standard error. I
-think this is a more transparent representation of
-the data that led to our conclusions. Here's an example 
-using this experiment.
+```{r}
 
-Also, notice that the figure caption includes all the information needed to interpret the figure results.
+true_means <- c(195, 202, 215, 205, 198, 193)
+mu <- mean(true_means)
 
-```{r, fig.cap="Mean corn yield for the six fungicide treatments (F1–F6) in a randomized complete block experiment. Empty circles represent individual observations, red-filled circles represent treatment means, and error bars show ±1 standard error of the mean. Letters below the points indicate mean separation groups using a Tukey procedure at α = 0.05; treatments sharing a common letter are not significantly different."}
 
+block_effects <- c(`1` = -50,
+                   `2` = -50,
+                   `3` = 0,
+                   `4` = 0,
+                   `5` = 0)
+
+rcbd_layout$yield <- 
+  mu +
+  true_means[rcbd_layout$trt] - mean(true_means) +
+  block_effects[rcbd_layout$block] +
+  rnorm(30, mean = 0, sd = 8)
+```
+
+Let's take a look at the data from the randomized
+complete block trial. One of the things that stand
+out is that for every treatment, there are two
+points below the mean. These two points correspond
+to to the two water logging-prone blocks.
+
+```{r}
+ggplot(rcbd_layout, aes(x = trt, y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  stat_summary(fun = mean, geom = "point", shape = 17, size = 3) +
+  coord_flip() +
+  theme_linedraw() +
+  labs(x = "Fungicide",
+       y = "Corn Yield (bu/ac)")
+```
+
+
+## The linear additive model
+
+One important thing that we can think about is
+how, by accounting for soil variability using a
+blocked structure, we explicitly remove the soil
+variability from the residuals ($\epsilon_ij$).
+Our linear additive model now includes a block
+effect, as we can see below:
+
+$$Y_{ij}=\mu + \tau_i + B_j + \epsilon_{ij}$$
+
+Where, 
+
+$Y_{ij}$ = observed yield 
+
+$\mu$ = overall mean yield
+
+$B_j$ = block effect
+
+$\tau_i$ = fungicide treatment effect 
+
+$\varepsilon_{ij}$ = random error
+
+
+What does this mean for the ANOVA? 
+
+Below, we can see the result of the analysis of
+variance table. Check how much of the MSE is
+allocated in the block effect. All of that error,
+if left unaccounted for, would inflate our
+residual MSE, which would decrease our $F$-value.
+
+```{r, echo=TRUE}
+lm3 <- lm(yield ~ trt + block, data = rcbd_layout)
+anova(lm3)
+```
+
+We can see that blocking the design is meant to
+account for pre-existing variability. The main
+assumption here is that experimental units within
+a block are exposed to uniform conditions.
+
+By modeling the block effect explicitly, we
+prevent environmental variability from inflating
+the residual error. This increases the sensitivity
+of the experiment and improves our ability to
+detect treatment differences.
+
+
+## A brief digression about Fixed and Random Effects
+
+Before we move forward, it is important to briefly
+discuss the difference between **fixed effects** and
+**random effects**. This distinction becomes important
+when we start working with blocked experiments
+and, later on, with more complex experimental
+designs.
+
+In agricultural experiments, **fixed effects** are
+factors where we are interested in comparing the
+specific levels included in the experiment. In
+other words, the treatments we include are the
+ones we want to draw conclusions about.
+
+For example, in the fungicide trial we have been
+simulating, the treatments are the five
+fungicides:
+
+> F1, F2, F3, F4, F5, and F6
+
+In this case, these fungicides are not a random
+sample of all possible fungicides in the world.
+Instead, they are specific products that we
+intentionally selected because we want to compare
+their performance. Because of that, fungicide
+treatment is considered a **fixed effect**.
+
+
+**Random effects** are different. A **random effect**
+represents a source of variability where the
+individual levels themselves are not of primary
+interest. Instead, the levels are viewed as a
+sample from a larger population of possible
+levels.
+
+
+When a statistical model includes both **fixed
+effects** and **random effects**, it is called a mixed
+model.
+
+This means that, if I do not intend to make any
+statements about the effect of block itself, but
+just want to account for that variability, we can
+model the block effect as a **random effects** Here,
+we do not intend to make a statement about how
+waterlogging will affect yield in this trial, all
+we want to do is to account for the block
+variability.
+
+If we treat blocks as a **random effects** we assume
+that the blocks in our experiment represent a
+random sample of possible field conditions.
+
+
+#### Modeling block as a **random effects**
+
+In this case, the linear additive model looks like
+this:
+
+$$Y_{ij}=\mu + \tau_i + b_j + \epsilon_{ij}\newline b_j \sim N(0, \sigma^2_{block})$$
+
+Where, 
+
+$Y_{ij}$ = observed yield 
+
+$\mu$ = overall mean yield
+
+$b_j$ = random effect of block
+
+$\tau_i$ = fungicide treatment effect 
+
+$\varepsilon_{ij}$ = random error
+
+
+
+To fit mixed effect models in R, we will have to
+use a package. There's no way around it. There are
+two main packages for this `lme4` and `nlme`.
+Here, we will use `nlme` for simplicity.
+
+```{r, echo=TRUE}
+library(nlme)
+model_mixed <- lme(yield ~ trt, 
+                   random = ~ 1 | block, 
+                   data = rcbd_layout)
+
+anova(model_mixed) 
+```
+
+If we want to see how much variability is
+attributed to the **random effects**, we can examine
+the variance components estimated by the model.
+
+```{r}
+VarCorr(model_mixed)
+```
+
+
+Plots within the same block tend to experience
+similar environmental conditions. Because of that,
+their yields are often more similar to each other
+than to plots located in other parts of the field.
+In other words, observations within a block are
+not completely independent.
+
+If we ignore this structure and treat every
+observation as independent, some of that shared
+block variability ends up inside the residual
+error term. This inflates the residual variance
+and can make it harder to detect treatment
+differences.
+
+By including block as a random effect, the model
+explicitly accounts for this shared variability.
+Instead of being treated as unexplained noise, the
+block-to-block variation is separated from the
+residual error.
+
+
+# Factorial Design
+
+Now, in agronomy we are often interested in more
+than one factor at a time. We have just looked at
+a simple example that investigated 6 fungicide
+treatments.
+
+Let's now imagine that we have another factor in
+which we are interested as well. We want to know
+wether the fungicide treatments behave differently
+with irrigation. In this case, we are interested
+in **two** factors. 
+
+Since we want to evaluate the effect of fungicide,
+the effect of irrigation, and whether the effect
+of fungicide is different when there is
+irrigation, we will set up a **factorial design**
+with two factors.
+
+From a design perspective, factorial experiments
+allow us to estimate both the main effects and the
+interaction between factors, because every
+combination of the factor levels appears in the
+experiment. This keeps our assumptions aligned
+with reality: we model the interactions we
+observe, maintain independent errors, and can
+properly test all effects.
+
+
+
+## Design example with two factors
+
+We will keep using the same trial location, with
+30 experimental units. To do so, and still include
+another level, I will choose fewer fungicide
+treatments. Let's pick treatments **F1, F3, and
+F4**.
+
+Now, we can include another factor: with or
+without irrigation.
+
+Since we have 3 fungicides and 2 irrigation
+levels, the factorial design produces 3 × 2 = 6
+treatment combinations.
+
+
+```{r, echo=TRUE}
+fungicide_treatments <- c('F1', 'F3', 'F4')
+irrigation_treatments <- c('Yes', 'No')
+factorial_treatments <- expand.grid(fungicide = fungicide_treatments,
+                                    irrigation = irrigation_treatments)
+factorial_treatments
+```
+
+```{r}
+set.seed(20260307)
+# Define blocks
+block <- factor(rep(1:5, each = 6))
+
+# Define fungicide and irrigation treatments
+fungicide <- factor(rep(c("F1", "F3", "F4"), times = 2 * 5 ))
+irrigation <- factor(rep(c("Yes", "No"), each = 3, times = 5))
+
+# Combine into a data frame
+trial_layout <- data.frame(block = block,
+                           fungicide = fungicide,
+                           irrigation = irrigation)
+
+# Randomize within each block
+for(b in levels(trial_layout$block)) {
+  rows <- trial_layout$block == b
+  trial_layout[rows, c("fungicide", "irrigation")] <- trial_layout[rows, c("fungicide", "irrigation")][sample(1:6), ]
+}
+
+trial_layout$label <- paste(trial_layout$fungicide, trial_layout$irrigation, sep = ' & ')
+eus$trt <- trial_layout$label
+```
+
+Let's arrange our treatments in 5 blocks, like
+before, and let's randomize the treatments within
+block.
+
+Below, the graph shows that every block contains a
+treatment that corresponds to a combination of our
+factors.
+
+
+```{r}
 ggplot()+
-  geom_point(data = rcbd, aes(x = trt, y = yield), pch = 21)+
-  geom_errorbar(data = tt, aes(x = trt, ymin = emmean - SE, ymax = emmean + SE),
-                width = 0.2)+
-  geom_point(data = tt, aes(x = trt, y = emmean), pch = 21, fill = 'red')+
-
-  geom_text(data = tt, aes(x = trt, y = 125, label = .group)) +
-  labs(
-    x = "Fungicide Treatment",
-    y = "Corn Yield (bu/ac)"
-  ) +
-  theme_bw()
+  geom_sf(data = eus, aes(fill = trt), col = 'black')+
+  geom_sf(data = field, fill = 'transparent', col = 'black')+
+  geom_sf_text(data = eus, aes(label = trt))+
+  theme_void()+
+  scale_fill_manual(values = hcl.colors(6, 'Dynamic'))+
+  labs(fill = 'Treatment')
 ```
-----
 
-From my previous lecture notes, you might have
-noticed that sometimes I flip the X and Y axis.
-Here's an example of what the graph would look
-like if we did that.
 
-```{r, fig.cap="Mean corn yield for the six fungicide treatments (F1–F6) in a randomized complete block experiment. Empty circles represent individual observations, red-filled circles represent treatment means, and error bars show ±1 standard error of the mean. Letters below the points indicate mean separation groups using a Tukey procedure at α = 0.05; treatments sharing a common letter are not significantly different."}
+```{r}
 
+fungicide_means <- c(F1 = 195, F3 = 215, F4 = 205)
+
+irrigation_effects <- c(Yes = 0, No = 25) 
+
+interaction_effects <- matrix(
+  c(0, 5,  
+    0, 25, 
+    0, 5), 
+  nrow = 3, 
+  byrow = TRUE,
+  dimnames = list(c("F1", "F3", "F4"), c("Yes", "No"))
+)
+
+block_effects <- c(`1` = -50, `2` = -50, `3` = 0, `4` = 0, `5` = 0)
+
+trial_layout$yield <- with(trial_layout,
+                           205 +
+                           fungicide_means[fungicide] - mean(fungicide_means) +
+                           irrigation_effects[irrigation] +
+                           mapply(function(f, i) interaction_effects[f, i], fungicide, irrigation) +
+                           block_effects[block] +
+                           rnorm(30, mean = 0, sd = 8)  
+)
+
+factorial_layout <- trial_layout
+names(factorial_layout)[4] <- 'trt'
+```
+
+
+Let's take a look at the data from this
+experiment. On the Y axis, we have the different
+fungicide-irrigation combinations.
+
+Comparing within the same fungicide, it seems like
+on average, irrigation increased yield as well.
+
+Now, is the effect of irrigation and fungicide
+different for the different combinations? That's
+what the interaction term of the model will answer.
+
+```{r}
+ggplot(factorial_layout, aes(x = trt, y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  stat_summary(fun = mean, geom = "point", shape = 17, size = 3) +
+  coord_flip() +
+  theme_linedraw() +
+  labs(x = "Fungicide & Irrigation",
+       y = "Corn Yield (bu/ac)")
+```
+
+We can visualize the relationship between out
+treatments and yield using what is called an
+interaction plot.
+
+Interaction plots provide a useful visual way to
+detect interactions. If the lines are roughly
+parallel, it suggests that the effect of one
+factor is consistent across the levels of the
+other factor. When the lines are not parallel,
+this indicates a possible interaction between the
+factors.
+
+```{r}
+ggplot(factorial_layout,
+       aes(x = irrigation, y = yield,
+           color = fungicide,
+           group = fungicide)) +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun = mean, geom = "point", size = 3) +
+  theme_linedraw() +
+  coord_flip()+
+  labs(x = "Irrigation",
+       y = "Corn Yield (bu/ac)",
+       color = "Fungicide")
+```
+
+
+## The linear additive model
+
+Now, our model is getting a little more
+complicated, right? The simple "treatment" effect
+($\tau_i$), has been replaced by $F$ and $I$,
+which indicate the effects of our two treatments.
+In addition, we also have the interaction term
+($FI_{ij}$), which indicates whether fungicide and
+irrigation treatments affect each other.
+
+In this case, I kept block as a random effect, but
+I could just as easily have included block as a
+**fixed effect**. I made this choice based on the fact
+that we do not want to make any statements about
+the two first blocks, which are
+waterlogging-prone. We want to include block in
+the model to account for this systematic
+variability coming from the different soil
+conditions.
+
+$$Y_{ijk}=\mu + F_i + I_j + FI_{ij} +  b_k + \epsilon_{ijk}\newline b_k \sim N(0, \sigma^2_{block})$$
+
+Where, 
+
+$Y_{ijk}$ = observed yield 
+
+$\mu$ = overall mean yield
+
+$F_i$ = fungicide treatment effect 
+
+$I_j$ = irrigation treatment effect 
+
+$FI_{jk}$ = interaction between fungicide and irrigation  
+
+$b_k$ = random effect of block
+
+$\varepsilon_{ijk}$ = random error
+
+## Fitting this model in R
+
+Just like before, we will use the `lme()`
+function, which is design to fit linear mixed
+effects models.
+
+```{r, echo=TRUE}
+model_fac <- lme(yield ~ fungicide * irrigation, 
+                 random = ~ 1 | block, 
+                 data = factorial_layout)
+anova(model_fac)
+
+```
+
+The ANOVA table output shows us strong evidence
+that both the fungicide and irrigation treatments
+have an effect on corn yield. Furthermore, the
+interaction row (fungicide:irrigation) shows us
+that our fungicide treatments behave differently
+whether there's irrigation or not.
+
+
+
+
+# Split-Plot Design
+
+Up to this point, we have been assuming that all
+treatments can be randomized at the **plot level**.
+In other words, we assumed that each experimental
+unit can independently receive any treatment.
+
+However, in real agricultural experiments this is
+not always practical.
+
+For example, in the factorial experiment we just
+constructed, we included an irrigation factor with
+two levels: **Yes** and **No**. In our simulated
+design we randomly assigned irrigation treatments
+to individual plots.
+
+In practice, however, irrigation is often
+difficult to apply on a plot-by-plot basis. It may
+be much easier to irrigate **larger strips of
+land** rather than individual plots.
+
+To account for this practical limitation, we can
+use a **split-plot design**.
+
+In a split-plot experiment, one factor is applied
+to **large experimental units** (called *main
+plots* or *whole plots*), while another factor is
+applied to
+**smaller units within them** (called *subplots*).
+
+In our case:
+
+- **Irrigation** will be the **main plot factor**
+- **Fungicide** will be the **split-plot factor**
+
+## Constructing the split-plot layout
+
+We will keep using our field with **5 blocks** and
+**30 experimental units**.
+
+Instead of assigning irrigation at the plot level,
+we will assign irrigation to **large strips within
+each block**.
+
+Each block will contain:
+
+- **one irrigated strip**
+- **one non-irrigated strip**
+
+Each strip will contain the three fungicide
+treatments.
+
+This means that fungicides will still be
+randomized, but **only within irrigation strips**.
+
+The graph below shows that the irrigation strips
+start at the left side of each block and run to
+the middle of the block.
+
+```{r}
+eus$irrigation <- 'Yes'
+eus$irrigation[c(4:6, 10:12, 16:18, 22:24, 28:30 )] <-  'No'
 ggplot()+
-  geom_point(data = rcbd, aes(x = trt, y = yield), pch = 21)+
-  geom_errorbar(data = tt, aes(x = trt, ymin = emmean - SE, ymax = emmean + SE),
-                width = 0.2)+
-  geom_point(data = tt, aes(x = trt, y = emmean), pch = 21, fill = 'red')+
-
-  geom_text(data = tt, aes(x = trt, y = 125, label = .group)) +
-  labs(
-    x = "Fungicide Treatment",
-    y = "Corn Yield (bu/ac)"
-  ) +
-  theme_bw()+
-  coord_flip()
+  geom_sf(data = eus, aes(fill = irrigation), col = 'black')+
+  geom_sf(data = field, fill = 'transparent', col = 'black')+
+  geom_sf_text(data = eus, aes(label = id))+
+  theme_void()+
+  scale_fill_manual(values = hcl.colors(2, 'Terrain', rev = TRUE))+
+  labs(fill = 'Irrigation')
 ```
-----
+
+
+```{r}
+set.seed(20260305)
+# Define blocks
+block <- factor(rep(1:5, each = 6))
+
+# Define irrigation strips (main plots)
+irrigation <- factor(rep(rep(c("Yes", "No"), each = 3), times = 5))
+
+# Define fungicide treatments (subplot factor)
+fungicide <- factor(rep(c("F1", "F3", "F4"), times = 10))
+
+# Combine into layout
+splitplot_layout <- data.frame(block,
+                               irrigation,
+                               fungicide)
+
+
+for(b in levels(splitplot_layout$block)) {
+  
+  for(i in levels(splitplot_layout$irrigation)) {
+    
+    rows <- splitplot_layout$block == b &
+            splitplot_layout$irrigation == i
+    
+    splitplot_layout$fungicide[rows] <-
+      sample(splitplot_layout$fungicide[rows])
+  }
+}
+```
+
+```{r}
+fungicide_means <- c(F1 = 195, F3 = 215, F4 = 205)
+
+irrigation_effects <- c(Yes = 0, No = 25)
+
+interaction_effects <- matrix(
+  c(0, 5,
+    0, 25,
+    0, 5),
+  nrow = 3,
+  byrow = TRUE,
+  dimnames = list(c("F1", "F3", "F4"), c("Yes", "No"))
+)
+
+block_effects <- c(`1` = -50,
+                   `2` = -50,
+                   `3` = 0,
+                   `4` = 0,
+                   `5` = 0)
+
+splitplot_layout$yield <- with(splitplot_layout,
+  205 +
+  fungicide_means[fungicide] - mean(fungicide_means) +
+  irrigation_effects[irrigation] +
+  mapply(function(f, i) interaction_effects[f, i],
+         fungicide, irrigation) +
+  block_effects[block] +
+  rnorm(30, mean = 0, sd = 8)
+)
+```
+
+
+
+```{r}
+splitplot_layout$trt <- paste(splitplot_layout$fungicide,
+                              splitplot_layout$irrigation,
+                              sep = " & ")
+
+eus$trt <- splitplot_layout$trt
+```
+
+
+In the figure below, irrigation treatments form
+large strips within each block, while fungicides
+are randomized within those strips.
+
+```{r}
+ggplot()+
+  geom_sf(data = eus, aes(fill = trt), col = 'black')+
+  geom_sf(data = field, fill = 'transparent', col = 'black')+
+  geom_sf_text(data = eus, aes(label = trt))+
+  theme_void()+
+  scale_fill_manual(values = hcl.colors(6, 'Dynamic'))+
+  labs(fill = 'Treatment')
+```
+
+Notice that irrigation treatments are applied to
+groups of plots, not individual plots. This is
+what creates the split-plot structure and requires
+a different statistical model.
+
+
+```{r}
+ggplot(splitplot_layout,
+       aes(x = paste(fungicide, irrigation, sep = '&'),
+           y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  stat_summary(fun.data = mean_se,
+               geom = "errorbar",
+               width = 0.2) +
+  stat_summary(fun = mean,
+               geom = "point",
+               shape = 17,
+               size = 3) +
+  coord_flip() +
+  theme_linedraw() +
+  labs(x = "Fungicide & Irrigation",
+       y = "Corn Yield (bu/ac)")
+```
+
+
+
+## The linear additive model
+
+Split-plot experiments introduce multiple
+sources of variability.
+
+Because irrigation is applied to large plots, the
+experimental units receiving irrigation are not
+independent at the same level as the fungicide
+subplots.
+
+We therefore include two sources of random variation:
+
+1. Block-to-block variability
+2. Main-plot variability (irrigation strips within blocks)
+
+The linear model becomes:
+
+$$Y_{ijk}=\mu + F_i + I_j + FI_{ij} +  b_k + m_{jk}+ \epsilon_{ijk}\newline b_k \sim N(0, \sigma^2_{block})\newline m_{jk} \sim N(0, \sigma^2_{strip})$$
+
+
+Where:
+
+$Y_{ijk}$ = observed yield
+
+$\mu$ = overall mean
+
+$F_i$ = fungicide effect
+
+$I_j$ = irrigation effect
+
+$FI_{ij}$ = interaction
+
+$b_k$ = random block effect
+
+$m_{jk}$ = random main plot effect (irrigation within block)
+
+$\varepsilon_{ijk}$ = subplot error
+
+
+Fitting the split-plot model in R
+
+```{r,echo=TRUE}
+model_split <- lme(
+  yield ~ fungicide * irrigation,
+  random = ~ 1 | block/irrigation,
+  data = splitplot_layout
+)
+
+anova(model_split)
+```
+The nested random structure
+
+block / irrigation
+
+tells the model that irrigation treatments are
+applied within blocks, and that the fungicide
+subplots share variability within those main
+plots.
+
+This accounts for the fact that irrigation was not
+randomized at the plot level.
 
 
 
 # Conclusion
 
-ANOVA tells us whether treatment effects exist,
-but it does not tell us
-*which* treatments differ. Means-comparison procedures extend ANOVA by
-allowing us to evaluate specific differences
-between treatments.
+Experimental design of multiple treatment
+experiments plays a critical role in the quality
+of our data and the inferences that can be made.
 
-Different procedures balance two competing goals:
-detecting real differences and limiting false
-positives. Methods such as LSD provide greater
-power but weaker control of experimentwise error,
-while procedures like Tukey HSD or Bonferroni
-adjustments provide stronger error control.
+**Randomized Complete Block Design**: In most cases,
+you will probably run RCBD experiments where
+blocking will reduce the error among plots within
+each block, making it easier to detect true
+treatment differences.
 
-In practice, the appropriate method depends on the
-research objective and the consequences of
-statistical errors. Regardless of the method used,
-results should be presented clearly, with means,
-measures of uncertainty, and transparent
-visualizations of the data.
+**Factorial Design**: The factorial design allows
+greater efficiency if you are interested in
+studying multiple factors simultaneously. It is
+also the only way to study the interactions
+between factors – and these interactions are often
+the most important findings.
 
-These tools allow us to move from statistical
-models to interpretable treatment comparisons and,
-ultimately, to informed agronomic decisions.
+**Split-Plot Design**: Where one factor is known to
+be more subtle (and therefore harder to test for
+significance) than a second factor, or where
+differences in equipment size make it more
+practical to nest one factor inside the other, the
+split-plot design can be very useful.
+
+## A Common Thread
+
+Behind every experimental design choice lies a
+single principle: we must **model all known
+sources of variation** in order to preserve the
+independence assumption that underlies ANOVA.
+Whether we are blocking to account for
+environmental gradients, including interaction
+terms to model how factors work together, or using
+separate error terms for nested factors, we are
+explicitly accounting for systematic patterns so
+that what remains (error) is truly independent and
+random.
+
+When you choose an experimental design, you are
+essentially asking: what sources of variation
+exist in my experimental environment and in how I
+can apply treatments? Model those sources. What
+remains becomes your error term. If your model is
+well-designed, errors will be independent, your
+statistical tests will be valid, and you will have
+a much better chance of detecting real treatment
+effects.
+
+Each design serves a different purpose, and
+choosing the right design is critical to the
+success and relevance of your research.

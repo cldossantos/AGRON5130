@@ -3,9 +3,6 @@ title: "Exercise: Split-Plot"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-```
 
 In this exercise we will walk through a **complete
 split-plot analysis**, from loading the data to
@@ -73,9 +70,7 @@ splitplot <- read.csv("data/cover-crop-and-termination-split.csv")
 head(splitplot)
 ```
 
-Notice that we convert these variables to
-**factors** so that R treats them as categorical
-variables in the statistical model.
+
 
 ## Visualize the Data
 
@@ -175,6 +170,7 @@ estimated marginal means.
 
 ```{r}
 emm <- emmeans(model_split, ~ species * termination)
+emm
 ```
 
 Now we can compare treatment levels.
@@ -220,7 +216,7 @@ For example:
 
 ```{r}
 emm_species <-  emmeans(model_split, ~ species)
-
+emm_species
 contrast(emm_species,
          method = list(
            legumes_vs_rye = c(1/2, 1/2, -1),
@@ -271,7 +267,7 @@ Let's format the numeric columns.
 ```{r}
 tab <- colformat_double(tab,
                         j = c("emmean","SE","lower.CL","upper.CL"),
-                        digits = 2)
+                        digits = 1)
 
 tab
 ```
