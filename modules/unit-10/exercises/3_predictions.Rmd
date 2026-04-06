@@ -1,0 +1,216 @@
+---
+title: "Exercise - Predictions from Regression Models"
+output: html_document
+---
+
+# Introduction
+
+In this exercise, we focus on one of the main goals of regression:
+prediction.
+
+In this one, focus on three ideas from Module 10:
+
+- building the prediction equation from `lm()`
+- making predictions for new x-values
+- distinguishing interpolation from extrapolation
+
+As you work, keep one rule in mind: a prediction is only as good as the
+model and data range behind it.
+
+# Case Study: Corn Allometry
+
+```{r}
+library(ggplot2)
+
+allometry <- read.csv("data/corn_allometry.csv")
+head(allometry)
+```
+
+## Step 1: Fit the model
+
+We model yield as a function of stalk circumference.
+
+This gives us the equation we will use for the rest of the exercise.
+
+```{r}
+model_circ <- lm(yield ~ stalk_circ, data = allometry)
+coef(model_circ)
+summary(model_circ)$r.squared
+```
+
+
+## Step 2: Visualize observed points and fitted trend
+
+```{r}
+ggplot(allometry, aes(x = stalk_circ, y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, color = "steelblue") +
+  labs(x = "Stalk circumference", y = "Yield") +
+  theme_bw()
+```
+
+The grey ribbon is the confidence band for the mean trend.
+Notice that uncertainty is usually smallest near the center of observed
+$x$ values and larger at the edges.
+
+## Step 3: Predict at new values of x
+
+```{r}
+new_stalk <- data.frame(
+  stalk_circ = c(1.5, 2.0, 2.5, 3.0, 3.5)
+)
+
+new_stalk$fit <- predict(model_circ, newdata = new_stalk)
+new_stalk
+```
+
+## Step 4: Confidence interval vs prediction interval
+
+For each x-value, we can estimate:
+
+- confidence interval for the mean response
+- prediction interval for a new individual observation
+
+```{r}
+pred_ci <- predict(model_circ, newdata = new_stalk, interval = "confidence")
+pred_ci
+
+pred_pi <- predict(model_circ, newdata = new_stalk, interval = "prediction")
+pred_pi
+```
+
+The table shows the numbers, but the difference
+becomes clearer on a plot. Below, we build a dense
+prediction grid across the observed range, compute
+both intervals, and overlay them on the original
+data.
+
+```{r}
+
+x_grid <- data.frame(
+  stalk_circ = seq(min(allometry$stalk_circ), max(allometry$stalk_circ), length.out = 100)
+)
+
+ci_band <- as.data.frame(predict(model_circ, newdata = x_grid, interval = "confidence"))
+pi_band <- as.data.frame(predict(model_circ, newdata = x_grid, interval = "prediction"))
+
+x_grid$fit <- ci_band$fit
+x_grid$ci_lwr <- ci_band$lwr
+x_grid$ci_upr <- ci_band$upr
+x_grid$pi_lwr <- pi_band$lwr
+x_grid$pi_upr <- pi_band$upr
+
+ggplot(allometry, aes(x = stalk_circ, y = yield)) +
+  geom_ribbon(data = x_grid, aes(y = fit, ymin = pi_lwr, ymax = pi_upr),
+              fill = "orange", alpha = 0.25) +
+  geom_ribbon(data = x_grid, aes(y = fit, ymin = ci_lwr, ymax = ci_upr),
+              fill = "steelblue", alpha = 0.4) +
+  geom_line(data = x_grid, aes(y = fit), color = "steelblue", linewidth = 0.8) +
+  geom_point(pch = 21, size = 2) +
+  labs(x = "Stalk circumference", y = "Yield",
+       caption = "Blue: 95% confidence interval for the mean | Orange: 95% prediction interval for a new observation") +
+  theme_bw()
+```
+
+The blue band captures uncertainty about the mean trend.
+The orange band is wider because it also accounts for individual-level
+scatter around that mean — it tells you where a single new plant is
+likely to fall.
+
+## Step 5: Interpolation vs extrapolation
+
+```{r}
+range(allometry$stalk_circ)
+```
+
+Now include one value clearly outside the observed range.
+
+```{r}
+new_stalk_ext <- data.frame(stalk_circ = c(1.8, 2.4, 3.0, 4.2))
+new_stalk_ext$fit <- predict(model_circ, newdata = new_stalk_ext)
+new_stalk_ext
+```
+
+Identify which of these values are interpolation and which are
+extrapolation.
+
+
+## If you are curious: significant slope does not always mean the line is right
+
+Here is a quick reminder from lecture: a
+significant linear slope does not guarantee that a
+straight-line model is adequate.
+
+```{r}
+set.seed(13)
+x_demo <- rep(seq(0, 120, length.out = 9), each = 4)
+y_demo <- 8 + 0.06 * x_demo - 0.00025 * (x_demo ^ 2) + rnorm(length(x_demo), 0, 0.5)
+
+demo_curve <- data.frame(x = x_demo, y = y_demo)
+
+ggplot(demo_curve, aes(x = x, y = y)) +
+  geom_point(pch = 21, size = 2) +
+  theme_bw()
+```
+
+Let's fit a linear model to this data and look at
+the summary
+
+```{r}
+demo_lm <- lm(y ~ x, data = demo_curve)
+summary(demo_lm)
+```
+
+The summary looks great overall, but what do the
+residuals tell us?
+
+```{r}
+plot(demo_lm, which = 1)
+plot(demo_lm, which = 2)
+```
+
+Think about this: if p-value is small but
+residuals are curved, which signal do you trust
+for model adequacy, the p-value or the residual
+pattern?
+
+# Practice 1
+
+Model `yield` as a function of `area_highest_leaf`.
+
+1. Fit the model and inspect coefficients with `coef()` and $R^2$ with `summary()`.
+1. Plot points plus fitted line and confidence band.
+1. Predict for `area_highest_leaf = 900, 1000, 1100, 1200, 1300`.
+1. Add confidence and prediction intervals for those values.
+
+```{r}
+# your code here
+```
+
+
+# Practice 2
+
+Now use the fertility dataset and model `yield` as a function of
+`organic_matter`.
+
+```{r}
+fertility <- read.csv("data/corn_fertility.csv")
+head(fertility)
+```
+
+1. Fit `lm(yield ~ organic_matter, data = fertility)`.
+1. Plot points and fitted line.
+1. Predict yield for `organic_matter = 1.5, 1.8, 2.1, 2.4, 2.7`.
+1. Add confidence and prediction intervals.
+1. Based on the observed range, label each new value as interpolation or
+   extrapolation.
+
+```{r}
+# your code here
+```
+
+Final checkpoint:
+
+If the model has low $R^2$ but a significant slope, should we still use
+it for prediction? Answer with one practical rule for agronomic use,
+including how you would check whether predictions are still useful.

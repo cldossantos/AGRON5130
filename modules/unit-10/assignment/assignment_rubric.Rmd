@@ -41,8 +41,10 @@ Create a scatterplot matrix for all quantitative
 variables in `weed`.
 
 ```{r}
+plot(weed)
 ```
 
+---
 
 # Question 2
 
@@ -54,6 +56,7 @@ of variables shows the strongest association.
 
 
 ```{r}
+round(cor(weed), 2)
 ```
 
 
@@ -67,6 +70,7 @@ Create a scatterplot showing the relationship between
 Optional but recommended: overlay a linear trend line.
 
 ```{r}
+plot(weed$total_weed_pop, weed$yield)
 ```
 
 
@@ -78,6 +82,7 @@ Run a correlation test between `total_weed_pop` and
 `yield` using `cor.test()`.
 
 ```{r}
+cor.test(weed$total_weed_pop, weed$yield)
 ```
 
 In 2–3 sentences, interpret:
@@ -97,6 +102,8 @@ function of `total_weed_pop`.
 Display coefficient estimates using `coef()`.
 
 ```{r}
+model1 <- lm(yield ~ total_weed_pop, data = weed)
+coef(model1)
 ```
 
 
@@ -107,6 +114,7 @@ Display coefficient estimates using `coef()`.
 Display $R^2$ for the model using `summary()`.
 
 ```{r}
+summary(model1)
 ```
 
 
@@ -138,6 +146,8 @@ Produce:
 2. normal Q-Q plot (`which = 2`)
 
 ```{r}
+plot(model1, which = 1)
+plot(model1, which = 2)
 ```
 
 Then write 2–3 sentences on whether a straight-line model
@@ -155,6 +165,10 @@ Using `ggplot()`, create a plot of `yield` vs
 2. fitted regression line
 
 ```{r}
+
+ggplot(weed, aes(x = total_weed_pop, y = yield))+
+  geom_point()+
+  geom_smooth(method = 'lm', se = F)
 ```
 
 
@@ -183,6 +197,7 @@ Generate:
 *Hint:* use `predict(..., interval = "confidence")`
 
 ```{r}
+predict(model1, newdata = new_weed_pops, interval = 'conf')
 ```
 
 

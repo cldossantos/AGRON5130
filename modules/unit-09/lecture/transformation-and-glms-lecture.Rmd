@@ -2,7 +2,7 @@
 title: "Transformations and Generalized Linear Models"
 subtitle: "AGRON 5130 - Module 9"
 author: "Caio dos Santos"
-date: "2026"
+date: "2026-03-29"
 output:
   html_document:
     toc: true
@@ -589,14 +589,14 @@ Instead of transforming the data to make it fit a normal model, we can take a di
 
 This is the idea behind **generalized linear models (GLMs)**.
 
-For count data, a common choice is the **Poisson model**, which:
+For count data, a common choice is the **Poisson distribution**, which:
 
 - Only allows non-negative values (0, 1, 2, …)  
 - Naturally handles right-skewed data  
 - Models the relationship between the mean and the variance  
 
 
-### Fitting a Poisson model
+### Fitting a GLM with a Poisson distribution
 
 Let’s fit a GLM using the same dataset:
 
@@ -620,7 +620,7 @@ par(mfrow = c(1,1))
 
 ### What scale are we working on?
 
-the Poisson model uses a log link function
+The GLM with a Poisson distribution uses a log link function
 
 This means that the logarithm of the expected
 value (mean) is modeled as a linear function of

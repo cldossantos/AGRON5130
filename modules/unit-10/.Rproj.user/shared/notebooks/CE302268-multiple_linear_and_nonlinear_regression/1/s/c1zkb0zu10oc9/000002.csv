@@ -1,2 +1,0 @@
-"0","counties_mn_wi = counties %>%"
-"0","  filter(state %in% c(""MN"", ""WI""))"

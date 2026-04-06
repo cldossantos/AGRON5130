@@ -11,7 +11,7 @@
 
 <meta name="author" content="Caio dos Santos" />
 
-<meta name="date" content="2026-01-01" />
+<meta name="date" content="2026-03-29" />
 
 <title>Transformations and Generalized Linear Models</title>
 
@@ -1573,7 +1573,7 @@ border-radius: 0px;
 Models</h1>
 <h3 class="subtitle">AGRON 5130 - Module 9</h3>
 <h4 class="author">Caio dos Santos</h4>
-<h4 class="date">2026</h4>
+<h4 class="date">2026-03-29</h4>
 
 </div>
 
@@ -1876,7 +1876,7 @@ start.</p>
 <p>This is the idea behind <strong>generalized linear models
 (GLMs)</strong>.</p>
 <p>For count data, a common choice is the <strong>Poisson
-model</strong>, which:</p>
+distribution</strong>, which:</p>
 <ul>
 <li>Only allows non-negative values (0, 1, 2, …)<br />
 </li>
@@ -1884,8 +1884,8 @@ model</strong>, which:</p>
 </li>
 <li>Models the relationship between the mean and the variance</li>
 </ul>
-<div id="fitting-a-poisson-model" class="section level3">
-<h3>Fitting a Poisson model</h3>
+<div id="fitting-a-glm-with-a-poisson-distribution" class="section level3">
+<h3>Fitting a GLM with a Poisson distribution</h3>
 <p>Let’s fit a GLM using the same dataset:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>mod_pois <span class="ot">&lt;-</span> <span class="fu">glm</span>(counts <span class="sc">~</span> treatment, </span>
 <span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>                <span class="at">data =</span> dat,</span>
@@ -1895,7 +1895,7 @@ model</strong>, which:</p>
 </div>
 <div id="what-scale-are-we-working-on" class="section level3">
 <h3>What scale are we working on?</h3>
-<p>the Poisson model uses a log link function</p>
+<p>The GLM with a Poisson distribution uses a log link function</p>
 <p>This means that the logarithm of the expected value (mean) is modeled
 as a linear function of the predictors.</p>
 <p>That means:</p>

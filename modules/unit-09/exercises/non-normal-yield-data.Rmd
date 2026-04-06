@@ -5,7 +5,7 @@ output: html_document
 
 We will begin by importing the libraries we'll use in this exercise
 
-```{r}
+```{r, message=FALSE}
 library(ggplot2)
 library(emmeans)
 ```
@@ -38,6 +38,7 @@ It seems like this first file has the first three treatments.
 df1 <- read.csv('./data/soybean-foliar-1.csv')
 head(df1)
 ```
+
 Great! Now, we can do the same for the second part of this trial's data.
 This dataset seems to have two treatments but also seems to be out of order. 
 
@@ -137,8 +138,8 @@ assumptions are violated.
 
 
 ```{r, echo=TRUE}
-mod_yield <- aov(yield ~ treatment, data = df_long)
-summary(mod_yield)
+mod_yield <- lm(yield ~ treatment, data = df_long)
+anova(mod_yield)
 ```
 
 
@@ -167,13 +168,14 @@ First, we will extract the treatments means using
 so we can use it within `ggplot`
 
 ```{r}
-means_yield <- emmeans(mod_yield, ~treatment)
+means_yield <- emmeans(mod_yield, ~ treatment)
 means_yield <- data.frame(means_yield)
 means_yield
 ```
 
 
-Now, let's add this to a plot. A couple of things I want you to notice:
+Now, let's add this to a plot. A couple of things
+I want you to notice:
 
 1. Since our model assumes constant variance among
 the treatments, look at how the width of the
@@ -220,10 +222,8 @@ model residuals are more in line with theoretical
 quantiles.
 
 ```{r}
-par(mfrow = c(1,2))
 plot(mod_log_yield, which = 1)
 plot(mod_log_yield, which = 2)
-par(mfrow = c(1,1))
 ```
 
 
@@ -240,8 +240,10 @@ log_means
 ```
 
 
-Now that we've recovered the treatment means at the log scale, let's interpret them. 
-Let's look at the difference between the `Control` and `T3` for example. 
+Now that we've recovered the treatment means at
+the log scale, let's interpret them. Let's look at
+the difference between the `Control` and `T3` for
+example.
 
 ```{r}
 4.23 - 3.47
@@ -288,7 +290,8 @@ mod_gamma <- glm(yield ~ treatment,
                  family = Gamma(link = "log"),
                  data = df_long)
 mod_gamma
-plot(mod_gamma)
+plot(mod_gamma, which = 1)
+plot(mod_gamma, which = 2)
 ```
 
 
@@ -314,7 +317,7 @@ variance anymore. The error variance is modeled as
 part of the distribution.
 
 ```{r}
-means_glm <- emmeans(mod_gamma, ~treatment, type = 'response')
+means_glm <- emmeans(mod_gamma, ~ treatment, type = 'response')
 means_glm <- data.frame(means_glm)
 means_glm
 ```

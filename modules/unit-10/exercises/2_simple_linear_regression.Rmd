@@ -1,0 +1,139 @@
+---
+title: "Exercise - Simple Linear Regression"
+output: html_document
+---
+
+# Introduction
+
+In the previous exercise, we focused on scatterplots and correlation.
+In this one, we move to the second half of Module 10: fitting and interpreting
+simple linear regression models.
+
+Keep one bridge in mind from earlier modules. This is the same playbook,
+just with a continuous predictor:
+
+- ANOVA with categorical predictors: $Y_{ij} = \mu + \tau_i + \epsilon_{ij}$
+- Regression with a continuous predictor: $Y_i = \beta_0 + \beta_1 x_i + \epsilon_i$
+
+The assumptions and diagnostics follow the same workflow you already
+know.
+
+# Case Study: Corn Allometry
+
+```{r}
+library(ggplot2)
+
+allometry <- read.csv("data/corn_allometry.csv")
+head(allometry)
+```
+
+## Step 1: Fit the model
+
+Model yield as a function of total leaf biomass.
+
+Start simple, then build your interpretation around that first model.
+
+```{r}
+model_yield_leaves <- lm(yield ~ total_leaves, data = allometry)
+summary(model_yield_leaves)
+```
+
+## Step 2: Plot the relationship
+
+```{r}
+ggplot(allometry, aes(x = total_leaves, y = yield)) +
+	geom_point(pch = 21, size = 2) +
+	geom_smooth(method = "lm", se = FALSE, color = "steelblue") +
+	labs(x = "Total leaves (dry matter)",
+			 y = "Yield") +
+	theme_bw()
+```
+
+## Step 3: Interpret coefficients
+
+```{r}
+coef(model_yield_leaves)
+```
+
+Write the fitted equation:
+
+$$
+\hat{y} = \hat{\beta}_0 + \hat{\beta}_1x
+$$
+
+and interpret:
+
+- intercept (expected yield at $x = 0$, if meaningful in range)
+- slope (expected change in yield per one-unit increase in leaves)
+
+
+## Step 4: Test significance two equivalent ways
+
+```{r}
+summary(model_yield_leaves)
+anova(model_yield_leaves)
+```
+
+For simple regression, testing whether the slope is zero is equivalent
+to the model F-test. You are seeing the same hypothesis presented in two
+output formats.
+
+## Step 5: Check model fit and assumptions
+
+```{r}
+summary(model_yield_leaves)$r.squared
+
+plot(model_yield_leaves, which = 1)
+plot(model_yield_leaves, which = 2)
+```
+
+Pause and think about:
+
+- any strong curvature in residuals vs fitted
+- any funnel pattern
+- whether Q-Q points stay reasonably close to a line
+
+If one diagnostic looks poor, do not ignore it just because the slope is
+significant.
+
+# Practice 1
+
+Now model `yield` as a function of `total_leaf_area`.
+
+1. Fit the model.
+1. Plot the fitted line over the scatterplot.
+1. Use `coef()` and `summary()` to inspect slope, p-value, and $R^2$.
+1. Plot residual diagnostics (`which = 1` and `which = 2`).
+
+```{r}
+# your code here
+```
+
+Quick checkpoint:
+
+- Is the slope positive or negative?
+- Is the relationship statistically significant?
+- Do diagnostics support a linear mean trend?
+
+Write one additional sentence on model adequacy: would you trust this
+model for interpretation only, for prediction, or for neither?
+
+# Practice 2
+
+Now use the fertility dataset and model `yield` as a function of
+`organic_matter`.
+
+```{r}
+fertility <- read.csv("data/corn_fertility.csv")
+head(fertility)
+```
+
+1. Fit `lm(yield ~ organic_matter, data = fertility)`.
+1. Summarize coefficients and write the fitted equation.
+1. Report $R^2$.
+1. Create residual and Q-Q diagnostics.
+
+```{r}
+# your code here
+```
+

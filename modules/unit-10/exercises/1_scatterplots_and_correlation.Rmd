@@ -1,0 +1,224 @@
+---
+title: "Exercise - Scatterplots and Correlation"
+output: html_document
+---
+
+# Introduction
+
+In this exercise, we stay with the first half of
+Module 10. The workflow is the same one from
+lecture: plot first, quantify second, interpret
+last.
+
+In this one, you will practice:
+
+- visualizing quantitative relationships with scatterplots
+- quantifying linear association with correlation
+- separating "strong pattern" from "strong linear pattern"
+
+We will use the corn allometry data and one short example where the
+relationship is curved.
+
+# Case Study: Corn Allometry
+
+Allometry studies how plant structures scale with
+one another. Think of this as a field team trying
+to figure out which plant traits track with grain
+yield well enough to justify deeper follow-up
+work.
+
+```{r}
+library(ggplot2)
+
+allometry <- read.csv("data/corn_allometry.csv")
+head(allometry)
+```
+
+## Step 1: Start with a scatterplot matrix
+
+Before computing anything, just look.
+
+```{r}
+plot(allometry)
+```
+
+This matrix is crowded, but it gives you a fast
+first pass across all variable pairs. At this
+stage, you are not trying to be precise. You are
+trying to spot obvious direction, spread, and any
+possible curve.
+
+## Step 2: Focus on one biologically meaningful pair
+
+Now isolate one pair with clear biological
+meaning: yield and total leaf biomass.
+
+```{r}
+ggplot(allometry,
+       aes(x = total_leaves, y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, color = "steelblue") +
+  labs(x = "Total leaves (dry matter)",
+       y = "Yield") +
+  theme_bw()
+```
+
+The points suggest a positive linear association.
+Pause and ask yourself whether the relationship
+looks mostly linear, or if there is any obvious
+curvature hidden in the cloud.
+
+## Step 3: Quantify linear association
+
+We can quantify the linear association between two
+variables using the `cor()` function
+
+```{r}
+cor(allometry$yield, allometry$total_leaves)
+```
+
+
+We can also test whether we're likely to observe
+this correlation value even if the true
+correlation is actually 0.
+
+```{r}
+cor.test(allometry$yield, allometry$total_leaves)
+```
+
+
+
+## Step 4: Build a correlation matrix
+
+```{r}
+round(cor(allometry), 2)
+```
+
+Use the yield row as your first screening pass for
+potentially useful predictors. This is not a final
+model decision.
+
+## Step 5: Important limitation of correlation
+
+Correlation measures linear association. A strong
+curved relationship can still produce low $r$.
+
+Let's simulate a dataset that is strongly
+associated (one of them is a function of the
+other) but in a nonlinear way.
+
+```{r}
+set.seed(7)
+x_nl <- seq(-3, 3, length.out = 50)
+y_nl <- -(x_nl ^ 2) + rnorm(50, 0, 0.4)
+
+nonlinear <- data.frame(x = x_nl, y = y_nl)
+```
+
+Then we can compute the correlation between them
+
+```{r}
+cor(nonlinear$x, nonlinear$y)
+```
+
+
+
+```{r}
+ggplot(nonlinear, aes(x, y)) +
+  geom_point(pch = 21, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, color = "firebrick") +
+  labs(title = paste0("Curved relationship, r = ",
+                      round(cor(nonlinear$x, nonlinear$y), 2)),
+       x = "x", y = "y") +
+  theme_bw()
+```
+
+This is one reason we always plot before
+interpreting $r$. If you only look at the
+coefficient, you can miss a real relationship that
+is simply not linear.
+
+## If you are curious: what is $r$ actually doing?
+
+Since I know you're curious, let's do this quick
+"by hand" check
+
+```{r}
+x <- allometry$total_leaves
+y <- allometry$yield
+
+x_c <- x - mean(x)
+y_c <- y - mean(y)
+
+num <- sum(x_c * y_c)
+den <- sqrt(sum(x_c ^ 2) * sum(y_c ^ 2))
+
+r_manual <- num / den
+r_builtin <- cor(x, y)
+
+r_manual
+r_builtin
+```
+
+
+# Practice 1
+
+Using `allometry`, create a scatterplot with `height` on the x-axis and
+`yield` on the y-axis.
+
+After plotting, add one sentence: does a linear trend look believable
+for this pair, yes or no?
+
+```{r}
+# your code here
+```
+
+# Practice 2
+
+Using `allometry`, run `cor.test()` for `height` and `yield`.
+
+Then write one sentence interpreting:
+
+- the sign of $r$
+- the magnitude of $r$
+- whether this proves causation
+
+Keep your sentence in agronomic language, not only statistical terms.
+
+```{r}
+# your code here
+```
+
+# Practice 3
+
+Load the fertility dataset and inspect it.
+
+```{r}
+fertility <- read.csv("data/corn_fertility.csv")
+head(fertility)
+```
+
+Create a scatterplot matrix for all quantitative variables.
+
+As you inspect it, note one variable pair that looks roughly linear and
+one that looks weak or noisy.
+
+```{r}
+# your code here
+```
+
+# Practice 4
+
+Create a correlation matrix for all variables in `fertility`.
+
+Then identify:
+
+- one variable with relatively strong positive correlation with yield
+- one variable with weak correlation with yield
+
+Add one sentence on why correlation alone is not enough to claim a
+cause-and-effect relationship for either variable.
+
+```{r}
+# your code here
+```

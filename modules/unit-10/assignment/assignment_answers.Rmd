@@ -1,7 +1,7 @@
 ---
 title: "Correlation and Simple Regression"
 subtitle: "AGRON 5130 - Unit 10 Assignment"
-author: "Caio dos Santos"
+author: "YOUR NAME HERE"
 output: pdf_document
 ---
 
@@ -43,6 +43,7 @@ variables in `weed`.
 ```{r}
 ```
 
+---
 
 # Question 2
 
