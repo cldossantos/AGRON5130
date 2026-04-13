@@ -1,0 +1,108 @@
+---
+title: "Exercise - Avoiding Bloated Models"
+output: html_document
+---
+
+# Introduction
+
+In this exercise, you will diagnose when a model has too many overlapping
+predictors.
+
+Key idea: a model can predict reasonably well and still give unstable
+coefficient interpretations when predictors are strongly correlated.
+
+# Case Study: Corn Yield and Collinearity
+
+```{r}
+library(ggplot2)
+library(car)
+
+counties <- read.csv("data/county_environments.csv")
+
+model_data <- subset(counties, state %in% c("MN", "WI"))
+model_data <- na.omit(model_data[, c("corn", "ppt", "sand", "silt", "clay", "om", "sph")])
+
+head(model_data)
+```
+
+## Start with a fuller model
+
+```{r}
+model_full <- lm(corn ~ ppt + sand + silt + clay + om + sph, data = model_data)
+summary(model_full)
+```
+
+## Correlation matrix as first warning sign
+
+```{r}
+round(cor(model_data[, c("ppt", "sand", "silt", "clay", "om", "sph")]), 2)
+```
+
+Quick check:
+
+- Which pairs are most strongly correlated?
+- Which predictors might compete to explain the same variation?
+
+## VIF as direct inflation check
+
+```{r}
+vif(model_full)
+```
+
+Interpretation guide:
+
+- Around 1: little inflation
+- Around 5: meaningful inflation
+- Around 10+: severe inflation
+
+Pause and reflect:
+
+- Could a predictor with a weak p-value still matter biologically?
+- Could a predictor with a significant p-value still be unstable under collinearity?
+
+## The compositional texture trap
+
+Sand, silt, and clay are compositional percentages. Together, they sum to 100.
+That can cause near-perfect linear dependence.
+
+Try dropping one texture class (silt) and refit:
+
+```{r}
+model_drop_silt <- lm(corn ~ ppt + sand + clay + om + sph, data = model_data)
+summary(model_drop_silt)
+vif(model_drop_silt)
+```
+
+Then try dropping a different texture class (clay):
+
+```{r}
+model_drop_clay <- lm(corn ~ ppt + sand + silt + om + sph, data = model_data)
+summary(model_drop_clay)
+vif(model_drop_clay)
+```
+
+Quick check:
+
+- Which reduced model gives more stable VIF values?
+- How do coefficient signs and uncertainty change across models?
+
+# Practice: Thompson Corn Data
+
+```{r}
+thompson_corn <- read.csv("data/thompson_corn.csv")
+head(thompson_corn)
+```
+
+1. Fit `lm(yield ~ rain6 + rain7 + temp6 + temp7, data = thompson_corn)`.
+2. Compute a correlation matrix for the predictors.
+3. Compute VIF values.
+4. Drop one predictor you think is redundant and refit.
+
+```{r}
+# your code here
+```
+
+Write 3-4 sentences:
+
+- What evidence suggested redundancy?
+- Did dropping one variable improve interpretability?

@@ -1,0 +1,247 @@
+---
+title: "Multiple Linear and Nonlinear Regression"
+subtitle: "AGRON 5130 - Unit 11 Assignment"
+author: "Caio dos Santos"
+output: pdf_document
+---
+
+# Introduction
+
+The goal of this assignment is to help you practice
+the full workflow from Module 11:
+
+- interpreting partial effects in multiple regression
+- diagnosing multicollinearity and unstable coefficients
+- comparing full vs reduced models
+- fitting and interpreting a nonlinear growth model
+- connecting model choice to biological reasoning
+
+You will complete two parts:
+
+- **Part 1:** multiple linear regression using soybean yield data
+- **Part 2:** nonlinear modeling using tomato growth data
+
+Submit a knitted PDF/HTML generated from your R
+Markdown file to Canvas.
+
+**Total: 15 points**
+
+# Part 1: Multiple Linear Regression (Thompson Soy)
+
+```{r}
+library(ggplot2)
+library(car)
+
+thompson_soy <- read.csv("data/thompson_soy.csv")
+head(thompson_soy)
+```
+
+For this dataset:
+
+- `yield` = soybean yield
+- `rain6` = total June precipitation
+- `rain7` = total July precipitation
+- `temp6` = mean June temperature
+- `temp7` = mean July temperature
+
+The goal is to ask which of these weather variables
+are associated with yield **after accounting for the
+others**.
+
+# Question 1
+
+**1 point**
+
+Fit a multiple linear regression model of `yield` as a
+function of all four weather variables:
+
+- `rain6`
+- `rain7`
+- `temp6`
+- `temp7`
+
+```{r}
+```
+
+# Question 2
+
+**1 point**
+
+Report model coefficients.
+
+```{r}
+```
+
+Write 2-3 sentences interpreting:
+
+1. one precipitation coefficient as a partial effect
+2. one temperature coefficient as a partial effect
+
+Use language like: "Holding the other predictors
+constant..."
+
+# Question 3
+
+**1 point**
+
+Report model fit statistics from `summary()`:
+
+```{r}
+```
+
+# Question 4
+
+**1 point**
+
+Create a scatterplot matrix of model variables.
+
+```{r}
+```
+
+Then name one pair of predictors that appears
+strongly related.
+
+# Question 5
+
+**1 point**
+
+Create a correlation matrix for the predictor
+variables only.
+
+```{r}
+```
+
+
+# Question 6
+
+**1 point**
+
+Describe and interpret the correlations between
+variables. Are there any varaibles you would be
+concerned about including in the model? Why?
+
+
+# Question 7
+
+**1 point**
+
+Compute VIF values for the full model.
+
+```{r}
+```
+
+Then answer:
+
+1. Which predictor has the largest VIF?
+2. Is multicollinearity likely to affect interpretation?
+
+# Question 8
+
+**1 point**
+
+Create a reduced model by dropping one predictor you
+believe is least useful or most redundant.
+
+```{r}
+```
+
+Compare full vs reduced model using:
+
+1. ANOVA (`anova(reduced, full)`)
+2. AIC (`AIC(reduced, full)`)
+
+```{r}
+```
+
+In 3-4 sentences, justify which model you would keep
+for interpretation.
+
+# Question 9
+
+**1 point**
+
+Check assumptions for your **selected** model using:
+
+1. residuals vs fitted plot (`which = 1`)
+2. normal Q-Q plot (`which = 2`)
+
+```{r}
+```
+
+Write 2-3 sentences on whether the linear model is
+adequate.
+
+# Part 2: Nonlinear Regression (Tomato Growth)
+
+```{r}
+tomato <- read.csv("data/tomato_days_volume.csv")
+head(tomato)
+```
+
+# Question 10
+
+**1 point**
+
+Plot `fruit_volume` as a function of `days`.
+
+```{r}
+```
+
+In one sentence, describe the shape you see.
+
+# Question 11
+
+**2 points**
+
+Fit and summarize a logistic nonlinear model:
+
+`fruit_volume ~ SSlogis(days, Asym, xmid, scal)`
+
+```{r}
+```
+
+Interpret each parameter in biological terms:
+
+1. `Asym`
+2. `xmid`
+
+
+# Question 12
+
+**1 point**
+
+Create a prediction grid for `days` from 7 to 49 by 1,
+then predict `fruit_volume` on that grid.
+
+```{r}
+```
+
+# Question 13
+
+**1 point**
+
+Add the fitted logistic curve to your original tomato
+scatterplot.
+
+```{r}
+```
+
+# Question 14
+
+**1 point**
+
+Fit a polynomial model to the same tomato data:
+
+`lm(fruit_volume ~ days + I(days^2), data = tomato)`
+
+```{r}
+```
+
+Then, in 3-4 sentences, compare polynomial vs logistic
+for this dataset using:
+
+1. biological interpretability
+2. plausibility of curve shape
+3. model communication to an agronomy audience
+
+

@@ -1,0 +1,170 @@
+---
+title: "Exercise - Multiple Linear Regression"
+output: html_document
+---
+
+# Introduction
+
+In this exercise, you will practice the core move
+of Module 11: interpreting coefficients as
+**partial effects**.
+
+The workflow is simple:
+
+1. Start with a simple two-predictor model to lock in intuition.
+2. Expand to a fuller model.
+3. Interpret coefficients using biology, not p-values alone.
+
+Before you start, make sure the `car` package is
+installed. We will use it later in this module for
+VIF.
+
+```{r}
+install.packages('car')
+```
+
+
+```{r}
+library(car)
+```
+
+# Case Study: Corn Yield in Minnesota and Wisconsin
+
+```{r}
+library(ggplot2)
+
+counties <- read.csv("data/county_environments.csv")
+
+model_data <- subset(counties, state %in% c("MN", "WI"))
+model_data <- na.omit(model_data[, c("corn", "ppt", "sand", "clay", "om", "sph")])
+
+head(model_data)
+```
+
+## Plot first
+
+```{r}
+plot(model_data, pch = 20, cex = 0.3)
+```
+
+Quick check:
+
+- Which predictors appear correlated?
+- Which relationships with `corn` look roughly linear?
+
+## Start simple: two predictors
+
+Fit yield as a function of rainfall and organic matter.
+
+```{r}
+model_simple <- lm(corn ~ ppt + om, data = model_data)
+summary(model_simple)
+```
+
+Now inspect coefficients directly from the model summary:
+
+```{r}
+coef(model_simple)
+```
+
+Interpretation prompt:
+
+- Write one sentence interpreting the `om` coefficient as a partial effect.
+- Start with: "Holding rainfall constant, ..."
+
+## Visualize partial effects
+
+```{r}
+om_levels <- quantile(model_data$om, probs = c(0.10, 0.90), na.rm = TRUE)
+
+pred_grid <- expand.grid(
+  ppt = seq(min(model_data$ppt), max(model_data$ppt), length.out = 200),
+  om = as.numeric(om_levels)
+)
+
+pred_grid$om_group <- factor(
+  pred_grid$om,
+  levels = as.numeric(om_levels),
+  labels = c("Lower OM (10th percentile)", "Higher OM (90th percentile)")
+)
+
+pred_grid$corn_pred <- predict(model_simple, newdata = pred_grid)
+
+ggplot() +
+  geom_point(
+    data = model_data,
+    aes(x = ppt, y = corn),
+    color = "gray65",
+    alpha = 0.35,
+    size = 1.7
+  ) +
+  geom_line(
+    data = pred_grid,
+    aes(x = ppt, y = corn_pred, color = om_group),
+    linewidth = 1.2
+  ) +
+  scale_color_manual(values = c("#1b9e77", "#d95f02")) +
+  labs(
+    title = "Partial Effects in a Two-Predictor Model",
+    subtitle = "Predicted lines from corn ~ ppt + om",
+    x = "Rainfall (ppt)",
+    y = "Predicted corn yield",
+    color = "Organic matter"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+Pause and reflect:
+
+- At the same rainfall value, what does the vertical gap between lines represent?
+- Why are the lines parallel here?
+
+## Expand to a fuller model
+
+```{r}
+model_full <- lm(corn ~ ppt + sand + clay + om + sph, data = model_data)
+summary(model_full)
+AIC(model_full)
+```
+
+
+Quick check:
+
+- Did any coefficient signs or p-values change vs the simple model?
+- Why can that happen when predictors are correlated?
+
+# Practice 1: Thompson Corn Data
+
+Fit a model of `yield` using `rain6`, `rain7`, `temp6`, and `temp7`.
+
+```{r}
+thompson_corn <- read.csv("data/thompson_corn.csv")
+head(thompson_corn)
+```
+
+1. Fit the model.
+2. Use `summary(model)` to inspect coefficients.
+3. Report fit metrics (`adj.r.squared`, `AIC`).
+
+```{r}
+# your code here
+```
+
+Write 2-3 sentences:
+
+- Which coefficients are easiest to interpret biologically?
+- Which ones feel unstable or uncertain?
+
+# Practice 2: Partial-Effect Language
+
+Using your Thompson model, write one partial-effect interpretation for:
+
+- `rain7`
+- `temp7`
+
+Template:
+
+"Holding the other predictors constant, a one-unit increase in ___ is associated
+with an expected ___-unit change in yield."
+
+Does this prove intervention-level causation? Why or why not?

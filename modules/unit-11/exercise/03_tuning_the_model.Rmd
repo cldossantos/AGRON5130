@@ -1,0 +1,85 @@
+---
+title: "Exercise - Tuning the Model"
+output: html_document
+---
+
+# Introduction
+
+In this exercise, you will make a practical model-selection decision.
+
+The question is not "Which model has the most predictors?"
+The question is "Which model is simple, biologically sensible, and still useful?"
+
+# Case Study: Full vs Reduced Model
+
+```{r}
+counties <- read.csv("data/county_environments.csv")
+
+model_data <- subset(counties, state %in% c("MN", "WI"))
+model_data <- na.omit(model_data[, c("corn", "ppt", "sand", "clay", "om", "sph")])
+```
+
+Fit full and reduced models:
+
+```{r}
+model_full <- lm(corn ~ ppt + sand + clay + om + sph, data = model_data)
+model_reduced <- lm(corn ~ ppt + sand + om + sph, data = model_data)
+```
+
+## Compare coefficients and fit
+
+```{r}
+coef(model_full)
+coef(model_reduced)
+```
+
+```{r}
+summary(model_full)
+summary(model_reduced)
+```
+
+
+## Compare models directly
+
+```{r}
+anova(model_reduced, model_full)
+AIC(model_reduced, model_full)
+```
+
+Interpretation prompts:
+
+- If ANOVA p-value is large, what does that suggest about the dropped predictor?
+- If AIC is similar or lower for reduced model, what does that suggest?
+
+Important note:
+
+This ANOVA comparison assumes models are nested and use the same observations.
+
+
+# Practice: Thompson Corn Data
+
+```{r}
+thompson_corn <- read.csv("data/thompson_corn.csv")
+```
+
+Build and compare:
+
+- Full: `yield ~ rain6 + rain7 + temp6 + temp7`
+- Reduced candidate: drop one predictor you think is least useful
+
+Tasks:
+
+1. Fit both models.
+2. Compare model summaries and fit metrics (`r.squared`, `adj.r.squared`, `sigma`, `AIC`).
+3. Run nested `anova()`.
+4. Compare AIC.
+5. (Optional) Run the same 80/20 held-out RMSE check.
+
+```{r}
+# your code here
+```
+
+Final prompt (write 4-6 sentences):
+
+Defend your final model for a real agronomy report. Your explanation should
+include statistical evidence and biological reasoning.

@@ -1,0 +1,150 @@
+---
+title: "Exercise - Nonlinear Regression"
+output: html_document
+---
+
+# Introduction
+
+In this exercise, you will fit two nonlinear models used constantly in agronomy:
+
+- linear-plateau (`SSlinp`) for nutrient response
+- logistic (`SSlogis`) for growth curves
+
+Key idea: nonlinear models are worth the extra effort when they match biology
+and give parameters you can actually use.
+
+# Case Study 1: Nutrient Response (Linear-Plateau)
+
+```{r}
+install.packages('nlraa')
+```
+
+
+```{r}
+library(ggplot2)
+library(nlraa)
+
+corn_n <- read.csv("data/corn_nrate_mono.csv")
+head(corn_n)
+```
+
+Plot first:
+
+```{r}
+ggplot(corn_n, aes(x = n_rate, y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  labs(x = "N rate", y = "Yield") +
+  theme_bw()
+```
+
+Fit linear-plateau model:
+
+```{r}
+model_linp <- nls(yield ~ SSlinp(n_rate, a, b, xs), data = corn_n)
+summary(model_linp)
+```
+
+Parameter intuition:
+
+- `a`: intercept (yield at zero N)
+- `b`: slope before the join point
+- `xs`: join point (the N rate where yield stops responding)
+
+Create predicted curve:
+
+```{r}
+grid_n <- data.frame(n_rate = seq(min(corn_n$n_rate), max(corn_n$n_rate), length.out = 200))
+grid_n$pred <- predict(model_linp, newdata = grid_n)
+
+ggplot(corn_n, aes(x = n_rate, y = yield)) +
+  geom_point(pch = 21, size = 2) +
+  geom_line(data = grid_n, aes(y = pred), color = "steelblue", linewidth = 1) +
+  labs(x = "N rate", y = "Yield") +
+  theme_bw()
+```
+
+Pause and reflect:
+
+- Why is `xs` often more actionable than a quadratic coefficient?
+- What management recommendation can you make from this curve?
+
+# Case Study 2: Logistic Growth
+
+```{r}
+soy_tdm <- read.csv("data/soybean_dae_tdm_logis.csv")
+head(soy_tdm)
+```
+
+Plot first:
+
+```{r}
+ggplot(soy_tdm, aes(x = dae, y = tdm)) +
+  geom_point(pch = 21, size = 2) +
+  labs(x = "Days after emergence", y = "Total dry matter") +
+  theme_bw()
+```
+
+Fit logistic model:
+
+```{r}
+model_logis <- nls(tdm ~ SSlogis(dae, Asym, xmid, scal), data = soy_tdm)
+summary(model_logis)
+```
+
+Parameter intuition:
+
+- `Asym`: maximum biomass
+- `xmid`: day of fastest growth
+- `scal`: curve steepness
+
+Predicted curve:
+
+```{r}
+grid_dae <- data.frame(dae = seq(min(soy_tdm$dae), max(soy_tdm$dae), length.out = 200))
+grid_dae$pred <- predict(model_logis, newdata = grid_dae)
+
+ggplot(soy_tdm, aes(x = dae, y = tdm)) +
+  geom_point(pch = 21, size = 2) +
+  geom_line(data = grid_dae, aes(y = pred), color = "darkgreen", linewidth = 1) +
+  labs(x = "Days after emergence", y = "Total dry matter") +
+  theme_bw()
+```
+
+# Practice 1: Ryegrass and Soil P (Linear-Plateau)
+
+```{r}
+ryegrass <- read.csv("data/ryegrass_soil_p_mono.csv")
+head(ryegrass)
+```
+
+Tasks:
+
+1. Plot `dm` vs `soil_p`.
+2. Fit `nls(dm ~ SSlinp(soil_p, a, b, xs), data = ryegrass)`.
+3. Build a prediction grid for `soil_p`.
+4. Plot observed points + fitted curve.
+5. Interpret `xs` agronomically.
+
+```{r}
+# your code here
+```
+
+# Practice 2: Aspergillus Growth (Logistic)
+
+```{r}
+aspergillus <- read.csv("data/aspergillus_hours_density_logist.csv")
+head(aspergillus)
+```
+
+Tasks:
+
+1. Plot `log_density` vs `hours`.
+2. Fit logistic model with `SSlogis`.
+3. Predict on a dense `hours` grid.
+4. Plot observed points + fitted curve.
+5. Interpret `xmid` in biological terms.
+
+```{r}
+# your code here
+```
+
