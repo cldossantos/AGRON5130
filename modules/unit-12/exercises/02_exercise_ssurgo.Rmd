@@ -1,0 +1,354 @@
+---
+title: "Exercise: SSURGO"
+output: html_document
+---
+
+# Introduction
+In this lesson, we saw how SSURGO can add soil
+context to yield maps.
+
+This file is a guided demonstration. The goal is
+to connect yield data to SSURGO soil polygons,
+then ask: do soil types explain yield differences?
+
+We start by loading the field yield shapefile.
+
+```{r}
+library(sf)
+
+field <- st_read("data/yield shape.shp", quiet = TRUE)
+head(field)
+dim(field)
+```
+
+Before going further, check the CRS. Every spatial
+analysis should start here. It determines whether
+distances and areas are meaningful.
+
+```{r}
+st_crs(field)
+st_is_longlat(field)
+```
+
+If `st_is_longlat()` returns `TRUE`, coordinates are
+in degrees. We will need to reproject before any
+distance-based operation.
+
+
+## Quick Yield Map
+
+First, make a simple yield map with base plotting.
+
+```{r}
+plot(field["Yld_Vol_Dr"], pch = 16, cex = 0.5,
+     pal = function(n){hcl.colors(n, 'Temps', rev = TRUE)},
+     breaks = 'quantile',
+     main = "Yield Map")
+```
+
+
+## Load SSURGO Tables
+
+Now pull SSURGO tables directly using
+`apsimx::get_ssurgo_tables()`.
+
+We create a field polygon from yield points and
+use it as the area of interest.
+
+```{r}
+library(apsimx)
+
+field_poly <- st_convex_hull(st_union(field))
+plot(field_poly)
+field_poly <- st_transform(field_poly, 4326)
+field_poly <- st_as_sf(field_poly)
+
+soil_tables <- get_ssurgo_tables(aoi = field_poly)
+names(soil_tables)
+```
+
+
+## Explore the Spatial Layer
+
+`get_ssurgo_tables()` returns a list. One element is
+`mapunit.shp`, the actual spatial polygons for each
+map unit. Let's look at it first before touching any
+attributes.
+
+```{r}
+mapunit_shp <- soil_tables$mapunit.shp
+class(mapunit_shp)
+nrow(mapunit_shp)
+head(mapunit_shp)
+```
+
+Before doing anything with the polygons, check
+that they're valid. Invalid geometries (self-
+intersecting rings, unclosed boundaries) will cause
+silent failures in spatial operations.
+
+```{r}
+st_is_valid(mapunit_shp)
+
+# If any are FALSE, repair them
+mapunit_shp <- st_make_valid(mapunit_shp)
+```
+
+This might be a no-op here, but get in the habit.
+you will hit invalid geometries in real data.
+
+Each row is one map unit polygon. The only attribute
+here is `mukey`, a unique ID that links polygons to
+the tabular SSURGO tables.
+
+Plot the raw polygons to see how the field is divided:
+
+```{r}
+# Reproject field boundary to match mapunit CRS for overlay
+field_poly_match <- st_transform(field_poly, st_crs(mapunit_shp))
+
+plot(st_geometry(mapunit_shp), border = "black", lwd = 1.5,
+     main = "SSURGO Map Unit Polygons")
+
+plot(st_geometry(field_poly_match), border = "firebrick",
+     lwd = 2,
+     add = TRUE)
+
+legend("topright", legend = c("Map units", "Field boundary"),
+       col = c("black", "firebrick"), lwd = c(1.5, 2), bty = "n")
+```
+
+How many distinct map units are there, and what are
+they called?
+
+```{r}
+mapunit_names <- soil_tables$mapunit[, c("mukey", "muname")]
+mapunit_names
+```
+
+Note the coarse resolution: a handful of polygons
+covers the entire field. Yield monitor data may have
+thousands of points at sub-meter density; SSURGO
+rarely has more than 5–10 polygons for a typical
+farm field.
+
+Think about what this means: many yield points will
+fall inside the same polygon and share identical
+SSURGO values. All within-polygon variability in
+yield is invisible to SSURGO.
+
+## Add Map Unit Labels to the Map
+
+We can label each polygon by name. First get centroids:
+
+```{r}
+centroids <- st_centroid(mapunit_shp)
+coords <- st_coordinates(centroids)
+labels <- mapunit_names$muname[match(mapunit_shp$mukey, mapunit_names$mukey)]
+
+plot(st_geometry(mapunit_shp), border = "black", lwd = 1.5,
+     main = "Map Units: Named")
+text(coords[, 1], coords[, 2], labels = labels,
+     cex = 0.6, col = "navy")
+```
+
+Note: a centroid can fall outside its own polygon
+if the shape is irregular or concave. That's fine
+for labels, but never use it instead of an actual
+point-in-polygon test in analysis.
+
+Each name typically includes the soil series and slope
+class (e.g., "Tama silty clay loam, 2–5%").
+
+## Build a Soil Spatial Layer
+
+SSURGO stores data across three tables, so we need
+to pick one representative value per map unit and
+then merge it back to the spatial layer.
+
+We do this in three steps.
+
+**Step 1:** Keep only the dominant component per
+map unit (there can be multiple soil types within one
+map unit; we take the one with the largest `comppct.r`):
+
+```{r}
+component <- soil_tables$component[, c("mukey", "cokey", "comppct.r")]
+names(component)[3] <- "comppct"
+component
+component <- component[order(component$mukey, -component$comppct), ]
+component <- component[!duplicated(component$mukey), ]
+component
+nrow(component)
+head(component)
+```
+
+**Step 2:** Keep topsoil horizon values (lowest
+`hzdept.r` = shallowest depth) for each component:
+
+```{r}
+chorizon <- soil_tables$chorizon[, c("cokey", "hzdept.r",
+                                     "om.r", "claytotal.r",
+                                     "silttotal.r", "sandtotal.r",
+                                     "cec7.r", "ph1to1h2o.r",
+                                     "awc.r", "ksat.r",
+                                     "dbthirdbar.r")]
+names(chorizon)[2] <- "hzdept"
+chorizon
+chorizon <- chorizon[order(chorizon$cokey, chorizon$hzdept), ]
+chorizon <- chorizon[!duplicated(chorizon$cokey), ]
+nrow(chorizon)
+head(chorizon)
+```
+
+**Step 3:** Merge everything and attach to the spatial
+polygons:
+
+```{r}
+soil_data <- merge(mapunit_names, component, by = "mukey", all.x = TRUE)
+soil_data <- merge(soil_data, chorizon, by = "cokey", all.x = TRUE)
+
+complete_soil_data <- merge(mapunit_shp, soil_data, by = "mukey", all.x = TRUE)
+complete_soil_data
+complete_soil_data <- st_transform(complete_soil_data, 4326)
+
+head(complete_soil_data[, c("muname", "comppct", "om.r", "claytotal.r")])
+```
+
+
+## Map SSURGO Variables
+
+### Organic Matter
+
+```{r}
+plot(complete_soil_data["om.r"],
+     border = "grey60",
+     main = "SSURGO Organic Matter (%)")
+```
+
+### Clay Content
+
+Use the same pattern as above, just swap the column:
+
+```{r}
+plot(complete_soil_data["claytotal.r"],
+     border = "grey60",
+     main = "SSURGO Clay (%)")
+```
+
+
+## Match Yield and Soil
+
+Now we connect the two datasets. We use `st_within`
+as the join predicate: each yield point is matched
+to the polygon that completely contains it.
+
+```{r}
+field <- st_transform(field, st_crs(complete_soil_data))
+yield_soil <- st_join(field, complete_soil_data, join = st_within)
+
+head(yield_soil[, c("Yld_Vol_Dr", "mukey", "muname", "om.r", "claytotal.r")])
+```
+
+How many yield points fall in each map unit?
+
+```{r}
+table(yield_soil$mukey)
+```
+
+Do the counts look equal? Unequal point density
+matters. Your average from 50 points is less
+certain than your average from 5,000.
+
+Each yield point now carries `mukey`, `muname`, and
+soil properties alongside its yield value.
+
+
+## Aggregate Yield by Soil Map Unit
+
+SSURGO is coarse, so many yield points pile into
+the same soil polygon. We can average the points
+within each map unit. Use `mukey` (the unique ID)
+instead of `muname` (the label). Names can
+repeat across different surveys.
+
+```{r}
+yield_by_mu <- aggregate(Yld_Vol_Dr ~ mukey,
+                         data = yield_soil,
+                         FUN = function(x) mean(x, na.rm = TRUE))
+yield_by_mu
+```
+
+Now stick those averages back on the soil map. Join
+by `mukey`, so the legend still has the soil names:
+
+```{r}
+soil_yield <- merge(complete_soil_data, yield_by_mu,
+                    by = "mukey", all.x = TRUE)
+
+plot(soil_yield["Yld_Vol_Dr"],
+     border = "grey60",
+     main = "Average Yield by Soil Map Unit")
+```
+
+**Interpret the map.** Consider:
+
+- Which map units have the highest average yield?
+- Are the differences between map units large or
+  small relative to total yield variability?
+- Does soil type seem to explain most of the yield
+  pattern, or are there within-polygon differences
+  that SSURGO misses entirely?
+- If SSURGO fully explained yield, what spatial
+  pattern would you expect to see? Would yield be
+  uniform within each polygon, with sharp changes
+  at polygon boundaries?
+
+
+## Within-Unit Variability
+
+The average yield per soil map unit tells you
+whether soil types differ on average. But SSURGO
+is coarse. Means hide all the yield variability
+*inside* each polygon. Add the standard deviation:
+
+```{r}
+yield_sd_by_mu <- aggregate(Yld_Vol_Dr ~ mukey,
+                            data = yield_soil,
+                            FUN = function(x) sd(x, na.rm = TRUE))
+yield_sd_by_mu
+```
+
+Consider:
+
+- Is within-unit variability large compared to the
+  between-unit differences you just mapped?
+- If so, what does that tell you about SSURGO's
+  ability to explain field-level yield patterns?
+
+
+## Practice
+
+Use the same pattern as the clay plot above to map
+one or more of the following. Choose the ones that
+show the most variation across map units:
+
+- `silttotal.r`: silt content (%)
+- `sandtotal.r`: sand content (%)
+- `cec7.r`: cation exchange capacity (cmol/kg)
+- `ph1to1h2o.r`: soil pH
+- `awc.r`: available water capacity (cm/cm)
+- `ksat.r`: saturated hydraulic conductivity (µm/s)
+- `dbthirdbar.r`: bulk density at field capacity (g/cm³)
+
+Template:
+
+```{r}
+plot(complete_soil_data["silttotal.r"],
+     border = "grey60",
+     main = "Available Water Capacity")
+```
+
+
+
+

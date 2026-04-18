@@ -29,6 +29,6 @@ Agronomy degree program.
 | Week 11: Mar 30 - Apr 03 | Transformations and Generalized Linear Models |done|
 | Week 12: Apr 6 - 10 | Correlation and Simple Regression |done|
 | Week 13: Apr 13 - 17 | Nonlinear Relationships and Multiple Linear Regression |done|
-| Week 14: Apr 20 - 24 | Spatial Statistics ||
+| Week 14: Apr 20 - 24 | Spatial Statistics |done|
 | Week 15: Apr 27 - May 1 | Machine Learning ||
 | Week 16: May 4 - May 8 | Putting it All Together ||

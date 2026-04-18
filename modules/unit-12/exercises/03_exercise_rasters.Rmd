@@ -1,0 +1,292 @@
+---
+title: "Exercise: Rasters"
+output: html_document
+---
+
+# Introduction
+In the lecture, we saw that rasters are grids:
+each cell holds one value. In this exercise,
+you'll build a raster from point data using kriging,
+then turn it into a management map.
+
+# Case Study: Soil Test Data
+You'll build a lime recommendation map from
+data collected in Minnesota.
+
+
+## Load and Filter Data
+```{r}
+library(sf)
+library(gstat)
+library(stars)
+
+
+point_data <- st_read("data/Folie N & SE_grid_sample.shp", quiet = TRUE)
+head(point_data)
+```
+
+Each row is one sampled location. They're
+POINT geometries.
+
+Our second shapefile describes the field boundary.
+Without this boundary, we would not know the shape
+or spatial extent of our raster.
+
+```{r}
+boundary <- st_read("data/Folie N &SE_boundary.shp", quiet = TRUE)
+
+head(boundary)
+```
+
+The boundary is a `POLYGON` layer with one row.
+
+Now pull out buffer pH (`Bph`):
+
+```{r}
+selected_data <- point_data[point_data$attribute == "Bph", ]
+```
+
+Before interpolating, spot-check where the points
+are with a quick map.
+
+```{r}
+plot(st_geometry(boundary), col = "grey95", border = "grey70", reset = FALSE)
+plot(st_geometry(selected_data), add = TRUE, pch = 16, cex = 0.8, col = "steelblue")
+title("Buffer pH Sampling Points")
+```
+
+
+## Build a Grid
+To make a raster, first create a grid template,
+then clip it to the field boundary.
+
+```{r}
+boundary <- st_transform(boundary, 3857)
+selected_data <- st_transform(selected_data, 3857)
+
+st_bbox(boundary)
+```
+
+Build and crop the grid:
+
+```{r}
+grd <- st_as_stars(st_bbox(boundary),
+                   dx = 10,
+                   dy = 10)
+plot(grd)
+grd <- st_crop(grd, boundary)
+plot(grd)
+```
+
+Plot the grid template.
+```{r}
+plot(st_geometry(boundary), col = "grey95", border = "black", reset = FALSE)
+plot(st_geometry(st_as_sf(grd)), add = TRUE, border = "black", col = NA)
+title("Grid Clipped to Field Boundary")
+```
+Cells are tiny, so you won't see them clearly, but
+you can see the grid matches the field footprint.
+
+## Build the Semivariogram
+Three steps:
+
+1) Calculate empirical semivariance (`variogram()`).
+2) Fit a model (`fit.variogram()`).
+3) Plot together to check the fit.
+
+```{r}
+
+v <- variogram(measure ~ 1, selected_data)
+v
+
+# "Sph" is the spherical variogram model.
+m <- fit.variogram(v, vgm("Sph"))
+plot(v, model = m)
+```
+Good if the model tracks the empirical points
+before you move to kriging.
+
+## Kriging
+Kriging uses the variogram to estimate values for
+the unsampled grid cells.
+
+`krige()` needs four things:
+
+1) formula (`measure ~ 1`)
+2) point data (`selected_data`)
+3) prediction grid (`grd`)
+4) variogram model (`m`)
+
+
+```{r}
+kriged_data <- krige(formula = measure ~ 1,
+                     selected_data, 
+                     grd, 
+                     model = m)
+```
+
+The predicted surface is the first layer.
+
+```{r}
+finished_data <- kriged_data[1]
+```
+
+## Mapping Kriged Data
+Plot the interpolated buffer pH surface.
+
+```{r}
+plot(finished_data["var1.pred"], reset = FALSE,
+    col = hcl.colors(12, "RdYlGn"), main = "Predicted Buffer pH (Kriging)")
+plot(st_geometry(boundary), add = TRUE, border = "black", col = NA, lwd = 1)
+plot(st_geometry(selected_data), add = TRUE, pch = 16, cex = 0.5, col = "grey20")
+```
+
+Warmer colors = higher predicted values. The
+boundary and points let you compare predictions
+against your sample pattern.
+
+## Building the Recommendation
+
+Make a lime rate from interpolated buffer pH.
+University of Minnesota guidance:
+
+$$rate = 37000 - bpH \times 5000$$
+
+https://extension.umn.edu/liming/lime-needs-minnesota
+
+Predicted values are in `var1.pred`.
+
+```{r}
+finished_data$rec <- (37000 - finished_data$var1.pred * 5000)
+```
+
+Set rates to zero where buffer pH is high (above
+6.8, which means the recommendation falls below
+3000 lb/ac):
+
+```{r}
+finished_data$rec <- ifelse(finished_data$rec < 3000, 0, finished_data$rec)
+```
+
+## Mapping the Recommendation
+Plot the recommendation surface.
+
+```{r}
+plot(finished_data["rec"], reset = FALSE,
+    col = hcl.colors(12, "RdYlGn"), main = "Recommended Lime Rate")
+plot(st_geometry(boundary), add = TRUE, border = "black", col = NA, lwd = 1)
+```
+
+This converts predicted buffer pH into action:
+higher zones get lime applied.
+
+# Practice 1
+Build a soil K raster from the same field.
+
+1) Change to `K`.
+```{r}
+selected_data <- point_data[point_data$attribute == "K", ]
+
+boundary <- st_transform(boundary, 3857)
+selected_data <- st_transform(selected_data, 3857)
+```
+
+2) Create the raster framework.
+```{r}
+grd <- st_as_stars(st_bbox(boundary))
+grd <- st_crop(grd, boundary)
+
+```
+
+3) Build and inspect the variogram.
+```{r}
+v <- variogram(measure ~ 1, selected_data)
+m <- fit.variogram(v, vgm("Sph"))
+plot(v, model = m)
+```
+
+4) Krige and extract predicted values.
+```{r}
+kriged_data <- gstat::krige(formula = measure ~ 1, selected_data, grd, model = m)
+
+finished_data <- kriged_data[1]
+```
+
+5) Map soil K values.
+```{r}
+plot(finished_data["var1.pred"], reset = FALSE,
+    col = hcl.colors(12, "RdYlGn"), main = "Predicted Soil K (Kriging)")
+plot(st_geometry(boundary), add = TRUE, border = "black", col = NA, lwd = 1)
+plot(st_geometry(selected_data), add = TRUE, pch = 16, cex = 0.5, col = "grey20")
+```
+
+Map reading tip: compare high and low prediction
+zones against sample locations.
+
+6) Calculate K recommendation rates for a 200 bu/ac
+yield goal.
+
+Use: K recommendation = $(1.12 - 0.0056 \times K) \times 200$
+
+Set to zero where K > 200 ppm:
+
+```{r}
+finished_data$rec <- (1.12 - 0.0056 * finished_data$var1.pred) * 200
+finished_data$rec <- ifelse(finished_data$var1.pred > 200, 0, finished_data$rec)
+```
+
+7) Plot recommended rates.
+```{r}
+plot(finished_data["rec"], reset = FALSE,
+    col = hcl.colors(12, "RdYlGn"), main = "Recommended K Rate")
+plot(st_geometry(boundary), add = TRUE, border = "black", col = NA, lwd = 1)
+```
+
+Map reading tip: this map shows where K
+application is expected to be most justified.
+
+
+
+
+# Practice 2
+Build a pH raster. Same process, just change
+`selected_data` to `Ph`. No recommendation
+layer needed.
+
+1) Filter for pH.
+```{r}
+selected_data <- point_data[point_data$attribute == "Ph", ]
+selected_data <- st_transform(selected_data, 3857)
+```
+
+2) Build grid.
+```{r}
+grd <- st_as_stars(st_bbox(boundary))
+grd <- st_crop(grd, boundary)
+```
+
+3) Variogram.
+```{r}
+v <- variogram(measure ~ 1, selected_data)
+m <- fit.variogram(v, vgm("Sph"))
+plot(v, model = m)
+```
+
+4) Krige and extract predicted values.
+```{r}
+kriged_data <- gstat::krige(formula = measure ~ 1, selected_data, grd, model = m)
+
+finished_data <- kriged_data[1]
+```
+
+5) Map soil pH values.
+```{r}
+plot(finished_data["var1.pred"], reset = FALSE,
+    col = hcl.colors(12, "RdYlGn"), main = "Predicted Soil pH (Kriging)")
+plot(st_geometry(boundary), add = TRUE, border = "black", col = NA, lwd = 1)
+plot(st_geometry(selected_data), add = TRUE, pch = 16, cex = 0.5, col = "grey20")
+```
+
+Map reading tip: this is a predicted surface, not
+direct observations at every location.
+

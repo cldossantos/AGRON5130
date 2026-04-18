@@ -25,8 +25,6 @@ You will complete two parts:
 Submit a knitted HTML/PDF generated from your R
 Markdown file to Canvas.
 
-**Total: 15 points**
-
 
 
 
@@ -50,6 +48,8 @@ Read in the SSURGO polygon layer
 (`data/soil_tests.shp`).
 
 ```{r}
+ssurgo <- read_sf('./data/sample-ssurgo.shp')
+soil <- read_sf('./data/soil_tests.shp')
 ```
 
 For each dataset, report:
@@ -70,6 +70,8 @@ Transform both datasets to the same projected CRS
 (use 32615 for UTM zone 15N).
 
 ```{r}
+ssurgo <- st_transform(ssurgo, 32615)
+soil <- st_transform(soil, 32615)
 ```
 
 Make a map showing both layers together. Use
@@ -86,6 +88,8 @@ attributes (for example `mukey`, `muname`, `om_r`)
 to each soil test point.
 
 ```{r}
+soil_b <- st_join(soil, ssurgo, join = st_within)
+soil_b
 ```
 
 
@@ -99,6 +103,9 @@ and attribute (use `aggregate()`).
 Include `mukey` in the grouping variables.
 
 ```{r}
+aggregate(measure ~ mukey + attribute,
+          soil_b,
+          FUN = mean)
 ```
 
 
@@ -118,6 +125,15 @@ has a 10 m resolution using `st_as_stars()` and
 Plot your empty grid.
 
 ```{r}
+boundary <- st_read('./data/boundary.shp')
+boundary <- st_transform(boundary, 32615)
+
+grd <- st_as_stars(st_bbox(boundary), 
+                   dx = 10,
+                   dy = 10)
+
+grd <- st_crop(grd, boundary)
+plot(grd)
 ```
 
 
@@ -132,7 +148,13 @@ Compute the empirical variogram with `variogram()`
 and plot it.
 
 ```{r}
+soil$attribute |> unique()
 
+# Example: select pH
+selected <- soil[soil$attribute == "P_bray", ]
+v <- variogram(measure ~ 1, selected)
+v
+plot(v)
 ```
 
 
@@ -145,6 +167,9 @@ spherical model (`"Sph"`) with `fit.variogram()` and
 plot empirical + fitted variogram together.
 
 ```{r}
+m <- fit.variogram(v, vgm("Sph"))
+m
+plot(v, model = m)
 ```
 
 
@@ -157,6 +182,11 @@ Using the fitted model from Question 7, run
 surface (`var1.pred`).
 
 ```{r}
+kr <- krige(measure ~ 1, selected, grd, model = m)
+
+plot(kr["var1.pred"])
+plot(st_geometry(boundary), add = TRUE, border = "black", col = NA, lwd = 1)
+plot(st_geometry(selected), add = TRUE, pch = 16, cex = 0.5, col = "grey20")
 ```
 
 

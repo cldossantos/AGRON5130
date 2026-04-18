@@ -1,0 +1,131 @@
+---
+title: "Exercise: Shapefiles"
+output: html_document
+---
+
+
+## Setup
+
+If you haven't already, install the required packages:
+
+```{r, eval=FALSE}
+install.packages("sf")
+install.packages("apsimx")
+install.packages("gstat")
+install.packages("stars")
+install.packages("soilDB")
+install.packages("spData")
+```
+
+These are only needed once. After installation, you can comment out or delete this chunk.
+
+# Introduction
+If you download data from a tractor,
+applicator, or combine, it will often be in
+shapefile format.
+
+A shapefile is usually bundled as multiple files
+with the same name and different extensions (for
+example `.dbf`, `.prj`, `.shp`, and `.shx`). The
+`.prj` file is especially important because it
+stores projection/CRS information.
+
+# Case Study
+We will work with another soil test shapefile from Minnesota.
+
+```{r}
+library(sf)
+
+soil_test_data <- st_read("data/Burnholdt_grid_sample.shp", quiet = TRUE)
+head(soil_test_data)
+```
+
+Always inspect geometry before analysis.
+
+Some layers use `POINT` geometry (single location
+per record), while others use `POLYGON` geometry.
+That determines what kind of plot and operations
+make sense.
+
+Confirm geometry and CRS:
+
+```{r}
+unique(st_geometry_type(soil_test_data))
+st_crs(soil_test_data)
+```
+
+Now make CRS actionable. If data are in
+longitude/latitude, transform them to a projected
+CRS before analysis.
+
+```{r}
+st_is_longlat(soil_test_data)
+
+# Use a projected CRS for local field analysis.
+soil_test_data <- st_transform(soil_test_data, 32615)
+st_crs(soil_test_data)
+```
+
+In this exercise, we will map soil organic matter
+(`attribute == "Om"`).
+
+```{r}
+unique(soil_test_data$attribute)
+single_attribute_data <- subset(soil_test_data, attribute == 'Om')
+```
+
+Check a few rows:
+
+```{r}
+head(single_attribute_data)
+```
+
+Now create a base map using `plot()`.
+
+```{r}
+plot(st_geometry(single_attribute_data),
+     pch = 16, cex = 1,
+     col = "grey40", main = "Soil OM Sampling Points")
+```
+
+To color points by OM values, plot the `measure`
+column directly. `sf` handles the color scale and
+legend automatically.
+
+```{r}
+plot(single_attribute_data["measure"], 
+     pch = 16, cex = 0.8,
+     main = "Soil Organic Matter (OM)")
+```
+
+
+
+# Practice
+Using the same workflow, map another soil
+attribute.
+
+Run this to see available attributes:
+
+```{r}
+unique(soil_test_data$attribute)
+```
+
+Choose one attribute (for example `P`, `K`, or
+`Ph`) and complete the steps below:
+
+1) Filter rows for your selected attribute.
+2) Plot the `measure` column directly using `sf`'s
+   default method.
+
+```{r}
+practice_data <- soil_test_data[soil_test_data$attribute == "Ph", ]
+
+plot(practice_data["measure"], pch = 16, cex = 0.8,
+     main = "Practice Map")
+```
+
+After creating your map, answer:
+
+Where are the highest values located?
+Do you see any spatial clustering?
+If management was uniform, what might explain this pattern?
