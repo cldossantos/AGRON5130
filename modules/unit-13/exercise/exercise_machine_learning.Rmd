@@ -1,0 +1,298 @@
+---
+title: "Exercise: Machine Learning for Canopy Classification"
+output: html_document
+---
+
+# Introduction
+
+In this exercise, you'll get hands-on with the
+same canopy/soil classification workflow we
+discussed in lecture. We'll use real drone imagery
+and labeled data. The goal: see how simple rules
+and machine learning models work in practice, and
+what happens when you try to generalize.
+
+Here's what you'll do:
+
+- Explore the structure of multispectral raster data
+- Try a simple ExG threshold rule
+- See how well it generalizes
+- Train and test a random forest model
+- Compare results and reflect on what you find
+
+
+# Installing relevant libraries
+
+In this module, we will introduce a new library.
+To fit random forest models, we will use the
+`randomForest` library. Let's begin by intalling
+it.
+
+```{r, eval=FALSE}
+install.packages('randomForest')
+```
+
+
+# 1. Load and Explore the Data
+
+Let's start by loading the libraries you'll need.
+These handle rasters, vectors, and plotting. If
+you get an error, check that the package is
+installed.
+
+```{r}
+library(stars)
+library(sf)
+library(ggplot2)
+```
+
+
+Now, load the first flight image. This is a
+multispectral raster, each pixel has several bands
+(not just RGB).
+
+```{r}
+img_first <- read_stars("data/2023-07-06_resampled.tif")
+```
+
+
+Let's see what the image looks like in color.
+We'll make an RGB composite and plot it. Does it
+look like a field?
+
+```{r}
+img_rgb <- st_rgb(img_first[,,,c(3,2,1)], stretch = TRUE)
+plot(img_rgb, main = "First Flight Image (RGB)")
+```
+
+
+Take a look at the structure of the raster. How
+many bands? What are the dimensions?
+
+```{r}
+st_dimensions(img_first)
+```
+
+# 2. Compute and Visualize ExG
+
+Next, let's compute the Excess Green (ExG) index.
+This is a quick way to highlight green vegetation.
+The formula is simple: $2G - R - B$.
+
+```{r}
+exg <- st_apply(img_first, 
+                MARGIN = c("x", "y"), 
+                FUN = function(bands) bands[2] * 2 - bands[1] - bands[3])
+```
+
+
+Plot the ExG surface. Where do you see the highest
+values? Do they match where you expect canopy?
+
+```{r}
+plot(exg,
+     main = "Excess Green (ExG) across the field", 
+     col = function(n) hcl.colors(n, 'Greens', rev = TRUE))
+```
+
+
+Now, plot a histogram of ExG values. This helps
+you pick a threshold to separate canopy from soil.
+Where would you draw the line?
+
+```{r}
+exg_vals <- as.vector(exg[[1]])
+hist(exg_vals, breaks = 80, col = "darkgreen", border = "white", main = "Distribution of ExG Values", xlab = "ExG Value")
+```
+
+# 3. Apply ExG Threshold and Evaluate
+
+Pick a threshold for ExG. Try 0.035 to start. This
+will be your rule: above = canopy, below = soil.
+
+```{r}
+binary_exg <- exg[[1]] > 0.035
+```
+
+
+Plot the result. Do the canopy and soil regions
+look reasonable?
+
+```{r}
+plot(st_as_stars(binary_exg),
+     col = c('chocolate4', 'darkgreen'),
+     main = "ExG Threshold Classification")
+```
+
+
+Let's see how well this rule works on new data.
+Load the labeled test points for the second
+flight. These are your "ground truth" for
+evaluation.
+
+```{r}
+test_pts <- st_read("data/2023-07-24_testing-set.geoJSON", quiet = TRUE)
+test_pts$class <- factor(test_pts$class, levels = c("0", "1"))
+```
+
+Let's visualize the second flight
+
+```{r}
+img_test <- read_stars("data/2023-07-24_resampled.tif")
+img_rgb2 <- st_rgb(img_test[,,,c(3,2,1)], stretch = TRUE)
+plot(img_rgb2, main = "Second Flight Image (RGB)")
+```
+
+
+Now, compute ExG for the second flight image. This
+is a new date and conditions may have changed. 
+
+```{r}
+exg_test <- st_apply(img_test, 
+                     MARGIN = c("x", "y"),
+                     FUN = function(bands) bands[2] * 2 - bands[1] - bands[3])
+plot(exg_test,
+     main = "Excess Green (ExG) across the field", 
+     col = function(n) hcl.colors(n, 'Greens', rev = TRUE))
+```
+
+
+Apply your threshold to the new image. This gives
+you a prediction for every pixel.
+
+```{r}
+test_pred <- as.numeric(exg_test[[1]] > 0.035)
+pred_raster <- st_as_stars(matrix(test_pred, nrow = dim(exg_test)[1], ncol = dim(exg_test)[2]))
+st_dimensions(pred_raster) <- st_dimensions(exg_test)[1:2]
+st_crs(pred_raster) <- st_crs(exg_test)
+plot(pred_raster,
+     col = c('chocolate4', 'darkgreen'),
+     main = "ExG Threshold Classification")
+```
+
+
+Extract the predicted class at each test point.
+This lets you compare your rule to the ground
+truth.
+
+```{r}
+pred_extract <- st_extract(pred_raster, at = test_pts)
+pred_factor <- factor(ifelse(as.vector(pred_extract[[1]]) == 1, "1", "0"), levels = c("0", "1"))
+```
+
+
+Make a confusion matrix. How many pixels did your
+rule get right? Where did it make mistakes?
+
+```{r}
+conf_mat <- table(Predicted = pred_factor, Observed = test_pts$class)
+print(conf_mat)
+```
+
+# 4. Train a Random Forest Model
+
+Now let's try a machine learning model. Load the
+randomForest library. If you get an error, install
+the package first.
+
+```{r}
+library(randomForest)
+```
+
+
+Load the hand-labeled training points for the
+first flight. These are the pixels you'll use to
+train the model.
+
+```{r}
+train_pts <- st_read("data/2023-07-06_training-set.geoJSON", quiet = TRUE)
+train_pts$class <- factor(train_pts$class, levels = c("0", "1"))
+```
+
+
+Pull out the RGB band values at each training
+point. This is your training data.
+
+```{r}
+train_x <- st_extract(img_first, at = train_pts)
+train_vals <- as.data.frame(train_x[[1]])
+names(train_vals) <- paste0("2023-07-06_resampled.tif.", 1:6)
+train_df <- cbind(st_drop_geometry(train_pts), train_vals)
+train_df <- train_df[complete.cases(train_df), ]
+```
+
+
+Train a random forest model using just the RGB
+bands. This is a classic "supervised learning"
+setup: you give the model examples, it learns a
+rule.
+
+```{r}
+x_cols_rgb <- c("2023-07-06_resampled.tif.1",
+                "2023-07-06_resampled.tif.2",
+                "2023-07-06_resampled.tif.3")
+
+rf_fit_rgb <- randomForest(x = train_df[, x_cols_rgb],
+                           y = train_df$class, 
+                           ntree = 300,
+                           importance = TRUE)
+print(rf_fit_rgb)
+```
+
+# 5. Test the Random Forest Model
+
+Now, let's see how the model does on new data.
+Prepare the RGB bands from the second flight image
+for prediction.
+
+```{r}
+rgb_data_test <- img_test[,,,1:3]
+dims_test <- dim(rgb_data_test)
+pixel_matrix_test <- matrix(NA, nrow = dims_test[1] * dims_test[2], ncol = 3)
+pixel_matrix_test[, 1] <- as.vector(rgb_data_test[[1]][,,1])
+pixel_matrix_test[, 2] <- as.vector(rgb_data_test[[1]][,,2])
+pixel_matrix_test[, 3] <- as.vector(rgb_data_test[[1]][,,3])
+```
+
+
+Use your trained model to predict canopy/soil for
+every pixel in the new image.
+
+```{r}
+pred_vec_test <- predict(rf_fit_rgb, pixel_matrix_test, type = "response")
+pred_numeric_test <- as.numeric(pred_vec_test == "1")
+pred_matrix_test <- matrix(pred_numeric_test,
+                           nrow = dims_test[1], 
+                           ncol = dims_test[2])
+pred_test_rgb <- st_as_stars(pred_matrix_test)
+st_dimensions(pred_test_rgb) <- st_dimensions(rgb_data_test)[1:2]
+st_crs(pred_test_rgb) <- st_crs(rgb_data_test)
+plot(pred_test_rgb,
+     col = c('chocolate4', 'darkgreen'))
+```
+
+
+Extract the predicted class at each test point,
+just like before.
+
+```{r}
+pred_extract <- st_extract(pred_test_rgb, at = test_pts)
+pred_factor_rf <- factor(ifelse(as.vector(pred_extract[[1]]) == 1, "1", "0"), levels = c("0", "1"))
+```
+
+
+Make a confusion matrix. Did the random forest do
+better than your simple rule? Where did it help?
+Where did it still struggle?
+
+```{r}
+conf_mat_rf <- table(Predicted = pred_factor_rf, Observed = test_pts$class)
+print(conf_mat_rf)
+```
+
+# 6. Reflection Questions
+
+- How did the ExG threshold and random forest models compare in accuracy?
+- What are the strengths and weaknesses of each approach?
+- If you wanted to improve the models, what would you try next?
+

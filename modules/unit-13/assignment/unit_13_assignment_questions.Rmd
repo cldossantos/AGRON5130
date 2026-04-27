@@ -1,0 +1,108 @@
+---
+title: "Machine Learning for Canopy Classification"
+subtitle: "AGRON 5130 - Module 13 Assignment"
+author: "YOUR NAME HERE"
+output: pdf_document
+---
+
+# Introduction
+
+The goal of this assignment is to interpret and
+reason through the machine learning workflow from
+Module 13.
+
+You worked through a guided exercise where you:
+
+- applied a simple threshold rule (ExG)
+- evaluated model performance using confusion matrices
+- trained a random forest model
+- tested model generalization across dates
+
+In this assignment, you will **analyze the results
+from that exercise** and explain what they mean.
+
+Submit a knitted PDF/HTML generated from your R
+Markdown file to Canvas.
+
+# Submission Notes
+
+* Answers should be written in complete sentences
+* Support your answers using results from the
+  exercise (confusion matrices, maps, or observed
+  patterns)
+* Focus on reasoning and interpretation, not code
+
+
+# Part 1: Model Evaluation and Interpretation
+
+## Question 1
+
+**3 points**
+
+Using the confusion matrices from the exercise,
+compare the ExG threshold and the random forest
+model on the **second flight (test date)**.
+Describe the overall accuracy from each model (how
+many correct classifications and how many errors)
+
+
+## Question 2
+
+**3 points**
+
+The ExG threshold was chosen using the first
+flight image.
+
+Compare its performance between:
+
+* the first flight (training conditions)
+* the second flight (new conditions)
+
+
+1. Did performance remain stable across dates?
+2. What does this tell you about using a **fixed
+   threshold rule** in practice?
+
+
+## Question 3
+
+**3 points**
+
+The random forest model is more flexible than the
+ExG threshold rule. However, in this case, it did
+not dramatically improve performance.
+
+Provide at least **one reason** why a more
+flexible model might fail to improve
+classification accuracy in this dataset. (Think
+about the data, not just the model.)
+
+## Question 4
+
+**3 points**
+
+Consider how classification errors affect
+agronomic interpretation. Think in terms of how
+canopy coverage is calculated.  Your answer should
+connect model errors to their practical
+consequences.
+
+## Question 5
+
+**3 points**
+
+Propose **one specific improvement** to the
+classification workflow.
+
+Your answer must include:
+
+1. What you would change
+2. Why you think it would improve performance
+3. One potential limitation or tradeoff of your
+   approach
+
+(Examples: different features, different training
+data, different evaluation strategy. Be
+specific, please.)
+
+

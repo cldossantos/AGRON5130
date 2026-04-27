@@ -148,9 +148,7 @@ Compute the empirical variogram with `variogram()`
 and plot it.
 
 ```{r}
-soil$attribute |> unique()
-
-# Example: select pH
+unique(soil$attribute)
 selected <- soil[soil$attribute == "P_bray", ]
 v <- variogram(measure ~ 1, selected)
 v

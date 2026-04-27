@@ -1,0 +1,371 @@
+---
+title: "preparing-data"
+output: html_document
+---
+
+First flight
+
+```{r}
+library(sf)
+library(stars)
+library(ggplot2)
+
+# 1 = blue
+# 2 = green
+# 3 = red
+
+flight <- read_stars('./data/2023-07-06_resampled.tif')
+eus <- st_read('./data/experimental-units.shp')
+
+img_rgb <- st_rgb(flight[,,,1:3],
+                  stretch = TRUE)
+
+
+exg <- st_apply(flight,
+                MARGIN = c('x', 'y'),
+                FUN = function(x){
+                  x[2] * 2 - x[1] - x[3] ## excess green function
+                })
+
+vals <- exg$`2023-07-06_resampled.tif` |> as.vector()
+plot(hist(vals, breaks = 256))
+
+binary <- st_apply(exg, 
+                   MARGIN = c('x', 'y'),
+                   FUN = function(exg){
+                     if (exg > 0.025)
+                       return('1')
+                     else
+                       return('0')
+                   })
+
+plot(binary)
+
+
+
+# generating random points
+
+x.rand <- runif(10000, st_bbox(flight)[1], st_bbox(flight)[3])
+y.rand <- runif(10000, st_bbox(flight)[2], st_bbox(flight)[4])
+rp <- data.frame(x = x.rand, 
+                 y = y.rand)
+rp <- st_as_sf(rp, 
+               coords = c('x', 'y'),
+               crs = st_crs(flight))
+
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_stars(data = binary, alpha = 0.4)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+geom_sf(data  = rp)+
+#  coord_sf(xlim = st_bbox(eus[1,])[c(1,3)],
+#           ylim = st_bbox(eus[1, ])[c(2,4)])+
+  theme_void()
+
+cls <- st_extract(binary, at = rp)
+names(cls)[1] <- 'class'
+cls
+
+cls <- cls[!is.na(cls$class), ]
+row.names(cls) <- NULL
+## reducing size of training and testing sets
+
+set.seed(20260420)
+training.indices <- sample(1:nrow(cls), 
+                           400)
+
+
+training.indices <- unlist(by(cls, cls$class, function(x) as.numeric(sample(row.names(x), 400))))
+
+training.set <- cls[training.indices,]
+
+
+cls <- cls[-training.indices, ]
+row.names(cls) <- NULL
+
+testing.indices <- unlist(by(cls, cls$class, function(x) as.numeric(sample(row.names(x), 400))))
+testing.set <- cls[testing.indices, ]
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+geom_sf(data  = cls[c(training.indices, 
+                      testing.indices), ], aes(col = class))+
+#  coord_sf(xlim = st_bbox(eus[1,])[c(1,3)],
+#           ylim = st_bbox(eus[1, ])[c(2,4)])+
+  theme_void()
+
+
+st_write(training.set, './data/2023-07-06_training-set.geoJSON', append = FALSE)
+st_write(testing.set, './data/2023-07-06_testing-set.geoJSON', append = FALSE)
+```
+
+```{r}
+plot(st_geometry(training.set))
+plot(st_geometry(testing.set), col = 'red', add = TRUE)
+
+```
+
+
+
+
+Second flight
+
+```{r}
+library(sf)
+library(stars)
+library(ggplot2)
+
+# 1 = blue
+# 2 = green
+# 3 = red
+
+flight <- read_stars('./data/2023-07-24_resampled.tif')
+eus <- st_read('./data/experimental-units.shp')
+
+
+img_rgb <- st_rgb(flight[,,,1:3],
+                  stretch = TRUE)
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+#  coord_sf(xlim = st_bbox(eus[1,])[c(1,3)],
+#           ylim = st_bbox(eus[1, ])[c(2,4)])+
+  theme_void()
+
+exg <- st_apply(flight,
+                MARGIN = c('x', 'y'),
+                FUN = function(x){
+                  x[2] * 2 - x[1] - x[3] ## excess green function
+                })
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+geom_stars(data = exg, alpha = 0.5)+
+#  coord_sf(xlim = st_bbox(eus[1,])[c(1,3)],
+#           ylim = st_bbox(eus[1, ])[c(2,4)])+
+  theme_void()
+
+vals <- flight$`2023-07-24_resampled.tif` |> as.vector()
+vals <- vals[vals < 1]
+quantile(vals)
+
+ h <- hist(vals, 
+           breaks = 256,
+           plot = TRUE)
+  p <- h$counts / sum(h$counts)
+  mids <- h$mids
+
+  w0 <- cumsum(p)
+  w1 <- 1 - w0
+  mu <- cumsum(p * mids)
+  mu_t <- sum(p * mids)
+
+  sigma_b2 <- (mu_t * w0 - mu)^2 / (w0 * w1)
+  sigma_b2[!is.finite(sigma_b2)] <- 0
+
+  mids[which.max(sigma_b2)]
+
+binary <- st_apply(exg, 
+                   MARGIN = c('x', 'y'),
+                   FUN = function(exg){
+                     if (exg > 0.015)
+                       return('1')
+                     else
+                       return('0')
+                   })
+
+
+
+
+# generating random points
+
+x.rand <- runif(10000, st_bbox(flight)[1], st_bbox(flight)[3])
+y.rand <- runif(10000, st_bbox(flight)[2], st_bbox(flight)[4])
+rp <- data.frame(x = x.rand, 
+                 y = y.rand)
+rp <- st_as_sf(rp, 
+               coords = c('x', 'y'),
+               crs = st_crs(flight))
+
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_stars(data = binary, alpha = 0.4)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+geom_sf(data  = rp)+
+#  coord_sf(xlim = st_bbox(eus[1,])[c(1,3)],
+#           ylim = st_bbox(eus[1, ])[c(2,4)])+
+  theme_void()
+
+cls <- st_extract(binary, at = rp)
+names(cls)[1] <- 'class'
+cls
+
+cls <- cls[!is.na(cls$class), ]
+row.names(cls) <- NULL
+## reducing size of training and testing sets
+
+set.seed(20260422)
+training.indices <- sample(1:nrow(cls), 
+                           400)
+
+
+training.indices <- unlist(by(cls, cls$class, function(x) as.numeric(sample(row.names(x), 400))))
+
+training.set <- cls[training.indices,]
+
+
+cls <- cls[-training.indices, ]
+row.names(cls) <- NULL
+
+testing.indices <- unlist(by(cls, cls$class, function(x) as.numeric(sample(row.names(x), 400))))
+testing.set <- cls[testing.indices, ]
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+geom_sf(data = cls, aes(col = class))+
+  coord_sf(xlim = st_bbox(eus[8,])[c(1,3)],
+           ylim = st_bbox(eus[8, ])[c(2,4)])+
+  theme_void()
+
+
+st_write(training.set, './data/2023-07-24_training-set.geoJSON', append = FALSE)
+st_write(testing.set, './data/2023-07-24_testing-set.geoJSON', append = FALSE)
+```
+
+
+Third flight
+
+```{r}
+library(sf)
+library(stars)
+library(ggplot2)
+
+# 1 = blue
+# 2 = green
+# 3 = red
+
+flight <- read_stars('./data/2023-08-21_resampled.tif')
+eus <- st_read('./data/experimental-units.shp')
+
+
+img_rgb <- st_rgb(flight[,,,1:3],
+                  stretch = TRUE)
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+#  coord_sf(xlim = st_bbox(eus[1,])[c(1,3)],
+#           ylim = st_bbox(eus[1, ])[c(2,4)])+
+  theme_void()
+
+exg <- st_apply(flight,
+                MARGIN = c('x', 'y'),
+                FUN = function(x){
+                  x[2] * 2 - x[1] - x[3] ## excess green function
+                })
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+geom_stars(data = exg, alpha = 0.5)+
+#  coord_sf(xlim = st_bbox(eus[1,])[c(1,3)],
+#           ylim = st_bbox(eus[1, ])[c(2,4)])+
+  theme_void()
+
+vals <- flight$`2023-08-21_resampled.tif` |> as.vector()
+vals <- vals[vals < 0.5]
+quantile(vals)
+
+ h <- hist(vals, 
+           breaks = 256,
+           plot = TRUE)
+  p <- h$counts / sum(h$counts)
+  mids <- h$mids
+
+  w0 <- cumsum(p)
+  w1 <- 1 - w0
+  mu <- cumsum(p * mids)
+  mu_t <- sum(p * mids)
+
+  sigma_b2 <- (mu_t * w0 - mu)^2 / (w0 * w1)
+  sigma_b2[!is.finite(sigma_b2)] <- 0
+
+  mids[which.max(sigma_b2)]
+
+binary <- st_apply(exg, 
+                   MARGIN = c('x', 'y'),
+                   FUN = function(exg){
+                     if (exg > 0.03)
+                       return('1')
+                     else
+                       return('0')
+                   })
+
+
+
+
+
+# generating random points
+
+x.rand <- runif(50000, st_bbox(flight)[1], st_bbox(flight)[3])
+y.rand <- runif(50000, st_bbox(flight)[2], st_bbox(flight)[4])
+rp <- data.frame(x = x.rand, 
+                 y = y.rand)
+rp <- st_as_sf(rp, 
+               coords = c('x', 'y'),
+               crs = st_crs(flight))
+
+inout <- st_intersects(rp, 
+                       eus)
+#rp <- rp[!is.na(as.numeric(inout)), ]
+
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_stars(data = binary, alpha = 0.4)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+  geom_sf(data = rp)+
+  #coord_sf(xlim = st_bbox(eus[1,])[c(1,3)],
+  #         ylim = st_bbox(eus[1, ])[c(2,4)])+
+  theme_void()
+
+cls <- st_extract(binary, at = rp)
+names(cls)[1] <- 'class'
+cls
+
+cls <- cls[!is.na(cls$class), ]
+row.names(cls) <- NULL
+## reducing size of training and testing sets
+
+set.seed(20260424)
+
+cls$class |> table()
+training.indices <- unlist(by(cls, cls$class, function(x) as.numeric(sample(row.names(x), 400))))
+
+training.set <- cls[training.indices,]
+
+
+cls <- cls[-training.indices, ]
+row.names(cls) <- NULL
+
+testing.indices <- unlist(by(cls, cls$class, function(x) as.numeric(sample(row.names(x), 400))))
+testing.set <- cls[testing.indices, ]
+
+ggplot()+
+geom_stars(data = img_rgb)+
+geom_sf(data = eus, fill = 'transparent', col = 'red')+
+geom_sf(data = cls, aes(col = class))+
+  #coord_sf(xlim = st_bbox(eus[8,])[c(1,3)],
+   #        ylim = st_bbox(eus[8, ])[c(2,4)])+
+  theme_void()
+
+
+st_write(training.set, './data/2023-08-21_training-set.geoJSON', append = FALSE)
+st_write(testing.set, './data/2023-08-21_testing-set.geoJSON', append = FALSE)
+```
