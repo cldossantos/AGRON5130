@@ -1,0 +1,700 @@
+---
+title: "Connecting all modules"
+subtitle: "AGRON 5130 - Module 14"
+author: "Caio dos Santos"
+date: "2026-05-03"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+
+    highlight: tango
+    smooth: false
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(sf)
+library(stars)
+```
+
+# Introduction
+
+Before we start, let me be really clear about what this module is and
+what it is not.
+
+We are not learning a brand-new method here.
+
+This is an integration module.
+
+From Modules 00 to 13, we built statistical reasoning step by step:
+we started with R and data structures, moved through probability,
+sampling, hypothesis testing, ANOVA, regression, spatial data, and
+machine learning. In this final lecture, we connect those pieces into
+one decision workflow that mirrors how agronomic analysis actually
+happens in practice.
+
+That is the whole point of Module 14.
+
+
+# Introduction
+
+I like to think of this lecture as a field-to-decision map.
+
+When real data arrive, we usually do not start by asking, "Which test
+do I run?" We start by asking a different question first:
+
+> What is the agronomic question, what kind of data do I have, and
+> which method gives me an answer that is both statistically valid and
+> biologically meaningful?
+
+That sentence summarizes the entire course.
+
+In Modules 00 and 01, we learned the mechanics: projects, paths,
+scripts, data frames, indexing, and reproducible workflows. From Module
+02 onward, we layered on inference and modeling tools. Now, in Module
+14, we connect all of that around common agronomic scenarios.
+
+Across all modules, the workflow stayed surprisingly consistent:
+
+1. Define the agronomic question.
+1. Understand the data-generating process.
+1. Match method to design and data structure.
+1. Diagnose assumptions and limitations.
+1. Interpret results biologically, not just statistically.
+
+
+# Scenario 1: Field Yield Distribution (Population Summary and Z-Distribution)
+
+Suppose you receive a cleaned yield monitor dataset from one field and
+your first goal is descriptive: summarize the population behavior and
+understand distribution shape.
+
+This takes us right back to:
+
+- Module 01: data loading and structure checks
+- Module 02: probability and normal distribution intuition
+
+What we do first:
+
+1. Inspect distribution shape (symmetry, skewness, tails).
+1. Estimate center and spread (mean, standard deviation).
+1. Ask whether a normal approximation is reasonable for quick
+  probability statements.
+
+If the data are approximately normal, z-scores give a fast way to talk
+about relative position (for example, values above one standard
+deviation from the mean). This is useful for screening and contextual
+interpretation, but at this stage we are still describing data, not
+testing treatment effects.
+
+So the first question is simple: what does this field look like before
+we even think about formal inference?
+
+One important reminder: normality is not a universal requirement for
+all statistics. It is a modeling approximation that can be useful in
+some contexts and unnecessary in others.
+
+```{r scenario1_load, echo=TRUE}
+barley <- read.csv("data/barley_uniformity.csv")
+
+head(barley)
+summary(barley$yield)
+```
+
+Before computing anything formal, I like to inspect the distribution
+shape directly.
+
+When you look at this histogram, ask yourself: would a normal
+approximation be wildly wrong here, or reasonable for a first pass?
+
+```{r scenario1_plot, echo=TRUE}
+hist(barley$yield,
+  col = "grey80",
+  border = "white",
+  main = "Scenario 1: Yield Distribution",
+  xlab = "Yield")
+```
+
+Now we can calculate center and spread, then make one probability
+statement under a normal approximation.
+
+This gives us a fast baseline that helps with scouting thresholds and
+communication with growers.
+
+```{r scenario1_stats, echo=TRUE}
+yield_mean <- mean(barley$yield)
+yield_sd   <- sd(barley$yield)
+
+yield_mean
+yield_sd
+
+z_threshold <- yield_mean + yield_sd
+z_threshold
+
+prob_above_threshold <- 1 - pnorm(z_threshold,
+                                  mean = yield_mean,
+                                  sd = yield_sd)
+prob_above_threshold
+```
+
+At this point, we have a descriptive anchor. Now we shift to what we
+usually face in practice: estimation from a sample, not from a full
+population.
+
+
+# Scenario 2: Yield Estimate (Sampling t-Distribution)
+
+Now imagine we cannot measure every unit in the field and must estimate
+population yield from a sample.
+
+This is the real world of agronomy, right?
+
+Field work is expensive and measurements take time.
+
+This takes us right back to:
+
+- Module 03: sampling variability, standard error, and confidence
+  intervals
+
+The key shift is conceptual: we move from known population summaries to
+uncertainty-aware estimates.
+
+In other words, we are no longer describing everything we observed.
+We are inferring what is plausible in the larger population.
+
+When population standard deviation is unknown (the usual case in
+agronomy), inference uses the $t$-distribution, not the z-distribution.
+This is where the standard error becomes central:
+
+$$SE = \frac{s}{\sqrt{n}}$$
+
+This scenario is the bridge between "describing what I observed" and
+"inferring what is plausible in the population."
+
+```{r scenario2_sample, echo=c(2,3)}
+set.seed(20260502)
+
+yield_sample <- sample(barley$yield, size = 20)
+yield_sample
+```
+
+Once the sample is drawn, we move to the $t$ framework for interval
+estimation.
+
+The key insight is that uncertainty is part of the estimate, not an
+optional appendix.
+
+As you read the output, focus less on the exact endpoints and more on
+the width: wide intervals mean limited precision for management
+decisions.
+
+```{r scenario2_ci, echo=TRUE}
+t_value <- qt(0.975, df = 19)
+sample_mean <- mean(yield_sample)
+sample_sd <- sd(yield_sample)
+se <- sample_sd / sqrt(20)
+
+ci_95 <- sample_mean + c(-1, 1) * t_value * se
+
+ci_95
+```
+
+If this interval were too wide for a decision, the practical response
+is not to force certainty. The practical response is to improve design,
+increase sample size, or collect more informative data.
+
+Notice how this interval is not a statement about individual plants.
+It is a statement about plausible values for the population mean yield.
+
+Now notice what changed as we move to the next scenario.
+In Scenario 2, uncertainty came from estimating one population mean.
+In Scenario 3, uncertainty comes from comparing competing treatments.
+The machinery changes, but the logic does not: estimate signal while
+accounting for variability.
+
+
+# Scenario 3: Side-By-Side (t-Test)
+
+Suppose the question is comparative: did treatment A differ from
+treatment B?
+
+This scenario connects directly to:
+
+- Module 04: two-treatment comparisons and paired logic
+- Module 05: hypotheses and the linear additive model foundation
+
+The first move is to formalize the question as hypotheses. Then we pick
+the test structure that matches design:
+
+- independent groups when units are unrelated
+- paired comparison when units are naturally matched (for example, strip
+  trials in the same field zone)
+
+The goal is not to chase a p-value. The goal is to quantify evidence,
+report uncertainty, and interpret effect size in agronomic language.
+
+So in this first step, we organize the two treatment vectors into a
+paired structure. I like showing this explicitly because students can
+see exactly where each column in the test comes from.
+
+```{r scenario3_prepare, echo=TRUE}
+corn_starter <- read.csv("data/corn_starter.csv")
+head(corn_starter)
+
+treatment_levels <- unique(corn_starter$treatment)
+
+yield_trt_a <- corn_starter$yield[
+  corn_starter$treatment == treatment_levels[1]
+]
+yield_trt_b <- corn_starter$yield[
+  corn_starter$treatment == treatment_levels[2]
+]
+
+paired_data <- data.frame(yield_a = yield_trt_a,
+                          yield_b = yield_trt_b)
+
+paired_data
+```
+
+I usually pause here and compare groups visually before running the
+formal test.
+
+Notice how this protects us from chasing p-values without looking at
+the data pattern first.
+
+```{r scenario3_plot, echo=TRUE}
+boxplot(corn_starter$yield ~ corn_starter$treatment,
+  col = c("grey75", "grey55"),
+  xlab = "Treatment",
+  ylab = "Yield",
+  main = "Scenario 3: Two-Treatment Comparison")
+```
+
+Then we run the paired test and focus on estimate plus uncertainty.
+
+This means effect size and interval are front and center in the
+interpretation.
+
+Before you even read the p-value, ask: is the observed difference large
+enough to matter agronomically?
+
+And this is where agronomic judgment matters: a statistically detectable
+difference can still be agronomically trivial.
+
+```{r scenario3_test, echo=TRUE}
+t.test(paired_data$yield_a,
+  paired_data$yield_b,
+       paired = TRUE)
+```
+
+
+# Scenario 4: Multiple-Treatment Trial (ANOVA in RCBD)
+
+Now expand from two treatments to many treatments.
+
+This is exactly where repeated $t$-tests stop being a good strategy.
+
+This takes us back to:
+
+- Module 06: ANOVA for multiple-treatment trials
+- Module 07: experimental design logic (especially RCBD)
+- Module 08: means separation and communication of results
+
+Once we have multiple treatments, repeated $t$-tests are no longer a
+good strategy. ANOVA gives one coherent framework to compare treatment
+variation against residual variation.
+
+If field heterogeneity is important, RCBD is usually preferable to CRD
+because blocking absorbs known spatial variation before it inflates
+error. After a significant ANOVA, we move to means separation and report
+results transparently with tables/figures and clear group interpretation.
+
+> **Key insight: design and analysis are inseparable.**
+
+Before plotting or modeling, we make sure block and treatment are stored
+as factors. That simple data-type decision controls how R interprets the
+design.
+
+```{r scenario4_prepare, echo=1}
+rcbd <- read.csv("data/rcbd-data.csv")
+rcbd$block <- factor(rcbd$block)
+rcbd$trt <- factor(rcbd$trt)
+```
+
+A quick plot gives us context before the ANOVA table.
+
+```{r scenario4_plot, echo=TRUE}
+boxplot(yield ~ trt,
+  data = rcbd,
+  col = "grey80",
+  xlab = "Treatment",
+  ylab = "Yield",
+  main = "Scenario 4: RCBD Treatment Distributions")
+```
+
+Now we fit the blocked model and inspect treatment means.
+
+Notice what we are doing: we are separating treatment variation from
+block-to-block variation before drawing conclusions.
+
+```{r scenario4_model, echo=TRUE}
+model_rcbd <- aov(yield ~ block + trt, data = rcbd)
+summary(model_rcbd)
+anova(model_rcbd)
+model.tables(model_rcbd, type = "means")
+```
+
+Interpretation checkpoint: if ANOVA does not show evidence of treatment
+differences, we should be careful about jumping into means separation.
+If ANOVA is significant, then post-hoc comparisons become meaningful.
+
+
+# Scenario 5: Cover Crop Species x Termination (Split-Plot ANOVA)
+
+Suppose we need to evaluate more than one factor at once, such as hybrid
+and fungicide, or species and termination method.
+
+This is where interactions become the main story.
+
+This takes us back to:
+
+- Module 07: factorial and split-plot design structures
+- Module 08: post-ANOVA interpretation strategy
+
+At this point, interactions become central.
+
+In practice, this is usually where interpretation gets harder and more
+interesting.
+
+The practical sequence is:
+
+1. Check interaction first.
+1. If interaction is important, interpret simple effects instead of only
+  main effects.
+1. Align interpretation with design structure (whole-plot vs subplot
+  error terms in split-plot settings).
+
+This is where design and analysis are inseparable: if design structure
+is ignored, the test is not just inefficient, it can be wrong.
+
+So first we define each role in the design clearly: block, whole-plot
+unit, species, and termination. Once those are encoded correctly, the
+model can use the right error strata.
+
+```{r scenario5_prepare, echo=1}
+split_dat <- read.csv("data/cover-crop-and-termination-split.csv")
+
+split_dat$block <- factor(split_dat$block)
+split_dat$main_plot <- factor(split_dat$main_plot)
+split_dat$species <- factor(split_dat$species)
+split_dat$termination <- factor(split_dat$termination)
+```
+
+For factorial logic, I prefer to look at interaction shape first.
+
+If lines diverge or cross, we already know a main-effect-only story is
+probably incomplete.
+
+```{r scenario5_plot, echo=TRUE}
+with(split_dat,
+  interaction.plot(x.factor = termination,
+          trace.factor = species,
+          response = yield,
+          xlab = "Termination",
+          ylab = "Mean yield",
+          main = "Scenario 5: Interaction Pattern"))
+```
+
+Then we fit the model that respects the split-plot structure.
+
+In other words, we let the design dictate the error structure.
+
+Factorial structure determines which biological questions we can ask.
+Split-plot structure determines which variability should be used to
+test those questions.
+
+```{r scenario5_model, echo=TRUE}
+model_split <- aov(yield ~ species * termination + Error(block / main_plot),
+                   data = split_dat)
+
+summary(model_split)
+```
+
+When you read this output, start with the interaction term. If
+interaction is important, do not report main effects as if they stand
+alone.
+
+Before moving on, here is the conceptual bridge I want you to keep:
+ANOVA, regression, and many predictive models are part of the same
+broader modeling framework; they mainly differ in the question being
+asked, the predictor structure, and how variability is partitioned.
+
+
+# Scenario 6: Corn Nitrogen Rate-Response (Linear vs Curved Regression)
+
+Now the question changes from "which treatment mean is larger?" to
+"how does response change as input rate changes?"
+
+This takes us back to:
+
+- Module 10: simple regression and association vs direction
+- Module 11: multiple regression and nonlinear forms
+
+For rate-response, a straight line is sometimes adequate in a local
+range, but agronomic processes often show curvature and plateaus.
+
+What this really means is that model fit and biological plausibility
+need to be evaluated together.
+
+This also connects back to Module 10: correlation describes association,
+while regression introduces directional structure by modeling expected
+response conditional on predictors.
+
+So the workflow is:
+
+1. Plot first.
+1. Fit candidate models.
+1. Diagnose residuals and plausibility.
+1. Prefer interpretable forms when decision-making requires actionable
+  parameters (for example, breakpoints/plateaus).
+
+This is also where we reinforce a major course idea: statistical fit
+alone is not enough; biological realism matters.
+
+Before fitting models, we inspect the raw dataset so students can see
+the response scale and predictor range we are working with.
+
+```{r scenario6_load, echo=TRUE}
+nrate <- read.csv("data/corn_nrate_mono.csv")
+head(nrate)
+```
+
+First, we compare candidate model forms numerically.
+
+This gives us a formal comparison before deciding which model story we
+want to tell.
+
+```{r scenario6_models, echo=TRUE}
+model_linear <- lm(yield ~ n_rate, data = nrate)
+model_quadratic <- lm(yield ~ n_rate + I(n_rate^2), data = nrate)
+
+AIC(model_linear, model_quadratic)
+summary(model_linear)
+summary(model_quadratic)
+
+anova(model_linear, model_quadratic)
+```
+
+Then we compare both fitted forms visually on the observed data.
+
+Notice how this helps catch cases where a model looks strong on paper
+but behaves oddly in agronomic terms.
+
+And one reminder I repeat often: do not interpret predictions far beyond
+the observed nitrogen range as if they were validated field behavior.
+
+```{r scenario6_plot, echo=TRUE}
+plot(nrate$n_rate, nrate$yield,
+     pch = 19,
+     col = "grey40",
+     xlab = "N rate",
+     ylab = "Yield",
+     main = "Scenario 6: Rate-Response")
+curve(predict(model_linear,
+      newdata = data.frame(n_rate = x)),
+  add = TRUE,
+  col = "tomato",
+  lwd = 2)
+curve(predict(model_quadratic,
+      newdata = data.frame(n_rate = x)),
+  add = TRUE,
+  col = "steelblue",
+  lwd = 2)
+legend("bottomright",
+   legend = c("Linear", "Quadratic"),
+   col = c("tomato", "steelblue"),
+   lwd = 2,
+   bty = "n")
+```
+
+
+# Scenario 7: Spatial Layers and Inference (Shapefiles and Rasters)
+
+Suppose the question is spatial: where should we apply or adjust
+management, not just how much change happened on average.
+
+So now we shift from "how much" to "where".
+
+This takes us back to:
+
+- Module 12: coordinate systems, projections, vector/raster workflows
+
+In spatial analysis, geometry and coordinate reference systems are part
+of the statistical validity. If layers are mismatched, the map may look
+fine but be analytically wrong.
+
+This is not a cosmetic issue. It is an inference issue.
+
+Spatial analysis adds one more layer to inference: location itself is
+information, and nearby observations are often more similar than distant
+observations.
+
+In practice, this usually combines:
+
+- vector boundaries/management zones
+- raster or interpolated surfaces
+- extraction/summarization by zone for decision support
+
+So, in practical terms, Module 12 turns model outputs into spatially
+actionable recommendations.
+
+Now we inspect vector and raster objects separately.
+
+This is where I want you to slow down and verify geometry and extent
+before trusting any map output.
+
+We start with the vector boundary first because it defines the analysis
+footprint. Then we move to the raster layer and ask whether its extent
+and resolution are compatible with that footprint.
+
+```{r scenario7_vector, echo=TRUE}
+field <- st_read("data/field.geojson", quiet = TRUE)
+print(field)
+st_bbox(field)
+plot(st_geometry(field),
+  col = "palegreen3",
+  border = "darkgreen",
+  lwd = 2,
+  main = "Scenario 7: Field Boundary")
+```
+
+```{r scenario7_raster, echo=TRUE}
+ndvi <- read_stars("data/example_ndvi.tif")
+print(ndvi)
+plot(ndvi,
+  main = "Scenario 7: NDVI Raster",
+  col = hcl.colors(6, palette = "RdYlGn"))
+```
+
+
+# Scenario 8: Yield Prediction (Multiple Linear Regression and other Predictive Models)
+
+Finally, suppose the goal is prediction rather than explanation.
+
+This takes us back to:
+
+- Module 11: multiple predictor modeling and multicollinearity checks
+- Module 13: supervised learning, feature-based prediction, and
+  overfitting control
+
+Traditional regression remains powerful when interpretability is a
+priority. Machine learning becomes useful when relationships are complex
+and prediction is the primary objective.
+
+In other words, the tool can change, but the discipline cannot.
+
+Machine learning is not a replacement for statistical thinking. It is
+an extension of the same workflow in more flexible predictive settings.
+
+Regardless of tool, the core discipline is the same:
+
+1. Define target clearly.
+1. Validate on unseen data.
+1. Report limitations and uncertainty.
+1. Avoid overfitting.
+
+If we skip that discipline, high apparent accuracy in-sample can fail in
+real fields.
+
+So this first chunk prepares an honest train/test split. I keep this
+step explicit so students can see exactly how we separate model fitting
+from model evaluation.
+
+```{r scenario8_prepare, echo=c(1,2,5,6)}
+county <- read.csv("data/county_environments.csv")
+
+model_data <- subset(county,
+                     state %in% c("MN", "WI"),
+                     select = c(corn, ppt, sand, clay, om, sph))
+
+set.seed(20260502)
+idx <- sample(seq_len(nrow(model_data)),
+              size = floor(0.7 * nrow(model_data)))
+
+train_data <- model_data[idx, ]
+test_data <- model_data[-idx, ]
+```
+
+Now we fit the model on the training split.
+
+This is our in-sample learning step.
+
+```{r scenario8_fit, echo=c(1,2,4,5)}
+model_mlr <- lm(corn ~ ppt + sand + clay + om + sph, data = train_data)
+summary(model_mlr)
+
+par(mfrow = c(1, 2))
+plot(model_mlr, which = 1)
+plot(model_mlr, which = 2)
+par(mfrow = c(1, 1))
+```
+
+Finally, we evaluate out-of-sample performance.
+
+This is where we test whether the model generalizes.
+
+In agronomic terms, this asks: does performance hold on unseen
+environments, or did we mostly memorize the training data?
+
+In this final step, we compute predictions, compare observed versus
+predicted values, and summarize error with RMSE. That gives us a direct
+decision-oriented check of practical model usefulness.
+
+```{r scenario8_eval, echo=TRUE}
+pred_test <- predict(model_mlr, newdata = test_data)
+
+rmse <- sqrt(mean((test_data$corn - pred_test)^2))
+
+head(data.frame(observed = test_data$corn,
+                predicted = pred_test))
+
+summary(model_mlr)$adj.r.squared
+rmse
+```
+
+If test RMSE is large relative to the variation you can tolerate in
+practice, the model is not ready for high-stakes recommendations yet.
+
+
+# Summary
+
+From Modules 00 to 13, the course built a single analytical logic:
+
+- organize data reproducibly
+- identify data type and design structure
+- choose a model that matches question and assumptions
+- diagnose before concluding
+- communicate results in agronomic terms
+
+That is the entire workflow we are trying to develop as professionals.
+
+If you have followed all modules, this sequence should feel familiar:
+question, design, model, diagnostics, interpretation.
+
+Across all of these tools, we are never producing certainty.
+We are making decisions under variability, incomplete information, and
+biological complexity. The goal is not perfect prediction. The goal is
+disciplined reasoning.
+
+So if you remember one thing from Module 14, let it be this:
+
+> Start from the agronomic question, choose the method that respects the
+> data-generating process, and report conclusions with both statistical
+> rigor and biological sense.
+
+

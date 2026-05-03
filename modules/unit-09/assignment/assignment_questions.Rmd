@@ -1,5 +1,5 @@
 ---
-title: "Analyzing Non-Normal Data"
+title: "Module 9 Assignment: Data Quality and Model Diagnostics"
 subtitle: "AGRON 5130"
 author: "Caio dos Santos"
 output: pdf_document
@@ -7,242 +7,177 @@ output: pdf_document
 
 # Introduction
 
-The goal of this assignment is to give you hands-on
-practice with **diagnosing model assumptions** and
-working with **non-normal data**.
+This assignment guides you through a complete statistical workflow:
+explore, fit, check assumptions, decide, and predict. You will apply
+what you learned in the lecture and exercises about inspecting data
+for assumption violations and deciding whether a model is appropriate
+before trusting its conclusions.
 
-You will work with a grape yield dataset from a
-vineyard experiment evaluating canopy management
-strategies.
-
-In this assignment, you will practice:
-
-- visualizing skewed data
-- diagnosing violations of model assumptions
-- applying a **log transformation**
-- fitting a **GLM**
-- interpreting treatment effects across models
-
-Submit a **knitted PDF/HTML generated from your R Markdown
-file** to Canvas.
-
-
-
-## Background
-
-Grapevine productivity is strongly influenced by
-canopy structure, which affects light
-interception, air movement, and ultimately fruit
-development.
-
-In commercial vineyards, growers often use
-different **canopy management practices** to
-balance vegetative growth and fruit production.
-However, these practices can have variable effects
-depending on environmental conditions and
-vine-to-vine variability.
-
-A field trial was conducted to evaluate the effect
-of different canopy management strategies on
-grapevine productivity in a mature vineyard.
-
-The treatments included:
-
-- **Control** (no canopy management)  
-- **Shoot thinning** (removal of excess shoots early in the season)  
-- **Leaf removal** (removal of basal leaves around the fruiting zone)  
-- **Shoot thinning + leaf removal**  
-
-The experiment was conducted using a **completely
-randomized design** with 30 replications.
-
-At the end of the growing season, the number of
-**grape clusters per vine** was recorded for each
-experimental unit.
-
-Due to natural variability among vines and the
-biological processes governing fruit set, the
-response variable is expected to show:
-
-- substantial variability across treatments  
-- increasing variance with increasing mean  
-- right-skewed distributions  
-
-These characteristics make this dataset a good
-candidate for exploring **violations of model
-assumptions** and methods to address them.
-
-We can start by loading the necessary libraries
-
-```{r, message=FALSE, warning=FALSE}
-library(ggplot2)
-library(emmeans)
-```
-
+Our case study is a wheat yield trial from India where the primary
+research question is: how does weed infestation reduce yield? You'll
+use simple linear regression—but with a critical eye on whether the
+model assumptions hold. Before making predictions, you must verify
+that the model respects its assumptions. If it does not, you should
+discuss what the violations mean for your conclusions.
 
 # Question 1
 
-**1 point**
+**6 points**
 
-Load the dataset `"data/grape.csv"` and display
-the first few rows.
-
-**note:**  make sure to call the dataset `grape`.
-This is important for the models I have pre built
-for you after question 10.
+Load the wheat-weed dataset and examine its structure. Before fitting
+any model, explore the relationships visually and numerically. This
+is how we spot problems before they hide in residuals.
 
 ```{r}
+library(ggplot2)
+
+weed <- read.csv("data/wheat_weed_india.csv")
+head(weed)
 ```
 
+1. Create a scatterplot matrix for all numeric variables in the
+dataset. Which pairs of variables appear most strongly related?
+
+```{r}
+
+```
+
+2. Compute the correlation coefficient between `total_weed_dm` (weed
+dry matter biomass) and `yield`. Use `cor.test()` to test whether
+this correlation is statistically significant.
+
+```{r}
+
+```
+
+3. Create a scatterplot with `total_weed_dm` on the x-axis and `yield`
+on the y-axis. Add a title and axis labels. Describe what you see
+in one or two sentences. Does the relationship look linear?
+
+```{r}
+
+```
+
+4. What is the correlation coefficient? How would you describe the
+strength of the relationship: weak, moderate, or strong?
 
 # Question 2
 
-**2 points**
+**4 points**
 
-Create a plot showing the relationship between
-`treatment` and `clusters`.
+Now fit a simple linear regression model to answer the question:
+how much does yield decline as weed biomass increases?
+
+1. Fit a linear model: `yield ~ total_weed_dm`. Display the model
+coefficients and their significance using `summary()` or similar.
 
 ```{r}
+
 ```
 
+2. Interpret the slope coefficient. What is the numeric value? Is it
+statistically significant at $\alpha = 0.05$? In plain language, what
+does the slope mean for a farmer? (Hint: "For every unit increase in
+weed biomass, yield changes by...")
 
 # Question 3
 
-**1 point**
+**8 points**
 
-Create a histogram of `clusters`.
+The linear regression model makes three key assumptions about
+residuals: normality, homogeneity of variance, and independence. 
+In this question, you'll check whether these assumptions hold.
 
-Briefly describe the distribution (normal vs skewed).
+1. Extract the residuals from your model and create a histogram. Does
+the distribution appear approximately normal? (Rough symmetry around
+zero is what you're looking for.) Briefly explain whether normality
+seems reasonable.
 
 ```{r}
+
 ```
 
+2. Create a residuals vs. fitted values plot. (Hint: `plot(model)` 
+will produce diagnostic plots including this one, or you can make it 
+with ggplot using `fitted(model)` and `residuals(model)` as 
+coordinates.) Examine the plot carefully and answer: Do residuals 
+scatter randomly around a horizontal line at zero? Do you see any 
+pattern (curve, funnel shape, or clustering)? What would a 
+problematic pattern suggest about the model?
+
+```{r}
+
+```
+
+3. Create a Q-Q plot to check normality more formally. (Hint: 
+`plot(model)` produces this automatically as plot 2, or use 
+`ggplot(aes(sample = residuals)) + stat_qq() + stat_qq_line()`.) 
+Do the points fall approximately along the diagonal line? Describe 
+any systematic departures. Are they severe enough to undermine the 
+model, or minor?
+
+```{r}
+
+```
 
 # Question 4
 
-**2 points**
+**5 points**
 
-Fit a linear model and extract the treatment
-means. Then, comment on the confidence intervals.
-Do any of the confidence intervals include negative values?
-Why might this be a problem for this type of data?
+Based on your assumption checks in Question 3, assess whether the 
+linear model is trustworthy.
+
+1. Summarize what you found in your diagnostic plots. Do residuals 
+appear normally distributed? Is variance homogeneous across fitted 
+values? Are there influential outliers?
 
 ```{r}
+
 ```
 
+2. Given your findings, do you think a simple linear regression is 
+appropriate here? Why or why not? What assumption(s) might be 
+questionable?
 
 # Question 5
 
-**1 points**
+**4 points**
 
-Create diagnostic plots and comment on:
+Now that you've evaluated the model's assumptions, use it to make 
+predictions—but with awareness of any limitations you discovered.
 
-* normality
-* constant variance
+1. Using your model, predict yield for the following weed biomass 
+levels. Display the predictions along with 95% confidence intervals.
 
-```{r  fig.show="hold", out.width="50%"}
+```{r}
+new_data <- data.frame(
+  total_weed_dm = c(10, 15, 20, 25)
+)
+
 ```
 
+2. Interpret your predictions. What yield does your model predict 
+when weed biomass is 10 kg/ha? What trend does yield follow as weed 
+biomass increases? Given your assumption checks from Question 3, how 
+much confidence do you have in these predictions? Explain.
 
 # Question 6
 
-**1 points**
+**3 points**
 
-Fit a model using a **log transformation** of the response.
+Reflect on the complete workflow you just completed. You explored the
+data and found a correlation, fit a model and estimated the effect 
+size, checked model assumptions, and made predictions.
 
-```{r}
-```
+Write a short paragraph (~150 words) summarizing:
 
-
-# Question 7
-
-**1 point**
-
-Create diagnostic plots for the log-transformed model.
-
-Did things improve?
-
-```{r  fig.show="hold", out.width="50%"}
-```
-
-
-# Question 8
-
-**1 point**
-
-Compute estimated marginal means for the log model.
+- What question did we answer?
+- What did the model tell us about the effect of weeds on yield?
+- What limitations did the assumption checks reveal?
+- If your model violated key assumptions, what might you do next?
+  (Hint: Refer back to the lecture on transformations or alternative
+  approaches.)
 
 ```{r}
+
 ```
-
-
-# Question 9
-
-**1 point**
-
-Back-transform the means using `exp()`.
-
-```{r}
-```
-
-
-# Question 10
-
-**1 point**
-
-Compute the difference between the treatments
-`Both` and `Control` presented on the log scale
-then interpret this difference in the data scale
-
-```{r}
-```
-
-
-
-Now we will fit a **GLM appropriate for this type
-of data** using a **Gamma distribution with a log
-link**. We will use the model `mod_glm` for the
-next questions.
-
-```{r, eval=FALSE}
-mod_glm <- glm(clusters ~ treatment,
-               family = Gamma(link = "log"),
-               data = grape)
-```
-
-
-
-# Question 11
-
-**1 point**
-
-
-Create diagnostic plots for the GLM model. Is this
-model a good fit? Are we concerned about violating
-assumptions?
-
-```{r  fig.show="hold", out.width="50%"}
-```
-
-
-# Question 12
-
-**1 point**
-
-Use `emmeans()` to extract treatment means on the
-**response scale**. Then, comment on the confidence intervals.
-Do any of the confidence intervals include negative values?
-
-```{r}
-```
-
-
-# Question 13
-
-**1 point**
-
-Briefly compare the GLM results to the
-log-transformed model (are the treatment effects
-similar?). Discuss how these two approaches are an
-improvement uppon the first approach in which we
-ignore the non-normality of the residuals.

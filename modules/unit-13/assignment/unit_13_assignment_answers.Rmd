@@ -1,7 +1,7 @@
 ---
 title: "Machine Learning for Canopy Classification"
 subtitle: "AGRON 5130 - Module 13 Assignment"
-author: "Caio dos Santos"
+author: "YOUR NAME HERE"
 output: pdf_document
 ---
 

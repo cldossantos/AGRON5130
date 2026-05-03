@@ -1063,29 +1063,6 @@ clustered in certain parts of the field? Clustered errors suggest
 the model has missed something systematic about that area — shade,
 soil type, crop stress. That is worth investigating.
 
-# Summary
-
-We started with a simple question: how do you turn
-drone pixels into agronomic measurements?
-
-A hand-tuned threshold (ExG > 0.035) works in
-simple cases. But it fails when lighting changes,
-soil color varies, or canopy is sparse.
-
-A random forest model learns from labeled examples
-instead of relying on a fixed rule. It can combine
-multiple bands in ways that a simple threshold
-cannot. But adding more bands does not
-automatically help. It depends on whether those
-bands actually carry useful information for your
-specific data.
-
-In this lecture, NIR did not improve
-classification. That is not a failure of the
-model, it is a signal worth understanding. Always
-check your assumptions against the data before
-drawing conclusions.
-
 
 # Conclusion
 
