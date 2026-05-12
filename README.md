@@ -31,4 +31,8 @@ Agronomy degree program.
 | Week 13: Apr 13 - 17 | Nonlinear Relationships and Multiple Linear Regression |done|
 | Week 14: Apr 20 - 24 | Spatial Statistics |done|
 | Week 15: Apr 27 - May 1 | Introduction to Machine Learning |done|
-| Week 16: May 4 - May 8 | Putting it All Together ||
+| Week 16: May 4 - May 8 | Putting it All Together |done|
+
+## Updates
+
+Course development was concluded on May 3rd of 2026. 
